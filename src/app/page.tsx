@@ -1,12 +1,9 @@
-import ClientPage from '@/components/client-page';
-import { MultiLevelBuilder } from '@/components/data-builder/multi-level-builder';
-import { MultiLevelPieChart } from '@/components/multi-level-pie-chart';
-import { MultiLevelPieChartData } from '@/lib/types/multi-level-pie-types';
+import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main className="flex h-screen flex-row justify-items-stretch items-stretch p-24">
-      <ClientPage />
+    <main className="">
+      <Link href='/pie'>Pie charts</Link>
     </main>
   );
 }

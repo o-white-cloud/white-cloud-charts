@@ -15,15 +15,21 @@ const draw = (
   data: {
     level: PieChartLevel;
     items: PieSector[];
-  }[],
-  width: number,
-  height: number
+  }[]
 ) => {
   const margin = { top: 40, left: 40, right: 40, bottom: 40 };
+  const width = data.reduce((max,dataItem) => Math.max(dataItem.level.outerRadius,max),0) * 3;
+  const height = width;
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const radius = Math.min(width, height) / 2;
   d3.select('#chart').remove();
+
+  let zoom = d3.zoom().on('zoom', handleZoom);
+
+  function handleZoom(e: any) {
+    d3.select('.pieRoot').attr('transform', e.transform);
+  }
 
   const svg = d3
     .select('.pieRoot')
@@ -32,6 +38,7 @@ const draw = (
     .attr('width', innerWidth)
     .attr('height', innerHeight);
 
+  d3.select('.pieRoot').call(zoom as any);
   data.reverse().map((l) => {
     drawPie(l.level, l.items, svg, innerWidth, innerHeight);
   });
@@ -63,14 +70,16 @@ const drawPie = (
     .innerRadius(level.innerRadius)
     .outerRadius(level.outerRadius);
   const pieData = pie(items);
-  
+
   const arch = mainG
     .selectAll(selector)
     .data(pieData)
     .enter()
     .append('g')
     .attr('class', 'arc')
-    .attr('fill', (d) => d.data.placeholder ? 'transparent' : color(d.data.id) as string);
+    .attr('fill', (d) =>
+      d.data.placeholder ? 'transparent' : (color(d.data.id) as string)
+    );
 
   arch.append('path').attr('d', path as any);
 
@@ -88,18 +97,15 @@ const drawPie = (
 export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
   props
 ) => {
-  const [height, setHeight] = useState(1000);
-  const [width, setWidth] = useState(1000);
-
   const data = pieLevels(props.data);
   useEffect(() => {
     if (props.data.levels.length > 0) {
-      draw(data, width, height);
+      draw(data);
     }
   }, [data]);
 
   return (
-    <div className="flex flex-1 flex-row items-center p-24">
+    <div className="flex flex-1 flex-row items-center p-1">
       <div className="pieRoot"></div>
     </div>
   );
