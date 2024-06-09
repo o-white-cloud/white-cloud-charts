@@ -65,7 +65,9 @@ export const pieLevels = (
       placeholder: item.name === 'Placeholder',
       labelDisplay: item.labelDisplay,
       colorSource: item.colorSource,
-      colorValue: item.colorValue
+      colorValue: item.colorValue,
+      strokeColor: x.level.strokeColor,
+      strokeWidth: x.level.strokeWidth
     })),
   }));
 };
