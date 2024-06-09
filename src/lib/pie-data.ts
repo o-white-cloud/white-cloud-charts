@@ -37,6 +37,8 @@ export const pieLevels = (
         level: current.level + 1,
         name: 'Placeholder',
         parent: current,
+        labelDisplay: current.labelDisplay,
+        colorSource: current.colorSource,
       });
     }
   }
@@ -61,6 +63,9 @@ export const pieLevels = (
       name: item.name,
       value: item.absoluteValue,
       placeholder: item.name === 'Placeholder',
+      labelDisplay: item.labelDisplay,
+      colorSource: item.colorSource,
+      colorValue: item.colorValue
     })),
   }));
 };

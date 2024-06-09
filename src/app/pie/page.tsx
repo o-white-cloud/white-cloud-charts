@@ -1,13 +1,17 @@
 'use client';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 import Canvas from '@/components/Canvas';
 import Navbar from '@/components/Navbar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MultiLevelPieChartData, PieChartItem } from '@/lib/types/multi-level-pie-types';
+import {
+    MultiLevelPieChartData, PieChartItem, PieChartLevel
+} from '@/lib/types/multi-level-pie-types';
 import { TabsContent } from '@radix-ui/react-tabs';
 
+import LevelEditor from './level-editor';
+import { Levels } from './levels';
 import { MultiLevelPieChart } from './multi-level-pie-chart';
 import { PieTree } from './tree';
 import TreeItemEditor from './tree-item-editor';
@@ -18,7 +22,47 @@ export default function Page() {
     levels: [],
   });
 
-  const [selectedItem, setSelectedItem] = useState<PieChartItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<
+    | { type: 'treeItem'; item: PieChartItem }
+    | { type: 'level'; item: PieChartLevel }
+    | null
+  >(null);
+
+  const onTreeItemSelect = useCallback(
+    (treeItem: PieChartItem | null) =>
+      setSelectedItem(treeItem ? { type: 'treeItem', item: treeItem } : null),
+    []
+  );
+  const onLevelSelect = useCallback(
+    (level: PieChartLevel | null) =>
+      setSelectedItem(level ? { type: 'level', item: level } : null),
+    []
+  );
+
+  const updateItemData = useCallback(
+    (item: PieChartItem) => {
+      const newItems = [...data.items];
+      const siblingsArray = item.parent ? item.parent.children : newItems;
+      const index = siblingsArray.findIndex((x) => x.id === item.id);
+      if (index !== -1) {
+        siblingsArray.splice(index, 1, item);
+        setData({ items: newItems, levels: data.levels });
+      }
+    },
+    [data]
+  );
+
+  const updateLevelData = useCallback(
+    (level: PieChartLevel) => {
+      const newLevels = [...data.levels];
+      const index = newLevels.findIndex((x) => x.id === level.id);
+      if (index !== -1) {
+        newLevels.splice(index, 1, level);
+        setData({ items: data.items, levels: newLevels });
+      }
+    },
+    [data]
+  );
 
   return (
     <main className="h-screen overflow-hidden">
@@ -26,19 +70,18 @@ export default function Page() {
       <section className="flex h-full flex-row">
         <PanelGroup direction="horizontal">
           <Panel defaultSize={25} className="p-2">
-            <Tabs defaultValue="items" className="h-full flex flex-col">
-              <TabsList>
-                <TabsTrigger value="items">Items</TabsTrigger>
-                <TabsTrigger value="levels">Levels</TabsTrigger>
-              </TabsList>
-              <TabsContent value="items" className="flex-1">
-                <PieTree
-                  data={data}
-                  onDataChange={setData}
-                  onSelectionChange={setSelectedItem}
-                />
-              </TabsContent>
-            </Tabs>
+            <Levels
+              data={data}
+              onSelectionChange={onLevelSelect}
+              selectedLevel={
+                selectedItem?.type == 'level' ? selectedItem?.item : null
+              }
+            />
+            <PieTree
+              data={data}
+              onDataChange={setData}
+              onSelectionChange={onTreeItemSelect}
+            />
           </Panel>
           <PanelResizeHandle />
           <Panel>
@@ -48,7 +91,18 @@ export default function Page() {
           </Panel>
           <PanelResizeHandle />
           <Panel defaultSize={25}>
-            <TreeItemEditor item={selectedItem} />
+            {selectedItem && selectedItem.type === 'treeItem' && (
+              <TreeItemEditor
+                item={selectedItem.item}
+                onItemUpdated={updateItemData}
+              />
+            )}
+            {selectedItem && selectedItem.type === 'level' && (
+              <LevelEditor
+                level={selectedItem.item}
+                onLevelUpdated={updateLevelData}
+              />
+            )}
           </Panel>
         </PanelGroup>
       </section>

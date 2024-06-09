@@ -1,13 +1,14 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import {
     CreateHandler, DeleteHandler, NodeApi, RenameHandler, Tree, TreeApi
 } from 'react-arborist';
 
+import { Input } from '@/components/ui/input';
 import {
-    MultiLevelPieChartData, PieChartItem, PieChartLevel
+    ColorSource, LabelDisplay, MultiLevelPieChartData, PieChartItem, PieChartLevel
 } from '@/lib/types/multi-level-pie-types';
 
 import { Button } from '../../components/ui/button';
@@ -27,7 +28,7 @@ function createTreeItemId(parentId: string, siblings: { id: string }[]) {
 }
 
 export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
-  const {data, onDataChange, onSelectionChange} = props;
+  const { data, onDataChange, onSelectionChange } = props;
   const treeRef = useRef<TreeApi<PieChartItem> | null>(null);
 
   const onRootItemCreate = useCallback(() => {
@@ -53,6 +54,8 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
         innerValue: 1,
         absoluteValue: 1,
         children: [],
+        labelDisplay: LabelDisplay.Inherit,
+        colorSource: ColorSource.Level
       };
 
       if (args.parentNode) {
@@ -64,16 +67,23 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
       const newLevels = [...props.data.levels];
       if (newItem.level > newLevels.length - 1) {
         newLevels.push({
+          id: `${newLevels.length + 1}`,
           innerRadius: (newLevels.length + 1) * 100,
           outerRadius: (newLevels.length + 2) * 100,
+          color: {type: 'single', value: '#ffffff'},
+          cornerRadius: 0,
+          padAngle: 1,
+          padRadius: 0,
+          strokeColor: '#ffffff',
+          strokeWidth: 1
         });
       }
 
-      props.onDataChange({ items: newItems, levels: newLevels });
+      onDataChange({ items: newItems, levels: newLevels });
 
       return newItem;
     },
-    [props.data]
+    [data, onDataChange]
   );
 
   const onItemDelete = useCallback<DeleteHandler<PieChartItem>>(
@@ -100,25 +110,31 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
     [props.data]
   );
 
-  const onTreeSelectionChanged = useCallback((nodes: NodeApi<PieChartItem>[]) => {
-    if(nodes.length) {
-      onSelectionChange(nodes[0].data);
-    } else {
-      onSelectionChange(null);
-    }
-  }, [onSelectionChange]);
+  const onTreeSelectionChanged = useCallback(
+    (nodes: NodeApi<PieChartItem>[]) => {
+      if (nodes.length) {
+        onSelectionChange(nodes[0].data);
+      } else {
+        onSelectionChange(null);
+      }
+    },
+    [onSelectionChange]
+  );
 
   return (
     <div className="flex flex-col flex-1">
-      <Button
-        onClick={onRootItemCreate}
-        variant={'ghost'}
-        className="p-0 w-9 h-9"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center">
+        <Input className='flex-1 h-9' placeholder='Search' startIcon={Search}/>
+        <Button
+          onClick={onRootItemCreate}
+          variant={'outline'}
+          className="h-9 self-end m-4"
+        >
+          <Plus className="h-4 w-4" /> Add root item
+        </Button>
+      </div>
       <Tree
-        className='flex-1'
+        className="flex-1"
         width="100%"
         rowHeight={36}
         data={data.items}
