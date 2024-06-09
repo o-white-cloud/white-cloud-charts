@@ -2,7 +2,7 @@ import { Plus, X } from 'lucide-react';
 import { useCallback } from 'react';
 
 import {
-    Color, EnumerationColor, GradientColor, SingleColor
+    Color, ColorType, EnumerationColor, GradientColor, SingleColor
 } from '@/lib/types/multi-level-pie-types';
 
 import { Button } from '../ui/button';
@@ -22,7 +22,7 @@ export const ColorEditor: React.FC<ColorEditorProps> = (props) => {
     <>
       <Select
         value={props.value.type}
-        onValueChange={(selectedType) => props.onChange({ type: selectedType })}
+        onValueChange={(selectedType) => props.onChange({ type: selectedType as ColorType } as any)}
       >
         <SelectTrigger className="w-[280px]">
           <SelectValue placeholder="Color type" />
