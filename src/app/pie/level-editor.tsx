@@ -87,7 +87,7 @@ const LevelEditor = (props: LevelEditorProps) => {
               </FormItem>
             )}
           />
-          <span className='mb-8'>-</span>
+          <span className="mb-8">-</span>
           <FormField
             control={form.control}
             name="outerRadius"
@@ -107,23 +107,27 @@ const LevelEditor = (props: LevelEditorProps) => {
             )}
           />
         </div>
-        <FormField
-          control={form.control}
-          name="color"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Color</FormLabel>
-              <FormControl>
-                <ColorEditor
-                  value={field.value}
-                  onChange={(e) => field.onChange(e)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex items-center">
+        <div className="flex items-start gap-4">
+          <FormField
+            
+            control={form.control}
+            name="color"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Color</FormLabel>
+                <FormControl>
+                  <ColorEditor
+                    value={field.value}
+                    onChange={(e) => field.onChange(e)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <StrokeEditor formControl={form.control as any} />
+        </div>
+        <div className="flex items-center gap-2">
           <FormField
             control={form.control}
             name="padAngle"
@@ -179,7 +183,7 @@ const LevelEditor = (props: LevelEditorProps) => {
             )}
           />
         </div>
-        <StrokeEditor formControl={form.control as any} />
+
         <Button type="submit">Submit</Button>
       </form>
     </Form>

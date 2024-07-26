@@ -3,16 +3,14 @@ import { useCallback, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 import Canvas from '@/components/Canvas';
+import { MultiLevelPieChart } from '@/components/charts/pie/multi-level-pie-chart';
 import Navbar from '@/components/Navbar';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     MultiLevelPieChartData, PieChartItem, PieChartLevel
 } from '@/lib/types/multi-level-pie-types';
-import { TabsContent } from '@radix-ui/react-tabs';
 
 import LevelEditor from './level-editor';
 import { Levels } from './levels';
-import { MultiLevelPieChart } from './multi-level-pie-chart';
 import { PieTree } from './tree';
 import TreeItemEditor from './tree-item-editor';
 
@@ -66,10 +64,10 @@ export default function Page() {
 
   return (
     <main className="h-screen overflow-hidden">
-      <Navbar />
-      <section className="flex h-full flex-row">
+      {/* <Navbar /> */}
+      <section className="flex h-full flex-row bg-gray-300">
         <PanelGroup direction="horizontal">
-          <Panel defaultSize={25} className="p-2">
+          <Panel defaultSize={25} className="p-2 bg-white">
             <Levels
               data={data}
               onSelectionChange={onLevelSelect}
@@ -85,12 +83,10 @@ export default function Page() {
           </Panel>
           <PanelResizeHandle />
           <Panel>
-            <Canvas>
-              <MultiLevelPieChart data={data} />
-            </Canvas>
+            <MultiLevelPieChart data={data} />
           </Panel>
           <PanelResizeHandle />
-          <Panel defaultSize={25}>
+          <Panel defaultSize={25} className="bg-white">
             {selectedItem && selectedItem.type === 'treeItem' && (
               <TreeItemEditor
                 item={selectedItem.item}

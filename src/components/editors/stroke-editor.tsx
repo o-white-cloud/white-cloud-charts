@@ -23,15 +23,16 @@ export interface StrokeEditorProps {
 
 export const StrokeEditor: React.FC<StrokeEditorProps> = (props) => {
   return (
-    <div className='flex items-center'>
+    <div className='flex gap-2 items-center'>
       <FormField
         control={props.formControl}
         name="strokeWidth"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Stroke width</FormLabel>
+            <FormLabel>Stroke</FormLabel>
             <FormControl>
               <Input
+                className='w-20'
                 placeholder="Width"
                 {...field}
                 onChange={(e) => field.onChange(Number(e.target.value))}
@@ -46,7 +47,7 @@ export const StrokeEditor: React.FC<StrokeEditorProps> = (props) => {
         name="strokeColor"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Stroke color</FormLabel>
+            <FormLabel>&nbsp;</FormLabel>
             <FormControl>
               <ColorPicker {...field} />
             </FormControl>

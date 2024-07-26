@@ -56,21 +56,21 @@ const draw = (
 
   d3.select('#chart').remove();
 
-  let zoom = d3.zoom().on('zoom', handleZoom);
-
-  function handleZoom(e: any) {
-    d3.select('#chart').attr('transform', e.transform);
-  }
+  const zoom = d3.zoom().scaleExtent([0.1, 10]).on('zoom', zoomed);
 
   const svg = d3
     .select('.pieRoot')
     .append('svg')
+    .attr('viewBox', [0, 0, innerWidth, innerHeight])
     .attr('id', 'chart')
     .attr('width', innerWidth)
     .attr('height', innerHeight);
-  //.attr('transform', `translate(-${innerWidth / 2} -${innerHeight / 2})`);
 
-  d3.select('#chart').call(zoom as any);
+  svg.call(zoom as any).call(zoom.transform as any, d3.zoomIdentity);
+  function zoomed(e: any) {
+    d3.select('#chart').attr('transform', e.transform);
+  }
+
   data.reverse().map((l) => {
     drawPie(l.level, l.items, svg, innerWidth, innerHeight);
   });
@@ -93,7 +93,7 @@ const drawPie = (
     case 'enumeration':
       levelEnumColors[level.id] = d3
         .scaleOrdinal()
-        .domain(d3.extent(items, (d,i) => i) as unknown as string)
+        .domain(d3.extent(items, (d, i) => i) as unknown as string)
         .range(level.color.values);
       break;
     case 'gradient':
@@ -103,7 +103,7 @@ const drawPie = (
         .getColors();
       levelEnumColors[level.id] = d3
         .scaleOrdinal()
-        .domain(d3.extent(items, (d,i) => i) as unknown as string)
+        .domain(d3.extent(items, (d, i) => i) as unknown as string)
         .range(colorArr);
   }
 

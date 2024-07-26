@@ -124,7 +124,7 @@ const GradientColorEditor: React.FC<ColorEditorProps<GradientColor>> = (
   props
 ) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-2">
       <ColorPicker
         value={props.value.to}
         onChange={(newColor) =>
