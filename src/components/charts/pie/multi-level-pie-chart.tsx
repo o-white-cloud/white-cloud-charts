@@ -181,16 +181,16 @@ const drawPie = (
       }
       return `translate(${path.centroid(d as any)})`;
     })
-    .attr('startOffset', function (d, i) {
-      const p = pieData[i];
-      const angle = pieAngle[i];
-      let percent = ((p.startAngle + p.endAngle) / 2 / 2 / Math.PI) * 100;
-      if (angle > 90 && angle <= 270) {
-        //calculate the correct percent for each path respectively
-        return 100 - percent + '%';
-      }
-      return percent + '%';
-    })
+    // .attr('startOffset', function (d, i) {
+    //   const p = pieData[i];
+    //   const angle = pieAngle[i];
+    //   let percent = ((p.startAngle + p.endAngle) / 2 / 2 / Math.PI) * 100;
+    //   if (angle > 90 && angle <= 270) {
+    //     //calculate the correct percent for each path respectively
+    //     return 100 - percent + '%';
+    //   }
+    //   return percent + '%';
+    // })
     .style('text-anchor', (d, i) => {
       if (d.data.labelDisplay === LabelDisplay.Radial) {
         const p = pieData[i];

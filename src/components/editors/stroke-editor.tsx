@@ -13,11 +13,7 @@ export interface StrokeEditorProps {
       strokeColor: string;
       strokeWidth: number;
     },
-    any,
-    {
-      strokeColor: string;
-      strokeWidth: number;
-    }
+    any
   >;
 }
 
