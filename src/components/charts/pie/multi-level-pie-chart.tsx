@@ -35,30 +35,38 @@ const draw = (
 
   d3.select('#chart').remove();
 
-  const zoom = d3.zoom().scaleExtent([0.1, 10]).on('zoom', zoomed);
-
   const svg = d3
     .select('.pieRoot')
     .append('svg')
-    .attr('viewBox', [0, 0, innerWidth, innerHeight])
+    //.attr('viewBox', [0, 0, innerWidth, innerHeight])
     .attr('id', 'chart')
     .attr('width', innerWidth)
     .attr('height', innerHeight);
 
-  svg.call(zoom as any).call(zoom.transform as any, d3.zoomIdentity);
-  function zoomed(e: any) {
-    d3.select('#chart').attr('transform', e.transform);
-  }
+  // Create a container group for zooming
+  const g = svg.append('g')
+    .attr('id', 'zoomG')
+    .attr('transform', `translate(${innerWidth / 2},${innerHeight / 2})`);
+
+  // Create zoom behavior
+  const zoom = d3.zoom<SVGSVGElement, unknown>()
+    .scaleExtent([0.5, 5]) // Min and max zoom scale
+    .on('zoom', (event) => {
+      g.attr('transform', event.transform);
+    });
+
+  // Apply zoom behavior to SVG
+  svg.call(zoom);
 
   data.reverse().map((l) => {
-    drawPie(l.level, l.items, svg, innerWidth, innerHeight);
+    drawPie(l.level, l.items, g, innerWidth, innerHeight);
   });
 };
 
 const drawPie = (
   level: PieChartLevel,
   items: PieSector[],
-  svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>,
+  svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   innerWidth: number,
   innerHeight: number
 ) => {
@@ -97,8 +105,8 @@ const drawPie = (
     .attr('fill', (d) =>
       d.data.placeholder ? 'transparent' : d.data.properties?.color.value?.value ?? '#ddd'
     )
-    .attr('stroke', (d) => d.data.properties?.strokeColor?.value?.value??'#000')
-    .attr('stroke-width', (d) => d.data.placeholder ? 0 : d.data.properties?.strokeWidth.value??1
+    .attr('stroke', (d) => d.data.properties?.strokeColor?.value?.value ?? '#000')
+    .attr('stroke-width', (d) => d.data.placeholder ? 0 : d.data.properties?.strokeWidth.value ?? 1
     );
 
   mainG
@@ -123,7 +131,7 @@ const drawPie = (
         }
         case LabelDisplayType.centroid:
           return `translate(${path.centroid(d as any)})`;
-        default:  return `translate(${path.centroid(d as any)})`;
+        default: return `translate(${path.centroid(d as any)})`;
       }
 
     })
@@ -174,7 +182,7 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
       <div className="pieRoot">
         <Button
           onClick={() =>
-            d3.select('#chart').attr('transform', 'translate(0,0) scale(1)')
+            d3.select('#zoomG').attr('transform', 'translate(0,0) scale(1)')
           }
         >
           Reset zoom
