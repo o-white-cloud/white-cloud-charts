@@ -1,154 +1,59 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { Button } from '@/components/ui/button';
-import {
-    Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage
-} from '@/components/ui/form';
+import { Label } from "@/components/ui/label"
+import { LabelDisplayType, PieChartItem, PieChartLevel, SingleColor } from '@/lib/types/multi-level-pie-types';
+import { PropertyEditor } from '@/components/editors/property-editor';
+import { EnumEditor } from '@/components/editors/enum-editor';
 import { Input } from '@/components/ui/input';
-import {
-    getEnumKeys, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger,
-    SelectValue
-} from '@/components/ui/select';
-import { ColorSource, LabelDisplay, PieChartItem } from '@/lib/types/multi-level-pie-types';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { ColorEditor, SingleColorEditor } from '@/components/editors/color-editor';
+import { NumericEditor } from '@/components/editors/numeric-editor';
 
 interface TreeItemEditorProps {
   item: PieChartItem | null;
+  level: PieChartLevel;
   onItemUpdated: (item: PieChartItem) => void;
 }
 
-const FormSchema = z.object({
-  name: z.string().min(1, {
-    message: 'Sector name must be at least one character long.',
-  }),
-  innerValue: z.number().min(1, {
-    message: 'Sector value must be at least 1',
-  }),
-  labelDisplay: z.nativeEnum(LabelDisplay),
-  colorSource: z.nativeEnum(ColorSource),
-});
-
 const TreeItemEditor = (props: TreeItemEditorProps) => {
-  const { item, onItemUpdated } = props;
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    values: {
-      name: item?.name ?? '',
-      innerValue: item?.innerValue ?? 1,
-      labelDisplay: item?.labelDisplay ?? LabelDisplay.Inherit,
-      colorSource: item?.colorSource ?? ColorSource.Level
-    },
-    mode: 'onChange',
-  });
-
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    const newItem = { ...item, ...data } as PieChartItem;
-    onItemUpdated(newItem);
-  }
+  const { item, level, onItemUpdated } = props;
 
   if (!item) {
     return <div>No item selected</div>;
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="p-4 w-full space-y-6"
-      >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="sector name" {...field} />
-              </FormControl>
-              <FormDescription>
-                Name of the sector as it will be appear on the chart.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="innerValue"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Value</FormLabel>
-              <FormControl>
-                <Input placeholder="sector value" {...field} type="number" onChange={(e) => field.onChange(Number(e.target.value))}/>
-              </FormControl>
-              <FormDescription>
-                Value of the sector in relation to its siblings.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="labelDisplay"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Label display</FormLabel>
-              <FormControl>
-                <Select {...field} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-[280px]">
-                    <SelectValue placeholder="Sector label display type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {/* <SelectLabel>Label display</SelectLabel> */}
-                      {getEnumKeys(LabelDisplay).map((key) => (
-                        <SelectItem key={key} value={LabelDisplay[key]}>
-                          {key}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormDescription>Pie sector label display mode</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="colorSource"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Color source</FormLabel>
-              <FormControl>
-                <Select {...field} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-[280px]">
-                    <SelectValue placeholder="Color source" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {/* <SelectLabel>Label display</SelectLabel> */}
-                      {getEnumKeys(ColorSource).map((key) => (
-                        <SelectItem key={key} value={ColorSource[key]}>
-                          {key}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormDescription>Source of the color for the sector</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+    <div className='p-4'>
+      <Label htmlFor="name">Label</Label>
+      <Input value={item.name} id="name" onChange={(e) => onItemUpdated({ ...item, name: e.currentTarget.value })} />
+
+      <Label htmlFor='innerValue'>Value</Label>
+      <Input id='innerValue' type="number" value={item.innerValue} onChange={(e) => onItemUpdated({ ...item, innerValue: e.currentTarget.valueAsNumber })} />
+      
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={item.properties.labelDisplay}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <EnumEditor {...valueProps} options={Object.keys(LabelDisplayType)} />} />
+
+
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={item.properties.color}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
+
+    <PropertyEditor
+        level={level}
+        item={item}
+        property={level.properties.strokeWidth}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={level.properties.strokeColor}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
+
+    </div>
   );
 };
 

@@ -5,6 +5,31 @@ export interface MultiLevelPieChartData {
   items: PieChartItem[];
 }
 
+export interface PieChartItemProperties extends Record<string, Property<any>> {
+  color: Property<SingleColor>,
+  labelDisplay: Property<LabelDisplayType>,
+  labelAnchor: Property<'start' | 'middle' | 'end'>,
+  labelDX: Property<number>,
+  strokeWidth: Property<number>,
+  strokeColor: Property<SingleColor>,
+}
+
+export interface PieChartItem {
+  id: string;
+  name: string;
+  innerValue: number;
+  absoluteValue: number;
+  level: number;
+  parent?: PieChartItem;
+  children: PieChartItem[];
+  icon?: LucideIcon;
+  properties: PieChartItemProperties;
+}
+
+export interface PieChartLevelProperties extends Omit<PieChartItemProperties, 'color'> {
+  color: Property<Color>
+}
+
 export interface PieChartLevel {
   id: string;
   innerRadius: number;
@@ -15,32 +40,27 @@ export interface PieChartLevel {
   cornerRadius: number;
   strokeWidth: number;
   strokeColor: string;
+
+  properties: PieChartLevelProperties;
 }
 
-export interface PieChartItem {
-  colorValue?: string;
-  colorSource: ColorSource;
-  id: string;
-  name: string;
-  innerValue: number;
-  absoluteValue: number;
-  level: number;
-  parent?: PieChartItem;
-  children: PieChartItem[];
-  icon?: LucideIcon;
-  labelDisplay: LabelDisplay;
+export interface Property<T> {
+  source: 'override' | 'parent' | 'level';
+  value: T | null,
+  label: string,
+  name: string,
+  description: string
+}
+
+export interface PieSectorProperties extends PieChartItemProperties {
 }
 
 export interface PieSector {
-  strokeWidth: number;
-  strokeColor: string;
   id: string;
   name: string;
   value: number;
   placeholder: boolean;
-  labelDisplay: LabelDisplay;
-  colorSource: ColorSource;
-  colorValue?: string;
+  properties: PieSectorProperties | null;
 }
 
 export type ColorType = 'single' | 'gradient' | 'enumeration';
@@ -69,14 +89,8 @@ export type Color =
   | GradientColor
   | EnumerationColor;
 
-export enum ColorSource {
-  Level = 'level',
-  Explicit = 'explicit',
-}
-
-export enum LabelDisplay {
-  Inherit = 'inherit',
-  Centroid = 'centroid',
-  Radial = 'rounded',
-  Path = 'path',
+export enum LabelDisplayType {
+  'centroid' = 'centroid',
+  'radial' = 'radial',
+  'path' = 'path'
 }

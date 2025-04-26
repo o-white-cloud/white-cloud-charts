@@ -1,21 +1,21 @@
 'use client';
 
 import { Plus, Search } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useContext, useRef, useState } from 'react';
 import {
     CreateHandler, DeleteHandler, NodeApi, RenameHandler, Tree, TreeApi
 } from 'react-arborist';
 
 import { Input } from '@/components/ui/input';
 import {
-    ColorSource, LabelDisplay, MultiLevelPieChartData, PieChartItem, PieChartLevel
+    LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartLevel
 } from '@/lib/types/multi-level-pie-types';
 
 import { Button } from '../../components/ui/button';
 import Node from './node';
+import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 
 export interface MultiLevelBuilderProps {
-  data: MultiLevelPieChartData;
   onDataChange: (data: MultiLevelPieChartData) => void;
   onSelectionChange: (item: PieChartItem | null) => void;
 }
@@ -28,7 +28,8 @@ function createTreeItemId(parentId: string, siblings: { id: string }[]) {
 }
 
 export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
-  const { data, onDataChange, onSelectionChange } = props;
+  const { onDataChange, onSelectionChange } = props;
+  const data = useContext(MultiLevelPieChartDataContext);
   const treeRef = useRef<TreeApi<PieChartItem> | null>(null);
 
   const onRootItemCreate = useCallback(() => {
@@ -41,7 +42,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
 
   const onItemCreate = useCallback<CreateHandler<PieChartItem>>(
     (args) => {
-      const newItems = [...props.data.items];
+      const newItems = [...data.items];
       const newItemId = createTreeItemId(
         args.parentNode?.data.id ?? '',
         args.parentNode?.data.children ?? newItems
@@ -54,8 +55,50 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
         innerValue: 1,
         absoluteValue: 1,
         children: [],
-        labelDisplay: LabelDisplay.Inherit,
-        colorSource: ColorSource.Level
+        properties: {
+          color: {
+            description: 'Color of the pie sector',
+            label: 'Color',
+            name: 'color',
+            source: args.parentNode ? 'parent' : 'level',
+            value: null
+          },
+          labelAnchor: {
+            description: 'Anchor of the pie sector label',
+            label: 'Anchor',
+            name: 'labelAnchor',
+            source: 'level',
+            value: null
+          },
+          labelDisplay: {
+            description: 'Display type of label',
+            label: 'Display',
+            name: 'labelDisplay',
+            source: 'level',
+            value: null
+          },
+          labelDX: {
+            description: 'X offset of the label',
+            label: 'Delta X',
+            name: 'labelDX',
+            source: 'level',
+            value: null
+          },
+          strokeColor: {
+            description: 'Color of the stroke',
+            label: 'Stroke color',
+            name: 'strokeColor',
+            source: 'level',
+            value: null
+          },
+          strokeWidth: {
+            description: 'Width of the stroke',
+            label: 'Stroke width',
+            name: 'strokeWidth',
+            source: 'level',
+            value: null
+          },
+        }
       };
 
       if (args.parentNode) {
@@ -64,7 +107,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
         newItems.push(newItem);
       }
 
-      const newLevels = [...props.data.levels];
+      const newLevels = [...data.levels];
       if (newItem.level > newLevels.length - 1) {
         newLevels.push({
           id: `${newLevels.length + 1}`,
@@ -75,7 +118,54 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
           padAngle: 1,
           padRadius: 0,
           strokeColor: '#ffffff',
-          strokeWidth: 1
+          strokeWidth: 1,
+          properties: {
+            color: {
+              description: 'Color of the pie sector',
+              label: 'Color',
+              name: 'color',
+              source: 'level',
+              value: {
+                type: 'single',
+                value: '#ffffff'
+              }
+            },
+            labelAnchor: {
+              description: 'Anchor of the pie sector label',
+              label: 'Anchor',
+              name: 'labelAnchor',
+              source: 'level',
+              value: 'middle'
+            },
+            labelDisplay: {
+              description: 'Display type of label',
+              label: 'Display',
+              name: 'labelDisplay',
+              source: 'level',
+              value: LabelDisplayType.centroid
+            },
+            labelDX: {
+              description: 'X offset of the label',
+              label: 'Delta X',
+              name: 'labelDX',
+              source: 'level',
+              value: 0
+            },
+            strokeColor: {
+              description: 'Color of the stroke',
+              label: 'Stroke color',
+              name: 'strokeColor',
+              source: 'level',
+              value: '#000000'
+            },
+            strokeWidth: {
+              description: 'Width of the stroke',
+              label: 'Stroke width',
+              name: 'strokeWidth',
+              source: 'level',
+              value: 1
+            },
+          }
         });
       }
 
@@ -88,7 +178,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
 
   const onItemDelete = useCallback<DeleteHandler<PieChartItem>>(
     (args) => {
-      const newItems = [...props.data.items];
+      const newItems = [...data.items];
 
       args.nodes.forEach((node) => {
         const parentArray = node.data.parent?.children ?? newItems;
@@ -96,18 +186,18 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
         const index = parentArray.indexOf(node.data);
         parentArray.splice(index, 1);
       });
-      props.onDataChange({ items: newItems, levels: props.data.levels });
+      props.onDataChange({ items: newItems, levels: data.levels });
     },
-    [props.data]
+    [data]
   );
 
   const onItemRename = useCallback<RenameHandler<PieChartItem>>(
     (args) => {
-      const newItems = [...props.data.items];
+      const newItems = [...data.items];
       args.node.data.name = args.name;
-      props.onDataChange({ items: newItems, levels: props.data.levels });
+      props.onDataChange({ items: newItems, levels: data.levels });
     },
-    [props.data]
+    [data]
   );
 
   const onTreeSelectionChanged = useCallback(

@@ -4,26 +4,28 @@ import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { SelectContent, SelectGroup, SelectItem } from '@/components/ui/select';
 import {
-    LabelDisplay, MultiLevelPieChartData, PieChartItem, PieChartLevel
+    LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartLevel
 } from '@/lib/types/multi-level-pie-types';
 import { cn } from '@/lib/utils';
+import { useContext } from 'react';
+import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 
 export interface LevelsProps {
-  data: MultiLevelPieChartData;
   onSelectionChange: (item: PieChartLevel | null) => void;
   selectedLevel: PieChartLevel | null;
 }
 
 export const Levels: React.FC<LevelsProps> = (props) => {
+  const data = useContext(MultiLevelPieChartDataContext);
   return (
     <nav className="flex">
-      {props.data.levels.map((level) => (
+      {data.levels.map((level) => (
         <Link
           key={level.id}
           href={''}
           id={level.id}
           onClick={(e) => {
-            const newSelected = props.data.levels.find(
+            const newSelected = data.levels.find(
               (l) => l.id === e.currentTarget.id
             );
             if (newSelected) {

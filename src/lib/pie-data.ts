@@ -1,6 +1,15 @@
+import { getPropertyValue } from './pie-chart-item-value';
 import {
-    MultiLevelPieChartData, PieChartItem, PieChartLevel, PieSector
+  MultiLevelPieChartData, PieChartItem, PieChartItemProperties, Property, PieChartLevel, PieSector,
+  PieSectorProperties,
+  SingleColor
 } from './types/multi-level-pie-types';
+
+type FlattenedLevels =
+  {
+    level: PieChartLevel;
+    items: Array<PieChartItem>;
+  }[];
 
 export const pieLevels = (
   data: MultiLevelPieChartData
@@ -37,11 +46,11 @@ export const pieLevels = (
         level: current.level + 1,
         name: 'Placeholder',
         parent: current,
-        labelDisplay: current.labelDisplay,
-        colorSource: current.colorSource,
+        properties: current.properties
       });
     }
   }
+
 
   flattenedLevels.forEach((l) => {
     l.items.forEach((i) => {
@@ -52,22 +61,27 @@ export const pieLevels = (
         i.name === 'Placeholder' && i.parent
           ? i.parent?.absoluteValue
           : (i.innerValue / siblingSum) *
-            (i.parent ? i.parent.absoluteValue : 1);
+          (i.parent ? i.parent.absoluteValue : 1);
     });
   });
 
-  return flattenedLevels.map((x) => ({
-    level: x.level,
-    items: x.items.map<PieSector>((item) => ({
-      id: item.id,
-      name: item.name,
-      value: item.absoluteValue,
-      placeholder: item.name === 'Placeholder',
-      labelDisplay: item.labelDisplay,
-      colorSource: item.colorSource,
-      colorValue: item.colorValue,
-      strokeColor: x.level.strokeColor,
-      strokeWidth: x.level.strokeWidth
-    })),
-  }));
+  return mapItemsToSectors(flattenedLevels, data);
 };
+
+const mapItemsToSectors = (flattenedLevels: FlattenedLevels, data: MultiLevelPieChartData) => {
+  return flattenedLevels.map((levelAndItems) => ({
+    level: levelAndItems.level,
+    items: levelAndItems.items.map<PieSector>((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        value: item.absoluteValue,
+        placeholder: item.name === 'Placeholder',
+        properties: item.name === 'Placeholder' ? null : Object.keys(item.properties).reduce<PieSectorProperties>((newProperties, property: keyof PieChartItemProperties) => {
+          newProperties[property].value = getPropertyValue(item, item.properties[property], data);
+          return newProperties;
+        }, { ...item.properties })
+      };
+    }),
+  }));
+}

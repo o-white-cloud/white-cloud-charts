@@ -2,27 +2,33 @@ import { Plus, X } from 'lucide-react';
 import { useCallback } from 'react';
 
 import {
-    Color, ColorType, EnumerationColor, GradientColor, SingleColor
+  Color, ColorType, EnumerationColor, GradientColor, SingleColor
 } from '@/lib/types/multi-level-pie-types';
 
 import { Button } from '../ui/button';
 import { ColorPicker } from '../ui/color-picker';
-import { FormDescription } from '../ui/form';
 import {
-    Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue
 } from '../ui/select';
+import { ValueEditorProps } from './property-editor';
 
-export interface ColorEditorProps<T extends Color = Color> {
-  value: T;
-  onChange: (value: T) => void;
+export interface ColorEditorProps<T extends Color = Color> extends ValueEditorProps<T> {
 }
 
-export const ColorEditor: React.FC<ColorEditorProps> = (props) => {
+export function ColorEditor(props: ColorEditorProps) {
   return (
     <>
       <Select
-        value={props.value.type}
-        onValueChange={(selectedType) => props.onChange({ type: selectedType as ColorType } as any)}
+        value={props.value?.type}
+        onValueChange={(selectedType) => {
+          let newColor: Color = {type: 'single', value: '#fff'};
+          switch(selectedType) {
+            case 'single': newColor = {type: 'single', value: '#fff'}; break;
+            case 'enumeration': newColor = {type: 'enumeration', values: ['#fff']}; break;
+            case 'gradient': newColor = {type: 'gradient', from: '#fff', to: '#000'}; break;
+          }
+          props.onChange(newColor);
+        }}
       >
         <SelectTrigger className="w-[280px]">
           <SelectValue placeholder="Color type" />
@@ -37,41 +43,41 @@ export const ColorEditor: React.FC<ColorEditorProps> = (props) => {
           </SelectGroup>
         </SelectContent>
       </Select>
-      {props.value.type === 'single' && (
-        <SingleColorEditor value={props.value} onChange={props.onChange} />
+      {props.value?.type === 'single' && (
+        <SingleColorEditor value={props.value} onChange={props.onChange} readonly={props.readonly}/>
       )}
-      {props.value.type === 'enumeration' && (
-        <EnumerationColorEditor value={props.value} onChange={props.onChange} />
+      {props.value?.type === 'enumeration' && (
+        <EnumerationColorEditor value={props.value} onChange={props.onChange} readonly={props.readonly}/>
       )}
-      {props.value.type === 'gradient' && (
-        <GradientColorEditor value={props.value} onChange={props.onChange} />
+      {props.value?.type === 'gradient' && (
+        <GradientColorEditor value={props.value} onChange={props.onChange} readonly={props.readonly}/>
       )}
     </>
   );
 };
 
-const SingleColorEditor: React.FC<ColorEditorProps<SingleColor>> = (props) => {
+export const SingleColorEditor: React.FC<ColorEditorProps<SingleColor>> = (props) => {
   return (
-    <ColorPicker
-      value={props.value.value}
+    <ColorPicker disabled={props.readonly}
+      value={props.value?.value ?? '#fff'}
       onChange={(value) => props.onChange({ type: 'single', value })}
     />
   );
 };
 
-const EnumerationColorEditor: React.FC<ColorEditorProps<EnumerationColor>> = (
+export const EnumerationColorEditor: React.FC<ColorEditorProps<EnumerationColor>> = (
   props
 ) => {
   const onColorAdd = useCallback(() => {
     props.onChange({
       type: 'enumeration',
-      values: [...(props.value.values ?? []), '#ffffff'],
+      values: [...(props.value?.values ?? []), '#ffffff'],
     });
   }, [props]);
 
   const onColorChange = useCallback(
     (newColor: string, index: number) => {
-      const newColors = [...props.value.values];
+      const newColors = [...props.value?.values ?? []];
       newColors.splice(index, 1, newColor);
       props.onChange({
         type: 'enumeration',
@@ -83,7 +89,7 @@ const EnumerationColorEditor: React.FC<ColorEditorProps<EnumerationColor>> = (
 
   const onColorDelete = useCallback(
     (index: number) => {
-      const newColors = [...props.value.values];
+      const newColors = [...props.value?.values ?? []];
       newColors.splice(index, 1);
       props.onChange({
         type: 'enumeration',
@@ -95,10 +101,10 @@ const EnumerationColorEditor: React.FC<ColorEditorProps<EnumerationColor>> = (
 
   return (
     <div className="flex flex-wrap items-center gap-4">
-      {!props.value.values && (
-        <FormDescription>Click the plus button to add colors</FormDescription>
+      {!props.value?.values && (
+        <span>Click the plus button to add colors</span>
       )}
-      {props.value.values?.map((c, i) => (
+      {props.value?.values?.map((c, i) => (
         <div key={i} className="relative">
           <ColorPicker
             value={c}
@@ -120,26 +126,28 @@ const EnumerationColorEditor: React.FC<ColorEditorProps<EnumerationColor>> = (
   );
 };
 
-const GradientColorEditor: React.FC<ColorEditorProps<GradientColor>> = (
+export const GradientColorEditor: React.FC<ColorEditorProps<GradientColor>> = (
   props
 ) => {
   return (
     <div className="flex gap-2">
       <ColorPicker
-        value={props.value.to}
+        value={props.value?.to ?? '#fff'}
         onChange={(newColor) =>
           props.onChange({
-            ...props.value,
             to: newColor,
+            from: props.value?.from??"#fff",
+            type: 'gradient'
           })
         }
       />
       <ColorPicker
-        value={props.value.from}
+        value={props.value?.from ?? '#fff'}
         onChange={(newColor) =>
           props.onChange({
-            ...props.value,
             from: newColor,
+            to: props.value?.from??"#fff",
+            type: 'gradient'
           })
         }
       />
