@@ -9,7 +9,7 @@ interface EnumPickerProps<T> extends ValueEditorProps<T> {
 }
 export const EnumEditor = <T,>(props: EnumPickerProps<T>) => {
     return (<Select value={props.value?.toString()} onValueChange={(value) => { props.onChange(value as T) }} disabled={props.readonly}>
-        <SelectTrigger className="w-[280px]">
+        <SelectTrigger>
             <SelectValue placeholder={"Select value"} />
         </SelectTrigger>
         <SelectContent>

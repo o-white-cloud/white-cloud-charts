@@ -74,10 +74,17 @@ export const PropertyEditor = <T,>(props: React.PropsWithChildren<PropertyEditor
     }, [item, level, property, onItemChange, onLevelChange]);
 
     return <div className="mt-5 mb-5">
+        <Label className="flex-1">{props.property.label}</Label>
         <div className="flex flex-row items-center mb-2">
-            <Label className="flex-1">{props.property.label}</Label>
+            <div className="flex-1">
+                {props.render({
+                value: item ? getPropertyValue(item, property, data) : property.value,
+                onChange: valueChanged,
+                readonly: item !== undefined && (property.source !== 'override')
+            })}
+            </div>
             {item && (<Select value={property.source} onValueChange={sourceChanged}>
-                <SelectTrigger className="w-[100px] px-2 py-0 h-[28px]">
+                <SelectTrigger className="w-[100px] px-2 py-0 h-[28px] ml-4">
                     <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
@@ -85,13 +92,10 @@ export const PropertyEditor = <T,>(props: React.PropsWithChildren<PropertyEditor
                     {props.item?.parent && <SelectItem value="parent">Parent</SelectItem>}
                     <SelectItem value="override">Override</SelectItem>
                 </SelectContent>
-            </Select>)}</div>
-        {props.render({
-            value: item ? getPropertyValue(item, property, data) : property.value,
-            onChange: valueChanged,
-            readonly: item !== undefined && (property.source !== 'override')
-        })}
-        <span>{property.description}</span>
+            </Select>)}
+
+        </div>
+        {/* <span>{property.description}</span> */}
     </div>;
 }
 

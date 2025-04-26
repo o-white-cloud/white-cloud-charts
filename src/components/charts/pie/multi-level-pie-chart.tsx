@@ -13,9 +13,10 @@ export interface MultiLevelPieChartProps {
 }
 
 const sectorIdAttr = 'sector-id';
-const arcId = (pieSector: PieSector) => `arc-${pieSector.id}`
-const textId = (pieSector: PieSector) => `text-${pieSector.id}`
-const textClass = (pieSector: PieSector) => `text-${pieSector.properties?.labelDisplay.value}`
+const arcId = (pieSector: PieSector) => `arc-${pieSector.id}`;
+const arcHiddenId = (pieSector: PieSector) => `arc-hidden-${pieSector.id}`;
+const textId = (pieSector: PieSector) => `text-${pieSector.id}`;
+const textClass = (pieSector: PieSector) => `text-${pieSector.properties?.labelDisplay.value}`;
 
 const draw = (
   data: {
@@ -43,19 +44,17 @@ const draw = (
     .attr('width', innerWidth)
     .attr('height', innerHeight);
 
-  // Create a container group for zooming
+
   const g = svg.append('g')
     .attr('id', 'zoomG')
-    .attr('transform', `translate(${innerWidth / 2},${innerHeight / 2})`);
+    .attr('transform', 'translate(0,0)');
 
-  // Create zoom behavior
   const zoom = d3.zoom<SVGSVGElement, unknown>()
     .scaleExtent([0.5, 5]) // Min and max zoom scale
     .on('zoom', (event) => {
       g.attr('transform', event.transform);
     });
 
-  // Apply zoom behavior to SVG
   svg.call(zoom);
 
   data.reverse().map((l) => {
@@ -107,7 +106,29 @@ const drawPie = (
     )
     .attr('stroke', (d) => d.data.properties?.strokeColor?.value?.value ?? '#000')
     .attr('stroke-width', (d) => d.data.placeholder ? 0 : d.data.properties?.strokeWidth.value ?? 1
-    );
+    )
+    .each(function (d, i) {
+      if (!d) {
+        return;
+      }
+      const firstArcSection = /(^.+?)L/;
+      const thisArc = firstArcSection.exec(d3.select(this).attr("d"));
+      
+      if (!thisArc || thisArc.length == 0) {
+        return;
+      }
+      let newArc = thisArc[1];
+      newArc = newArc.replace(/,/g, " ");
+      const hiddenPathId = arcHiddenId((d as any).data);
+      
+      mainG.append("path")
+        .attr("id", hiddenPathId)
+        .attr("d", newArc)
+        .attr("fill", "none")
+        //.attr('stroke', "red")
+        //.attr('stroke-width', 1)
+        ;
+    });
 
   mainG
     .selectAll(selector)
@@ -116,6 +137,8 @@ const drawPie = (
     .append('text')
     .attr(sectorIdAttr, (d) => d.data.id)
     .attr('class', (d) => textClass(d.data))
+    .attr('dy', (d: any) => d.data.properties.labelDY.value)
+    .attr('x', (d: any) => d.data.properties.labelDX.value)
     .text((d) => d.data.placeholder ? null : d.data.name)
     .attr('transform', (d, i) => {
       switch (d.data.properties?.labelDisplay.value) {
@@ -131,6 +154,8 @@ const drawPie = (
         }
         case LabelDisplayType.centroid:
           return `translate(${path.centroid(d as any)})`;
+        case LabelDisplayType.path:
+          return null;
         default: return `translate(${path.centroid(d as any)})`;
       }
 
@@ -152,7 +177,7 @@ const drawPie = (
         default: return null;
       }
     })
-    .style('font-size', 12);
+    .style('font-size', (d: any) => d.data.properties.labelFontSize.value);
 
   var sectorsWithPathLabels = items.filter(v => v.properties?.labelDisplay.value == LabelDisplayType.path);
 
@@ -162,7 +187,9 @@ const drawPie = (
       .filter(`.${textClass(sectorsWithPathLabels[0])}`)
       .html(null)
       .append("textPath")
-      .attr("href", (d: any) => `#${arcId(d.data)}`)
+      .attr("href", (d: any) => `#${arcHiddenId(d.data)}`)
+      .style("text-anchor", (d: any) => d.data.properties.labelAnchor.value)
+      .attr("startOffset","50%")
       .text((d: any) => (d.data.placeholder ? '' : `${d.data.name}`))
   }
 };
@@ -171,6 +198,7 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
   props
 ) => {
   const data = pieLevels(props.data);
+
   useEffect(() => {
     if (props.data.levels.length > 0) {
       draw(data);
@@ -178,16 +206,16 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
   }, [data]);
 
   return (
-    <div className="flex flex-1 flex-row items-center p-1">
-      <div className="pieRoot">
-        <Button
-          onClick={() =>
-            d3.select('#zoomG').attr('transform', 'translate(0,0) scale(1)')
-          }
-        >
-          Reset zoom
-        </Button>
-      </div>
+    <div className="h-full w-full flex flex-1 flex-col items-center p-1 red">
+
+      <button
+        onClick={() =>
+          d3.select('#zoomG').attr('transform', 'translate(0,0) scale(1)')
+        }
+      >
+        Reset zoom
+      </button>
+      <div className="pieRoot h-full w-full "></div>
     </div>
   );
 };

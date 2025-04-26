@@ -8,6 +8,7 @@ import {
 
 import { Input } from '@/components/ui/input';
 import {
+  LabelAnchorType,
     LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartLevel
 } from '@/lib/types/multi-level-pie-types';
 
@@ -68,7 +69,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
             label: 'Anchor',
             name: 'labelAnchor',
             source: 'level',
-            value: null
+            value: LabelAnchorType.middle
           },
           labelDisplay: {
             description: 'Display type of label',
@@ -82,7 +83,21 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
             label: 'Delta X',
             name: 'labelDX',
             source: 'level',
-            value: null
+            value: 0
+          },
+          labelDY: {
+            description: 'Y offset of the label',
+            label: 'Delta Y',
+            name: 'labelDY',
+            source: 'level',
+            value: 0
+          },
+          labelFontSize: {
+            description: "Size of the label font",
+            label: "Font size",
+            name: 'labelFontSize',
+            source: 'level',
+            value: 12
           },
           strokeColor: {
             description: 'Color of the stroke',
@@ -135,7 +150,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
               label: 'Anchor',
               name: 'labelAnchor',
               source: 'level',
-              value: 'middle'
+              value: LabelAnchorType.middle
             },
             labelDisplay: {
               description: 'Display type of label',
@@ -150,6 +165,20 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
               name: 'labelDX',
               source: 'level',
               value: 0
+            },
+            labelDY: {
+              description: 'Y offset of the label',
+              label: 'Delta Y',
+              name: 'labelDY',
+              source: 'level',
+              value: 20
+            },
+            labelFontSize: {
+              description: "Size of the label font",
+              label: "Font size",
+              name: 'labelFontSize',
+              source: 'level',
+              value: 12
             },
             strokeColor: {
               description: 'Color of the stroke',

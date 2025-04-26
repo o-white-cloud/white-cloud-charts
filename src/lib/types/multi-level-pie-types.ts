@@ -8,8 +8,10 @@ export interface MultiLevelPieChartData {
 export interface PieChartItemProperties extends Record<string, Property<any>> {
   color: Property<SingleColor>,
   labelDisplay: Property<LabelDisplayType>,
-  labelAnchor: Property<'start' | 'middle' | 'end'>,
+  labelAnchor: Property<LabelAnchorType>,
   labelDX: Property<number>,
+  labelDY: Property<number>,
+  labelFontSize: Property<number>,
   strokeWidth: Property<number>,
   strokeColor: Property<SingleColor>,
 }
@@ -93,4 +95,10 @@ export enum LabelDisplayType {
   'centroid' = 'centroid',
   'radial' = 'radial',
   'path' = 'path'
+}
+
+export enum LabelAnchorType {
+  'start' = 'start',
+  'middle' = 'middle',
+  'end' = 'end'
 }
