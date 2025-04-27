@@ -70,6 +70,28 @@ export default function Page() {
     [data]
   );
 
+  const findItemById = useCallback((id: string, items: PieChartItem[]): PieChartItem | null => {
+    for (const item of items) {
+      if (item.id === id) {
+        return item;
+      }
+      if (item.children.length > 0) {
+        const found = findItemById(id, item.children);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  }, []);
+
+  const onSectorClick = useCallback((sectorId: string) => {
+    const item = findItemById(sectorId, data.items);
+    if (item) {
+      onTreeItemSelect(item);
+    }
+  }, [data.items, findItemById, onTreeItemSelect]);
+
   return (
     <MultiLevelPieChartDataContext.Provider value={data}>
       <main className="h-screen overflow-hidden">
@@ -84,13 +106,15 @@ export default function Page() {
             </Panel>
             <PanelResizeHandle />
             <Panel>
-              <Levels
+            <Levels
                 onSelectionChange={onLevelSelect}
                 selectedLevel={
                   selectedItem?.type == 'level' ? selectedItem?.item : null
-                }
+                }/>
+              <MultiLevelPieChart 
+                data={data} 
+                onSectorClick={onSectorClick}
               />
-              <MultiLevelPieChart data={data} />
             </Panel>
             <PanelResizeHandle />
             <Panel defaultSize={25} className="bg-white !overflow-auto">

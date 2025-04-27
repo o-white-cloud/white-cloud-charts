@@ -10,6 +10,7 @@ import {
 
 export interface MultiLevelPieChartProps {
   data: MultiLevelPieChartData;
+  onSectorClick?: (sectorId: string) => void;
 }
 
 const sectorIdAttr = 'sector-id';
@@ -22,7 +23,8 @@ const draw = (
   data: {
     level: PieChartLevel;
     items: PieSector[];
-  }[]
+  }[],
+  onSectorClick?: (sectorId: string) => void
 ) => {
   const margin = { top: 40, left: 40, right: 40, bottom: 40 };
   const width =
@@ -58,7 +60,7 @@ const draw = (
   svg.call(zoom);
 
   data.reverse().map((l) => {
-    drawPie(l.level, l.items, g, innerWidth, innerHeight);
+    drawPie(l.level, l.items, g, innerWidth, innerHeight, onSectorClick);
   });
 };
 
@@ -67,7 +69,8 @@ const drawPie = (
   items: PieSector[],
   svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   innerWidth: number,
-  innerHeight: number
+  innerHeight: number,
+  onSectorClick?: (sectorId: string) => void
 ) => {
   const selector = `pie${level.innerRadius}`;
   const mainG = svg
@@ -105,8 +108,13 @@ const drawPie = (
       d.data.placeholder ? 'transparent' : d.data.properties?.color.value?.value ?? '#ddd'
     )
     .attr('stroke', (d) => d.data.properties?.strokeColor?.value?.value ?? '#000')
-    .attr('stroke-width', (d) => d.data.placeholder ? 0 : d.data.properties?.strokeWidth.value ?? 1
-    )
+    .attr('stroke-width', (d) => d.data.placeholder ? 0 : d.data.properties?.strokeWidth.value ?? 1)
+    .style('cursor', 'pointer')
+    .on('click', (event, d) => {
+      if (!d.data.placeholder && onSectorClick) {
+        onSectorClick(d.data.id);
+      }
+    })
     .each(function (d, i) { // create hidden arc paths on which labels can be placed
       if (!d || d.data.placeholder || !d.data.properties || d.data.properties.labelDisplay.value !== 'path') {
         return; // skip placeholder sectors and the ones that don't have path labels 
@@ -255,13 +263,14 @@ const drawPie = (
 export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
   props
 ) => {
-  const data = pieLevels(props.data);
+  const { data, onSectorClick } = props;
+  const chartData = pieLevels(data);
 
   useEffect(() => {
-    if (props.data.levels.length > 0) {
-      draw(data);
+    if (data.levels.length > 0) {
+      draw(chartData, onSectorClick);
     }
-  }, [data]);
+  }, [chartData, onSectorClick]);
 
   const onDownload = () => {
     const svgElement = document.querySelector('.pieRoot svg');
