@@ -175,7 +175,7 @@ const drawPie = (
         d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
       .attr('stroke',(d) =>
         d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
-      .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m,i) => Math.max(i.properties?.strokeWidth?.value??0), 0));
+      .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m,i) => Math.max(i.properties?.strokeWidth?.value??0, m), 0));
   }
 
   mainG
