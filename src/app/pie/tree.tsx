@@ -72,9 +72,6 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
           id: `${newLevels.length + 1}`,
           innerRadius: (newLevels.length + 1) * 100,
           outerRadius: (newLevels.length + 2) * 100,
-          cornerRadius: 0,
-          padAngle: 1,
-          padRadius: 0,
           properties: DefaultLevelProperties()
         });
       }
