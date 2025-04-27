@@ -93,7 +93,7 @@ export default function Page() {
               <MultiLevelPieChart data={data} />
             </Panel>
             <PanelResizeHandle />
-            <Panel defaultSize={25} className="bg-white">
+            <Panel defaultSize={25} className="bg-white !overflow-auto">
               {selectedItem && selectedItem.type === 'treeItem' && (
                 <TreeItemEditor
                   item={selectedItem.item}

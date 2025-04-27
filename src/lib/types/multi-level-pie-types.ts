@@ -29,16 +29,18 @@ export interface PieChartItem {
 }
 
 export interface PieChartLevelProperties extends Omit<PieChartItemProperties, 'color'> {
-  color: Property<Color>
+  color: Property<Color>,
+  edgeColor: Property<SingleColor>,
+  edgeThickness: Property<number>,
+  startAngle: Property<number>,
+  padAngle: Property<number>
+  cornerRadius: Property<number>
 }
 
 export interface PieChartLevel {
   id: string;
   innerRadius: number;
   outerRadius: number;
-  padAngle: number;
-  padRadius: number;
-  cornerRadius: number;
   properties: PieChartLevelProperties;
 }
 

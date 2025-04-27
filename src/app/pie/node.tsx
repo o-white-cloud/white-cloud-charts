@@ -40,7 +40,7 @@ const Node = (props: NodeProps) => {
             autoFocus
           />
         ) : (
-          <span className="flex-1" onDoubleClick={(_) => node.edit()}>{node.data.name}</span>
+          <span className="flex-1 text-ellipsis overflow-hidden" onDoubleClick={(_) => node.edit()}>{node.data.name}</span>
         )}
         <div className="collapse group-hover:visible">
           <Button

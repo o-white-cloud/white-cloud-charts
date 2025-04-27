@@ -65,24 +65,64 @@ export const DefaultTreeItemProperties = (parentNode: NodeApi<PieChartItem> | nu
 
 export const DefaultLevelProperties = (): PieChartLevelProperties => {
 
-    var itemProps = DefaultTreeItemProperties(null);
-    Object.keys(itemProps).forEach((key: keyof PieChartItemProperties) => {
-        itemProps[key].source = 'level';
+    let levelProps :PieChartLevelProperties = {...DefaultTreeItemProperties(null), 
+        padAngle: {
+            description: 'Spacing as angle between each sector',
+            label: 'Pad angle',
+            name: 'padAngle',
+            source: 'level',
+            value: 0
+        },
+        cornerRadius: {
+            description: 'Roundness of the corners of each sector',
+            label: 'Corner radius',
+            name: 'cornerRadius',
+            source: 'level',
+            value: 0
+        },
+        startAngle: {
+            description: 'Angle at which the first sector starts from',
+            label: 'Start angle',
+            name: 'startAngle',
+            source: 'level',
+            value: 0
+        },
+        edgeColor: {
+            description: 'Sector outer edge color',
+            label: 'Edge color',
+            name: 'edgeColor',
+            source: 'level',
+            value: {
+                type: 'single',
+                value: '#000'
+            }
+        },
+        edgeThickness: {
+            description: 'Thickness of sector outer edge',
+            label: 'Edge thickness',
+            name: 'edgeThickness',
+            source: 'level',
+            value: 0
+        },
+    };
+
+    Object.keys(levelProps).forEach((key: keyof PieChartItemProperties) => {
+        levelProps[key].source = 'level';
     });
 
-    itemProps.color.value = {
+    levelProps.color.value = {
         type: 'single',
         value: '#ffffff'
     };
-
-    itemProps.labelAnchor.value = LabelAnchorType.middle;
-    itemProps.labelDisplay.value = LabelDisplayType.centroid;
-    itemProps.labelDX.value = 0;
-    itemProps.labelDY.value = 0;
-    itemProps.labelFontSize.value = 12;
-    itemProps.strokeColor.value = {  type: 'single',
+    levelProps.padAngle
+    levelProps.labelAnchor.value = LabelAnchorType.middle;
+    levelProps.labelDisplay.value = LabelDisplayType.centroid;
+    levelProps.labelDX.value = 0;
+    levelProps.labelDY.value = 0;
+    levelProps.labelFontSize.value = 12;
+    levelProps.strokeColor.value = {  type: 'single',
         value: '#000'};
-    itemProps.strokeWidth.value = 1;
+    levelProps.strokeWidth.value = 1;
 
-    return itemProps;
+    return levelProps;
 }

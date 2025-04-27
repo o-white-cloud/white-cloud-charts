@@ -26,7 +26,7 @@ const LevelEditor = (props: LevelEditorProps) => {
 
   return (
     <div className='p-4'>
-      <Label htmlFor="iradius">Sector radius</Label>
+      <Label htmlFor="iradius">Level thickness</Label>
       <div className="flex items-center gap-x-4 !mt-0">
         <Input
           id="iradius"
@@ -44,8 +44,35 @@ const LevelEditor = (props: LevelEditorProps) => {
           onChange={(e) => onLevelUpdated({ ...level, outerRadius: e.currentTarget.valueAsNumber })}
         />
       </div>
-      
-      <Divider/>
+
+      <PropertyEditor
+        level={level}
+        property={level.properties.startAngle}
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.startAngle)} render={(valueProps) => <NumericEditor {...valueProps} min={-360} max={360} step={10} />} />
+
+      <PropertyEditor
+        level={level}
+        property={level.properties.padAngle}
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.padAngle)} render={(valueProps) => <NumericEditor {...valueProps} min={0} max={0.2} step={0.01} />} />
+
+      <PropertyEditor
+        level={level}
+        property={level.properties.cornerRadius}
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.padAngle)} render={(valueProps) => <NumericEditor {...valueProps} min={0} max={(level.outerRadius - level.innerRadius) / 2} step={10} />} />
+
+      <Divider />
+
+      <PropertyEditor
+        level={level}
+        property={level.properties.edgeColor}
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.edgeColor)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        property={level.properties.edgeThickness}
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.edgeThickness)} render={(valueProps) => <NumericEditor {...valueProps} min={0} max={100} step={1} />} />
+
+      <Divider />
 
       <PropertyEditor
         level={level}
@@ -66,20 +93,20 @@ const LevelEditor = (props: LevelEditorProps) => {
         level={level}
         property={level.properties.labelDX}
         onLevelChange={(level) => onLevelUpdated(level, level.properties.labelDX)} render={(valueProps) => <NumericEditor {...valueProps} />} />
-      
+
       <PropertyEditor
         level={level}
         property={level.properties.labelDY}
         onLevelChange={(level) => onLevelUpdated(level, level.properties.labelDY)} render={(valueProps) => <NumericEditor {...valueProps} />} />
 
-      <Divider/>
+      <Divider />
 
       <PropertyEditor
         level={level}
         property={level.properties.labelFontSize}
         onLevelChange={(level) => onLevelUpdated(level, level.properties.labelFontSize)} render={(valueProps) => <NumericEditor {...valueProps} />} />
 
-      <Divider/>
+      <Divider />
 
       <PropertyEditor
         level={level}

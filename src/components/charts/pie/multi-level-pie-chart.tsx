@@ -78,19 +78,19 @@ const drawPie = (
   const pie = d3
     .pie<PieSector>()
     .sort(null)
+    .startAngle((level.properties.startAngle.value ?? 0) * (Math.PI / 180))
+    .endAngle((level.properties.startAngle.value ?? 0) * (Math.PI / 180) + 2 * Math.PI)
     .value((record) => record.value);
   const path = d3
     .arc()
     .innerRadius(level.innerRadius)
     .outerRadius(level.outerRadius)
-    .padAngle(level.padAngle)
-    .padRadius(level.padRadius)
-    .cornerRadius(level.cornerRadius);
+    .padAngle(level.properties.padAngle.value ?? 0)
+    .cornerRadius(level.properties.cornerRadius.value ?? 0);
   const pieData = pie(items);
   const pieAngle = pieData.map(function (p) {
     return ((p.startAngle + p.endAngle) / 2 / Math.PI) * 180;
   });
-
 
   mainG
     .selectAll(selector)
@@ -155,6 +155,28 @@ const drawPie = (
         //.attr('stroke-width', 1)
         ;
     });
+
+  if (level.properties.edgeThickness.value ?? 0 !== 0) {
+    const edgeArcs = d3
+      .arc()
+      .innerRadius(level.outerRadius - (level.properties.edgeThickness.value ?? 0))
+      .outerRadius(level.outerRadius)
+      .padAngle(level.properties.padAngle.value ?? 0)
+      .cornerRadius(level.properties.cornerRadius.value ?? 0);
+
+    mainG
+      .selectAll(selector)
+      .data(pieData)
+      .enter()
+      .append('path')
+      .attr('class', 'edge')
+      .attr('d', edgeArcs as any)
+      .attr('fill', (d) =>
+        d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
+      .attr('stroke',(d) =>
+        d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
+      .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m,i) => Math.max(i.properties?.strokeWidth?.value??0), 0));
+  }
 
   mainG
     .selectAll(selector)
