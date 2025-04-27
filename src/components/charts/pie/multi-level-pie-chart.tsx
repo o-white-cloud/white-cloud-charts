@@ -107,38 +107,46 @@ const drawPie = (
     .attr('stroke', (d) => d.data.properties?.strokeColor?.value?.value ?? '#000')
     .attr('stroke-width', (d) => d.data.placeholder ? 0 : d.data.properties?.strokeWidth.value ?? 1
     )
-    .each(function (d, i) {
+    .each(function (d, i) { // create hidden arc paths on which labels can be placed
       if (!d || d.data.placeholder || !d.data.properties || d.data.properties.labelDisplay.value !== 'path') {
-        return;
+        return; // skip placeholder sectors and the ones that don't have path labels 
       }
+
+      // get the full path of the main sector
       const firstArcSection = /(^.+?)L/;
       const thisArc = firstArcSection.exec(d3.select(this).attr("d"));
-      
+
       if (!thisArc || thisArc.length == 0) {
         return;
       }
       let newArc = thisArc[1];
       newArc = newArc.replace(/,/g, " ");
 
-      if (d.endAngle > 90 * Math.PI/180) {
-        //Everything between the capital M and first capital A
+      // if the sector is on the bottom half of the pie, we need to invert the path(so that labels don't appear upside-down)
+      if (d.endAngle > 90 * Math.PI / 180) {
+
         var startLoc = /M(.*?)A/;
-        //Everything between the capital A and 0 0 1
+
         var middleLoc = /A(.*?)0 0 1/;
-        //Everything between the 0 0 1 and the end of the string (denoted by $)
+
         var endLoc = /0 0 1 (.*?)$/;
         //Flip the direction of the arc by switching the start and end point
         //and using a 0 (instead of 1) sweep flag
-        var newStart = endLoc.exec(newArc)[1];
-        var newEnd = startLoc.exec(newArc)[1];
-        var middleSec = middleLoc.exec(newArc)[1];
-
+        var newStart = endLoc.exec(newArc);
+        var newEnd = startLoc.exec(newArc);
+        var middleSec = middleLoc.exec(newArc);
+        if (!newStart || newStart.length == 0 ||
+          !newEnd || newEnd.length == 0 ||
+          !middleSec || middleSec.length == 0
+        ) {
+          return;
+        }
         //Build up the new arc notation, set the sweep-flag to 0
-        newArc = "M" + newStart + "A" + middleSec + "0 0 0 " + newEnd;
-    }//if
+        newArc = "M" + newStart[1] + "A" + middleSec[1] + "0 0 0 " + newEnd[1];
+      }//if
 
       const hiddenPathId = arcHiddenId((d as any).data);
-      
+      // add the hidden path to the svg
       mainG.append("path")
         .attr("id", hiddenPathId)
         .attr("d", newArc)
@@ -156,16 +164,16 @@ const drawPie = (
     .attr(sectorIdAttr, (d) => d.data.id)
     .attr('class', (d) => textClass(d.data))
     .attr('dy', (d: any) => {
-      if(!d.data.properties){
+      if (!d.data.properties) {
         return null;
       }
-      switch(d.data.properties.labelDisplay.value){
+      switch (d.data.properties.labelDisplay.value) {
         case LabelDisplayType.path:
-          return (d.endAngle > 90 * Math.PI/180 ? d.data.properties?.labelDY.value * (-0.3) : d.data.properties?.labelDY.value);
+          return (d.endAngle > 90 * Math.PI / 180 ? d.data.properties?.labelDY.value * (-1) * 0.3/* for some reason this is needed to align properly*/ : d.data.properties?.labelDY.value);
         default: return d.data.properties?.labelDY.value;
       }
-          
-    } )
+
+    })
     .attr('x', (d: any) => d.data.properties?.labelDX.value)
     .text((d) => d.data.placeholder ? null : d.data.name)
     .attr('transform', (d, i) => {
@@ -217,7 +225,7 @@ const drawPie = (
       .append("textPath")
       .attr("href", (d: any) => `#${arcHiddenId(d.data)}`)
       .style("text-anchor", (d: any) => d.data.properties.labelAnchor.value)
-      .attr("startOffset","50%")
+      .attr("startOffset", "50%")
       .text((d: any) => (d.data.placeholder ? '' : `${d.data.name}`))
   }
 };
@@ -234,41 +242,43 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
   }, [data]);
 
   const onDownload = () => {
-      const svgElement = document.querySelector('.pieRoot svg');
-      if (!svgElement) {
-        console.error('SVG element not found!');
-        return;
-      }
-  
-      const serializer = new XMLSerializer();
-      const svgString = serializer.serializeToString(svgElement);
-  
-      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-  
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'chart.svg';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-  
-      URL.revokeObjectURL(url);
+    const svgElement = document.querySelector('.pieRoot svg');
+    if (!svgElement) {
+      console.error('SVG element not found!');
+      return;
+    }
+
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgElement);
+
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'chart.svg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   }
 
   return (
     <div className="h-full w-full flex flex-1 flex-col items-center p-1 red">
-
-      <button
-        onClick={() =>
-          d3.select('#zoomG').attr('transform', 'translate(0,0) scale(1)')
-        }
-      >
-        Reset zoom
-      </button>
-      <button onClick={onDownload}>
-        Download
-      </button>
+      <div className='w-full ml-4 mt-5 flex flex-row space-x-4 items-center'>
+        <Button
+          variant={'outline'}
+          onClick={() =>
+            d3.select('#zoomG').attr('transform', 'translate(0,0) scale(1)')
+          }
+        >
+          Reset zoom
+        </Button>
+        <Button variant={'outline'} onClick={onDownload}>
+          Download
+        </Button>
+      </div>
       <div className="pieRoot h-full w-full "></div>
     </div>
   );
