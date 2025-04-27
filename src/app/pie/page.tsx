@@ -11,7 +11,7 @@ import {
 
 import LevelEditor from './level-editor';
 import { Levels } from './levels';
-import { PieTree } from './tree';
+import { PieTree } from '@/components/tree';
 import TreeItemEditor from './tree-item-editor';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 import { updateChildrenWithParent } from '@/lib/pie-chart-item-value';

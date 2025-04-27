@@ -1,21 +1,23 @@
 'use client';
 
-import { Plus, Search, Save, Upload } from 'lucide-react';
+import { Plus, Search, Save, Upload, FileText } from 'lucide-react';
 import { useCallback, useContext, useRef, useState } from 'react';
 import {
-    CreateHandler, DeleteHandler, NodeApi, RenameHandler, Tree, TreeApi
+  CreateHandler, DeleteHandler, NodeApi, RenameHandler, Tree, TreeApi
 } from 'react-arborist';
 
 import { Input } from '@/components/ui/input';
 import {
-  LabelAnchorType,
-    LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartLevel
+  MultiLevelPieChartData, PieChartItem,
+  PieChartLevel
 } from '@/lib/types/multi-level-pie-types';
 
-import { Button } from '../../components/ui/button';
+import { Button } from '../ui/button';
 import Node from './node';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 import { DefaultLevelProperties, DefaultTreeItemProperties } from '@/lib/default-values';
+import { BulkItemDialog } from '../../app/pie/bulk-item-dialog';
+import { createNewTreeItem, createTree } from './tree-utils';
 
 export interface MultiLevelBuilderProps {
   onDataChange: (data: MultiLevelPieChartData) => void;
@@ -46,43 +48,30 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
   const onItemCreate = useCallback<CreateHandler<PieChartItem>>(
     (args) => {
       const newItems = [...data.items];
-      const newItemId = createTreeItemId(
-        args.parentNode?.data.id ?? '',
-        args.parentNode?.data.children ?? newItems
-      );
-      const newItem: PieChartItem = {
-        level: (args?.parentNode?.data.level ?? -1) + 1,
-        parent: args.parentNode?.data,
-        id: newItemId,
-        name: newItemId,
-        innerValue: 1,
-        absoluteValue: 1,
-        children: [],
-        properties: DefaultTreeItemProperties(args.parentNode)
-      };
+      const {item, level} = createNewTreeItem(data.items, data.levels, args.parentNode?.data ?? null);
 
       if (args.parentNode) {
-        args.parentNode.data.children.push(newItem);
+        args.parentNode.data.children.push(item);
       } else {
-        newItems.push(newItem);
+        newItems.push(item);
       }
 
       const newLevels = [...data.levels];
-      if (newItem.level > newLevels.length - 1) {
-        newLevels.push({
-          id: `${newLevels.length + 1}`,
-          innerRadius: (newLevels.length + 1) * 100,
-          outerRadius: (newLevels.length + 2) * 100,
-          properties: DefaultLevelProperties()
-        });
+      if(level){
+        newLevels.push(level);
       }
-
+      
       onDataChange({ items: newItems, levels: newLevels });
 
-      return newItem;
+      return item;
     },
     [data, onDataChange]
   );
+
+  const onBulkItemsCreate = useCallback((text: string) => {
+    const newData = createTree(text);
+    onDataChange(newData);
+  }, [data, onDataChange]);
 
   const onItemDelete = useCallback<DeleteHandler<PieChartItem>>(
     (args) => {
@@ -169,10 +158,10 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
     reader.onload = (e) => {
       try {
         const loadedData = JSON.parse(e.target?.result as string) as MultiLevelPieChartData;
-        
+
         // Reconstruct parent relationships
         const itemsWithParents = reconstructParentRelationships(loadedData.items);
-        
+
         // Update the state with the loaded data
         onDataChange({
           items: itemsWithParents,
@@ -184,7 +173,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
       }
     };
     reader.readAsText(file);
-    
+
     // Reset the input so the same file can be selected again
     event.target.value = '';
   }, [onDataChange]);
@@ -200,6 +189,17 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
         >
           <Plus className="h-4 w-4" /> Add root item
         </Button>
+        <BulkItemDialog
+        onSubmit={onBulkItemsCreate}
+        trigger={
+          <Button
+            variant={'outline'}
+            className="h-9 self-end mr-4"
+          >
+            <FileText className="h-4 w-4" /> From file
+          </Button>
+        }
+      />
         <Button
           onClick={onSave}
           variant={'outline'}

@@ -24,7 +24,7 @@ const Node = (props: NodeProps) => {
           <ChevronRight size={16} className={thumbClassname} onClick={() => node.isInternal && node.toggle()}/>
         )}
 
-        <PieChart size={16} />
+        {/* <PieChart size={16} /> */}
 
         {node.isEditing ? (
           <Input
@@ -40,7 +40,7 @@ const Node = (props: NodeProps) => {
             autoFocus
           />
         ) : (
-          <span className="flex-1 text-ellipsis overflow-hidden" onDoubleClick={(_) => node.edit()}>{node.data.name}</span>
+          <span className="flex-1 text-ellipsis overflow-hidden" onDoubleClick={(_) => node.edit()}>[{node.data.id}]{node.data.name}</span>
         )}
         <div className="collapse group-hover:visible">
           <Button

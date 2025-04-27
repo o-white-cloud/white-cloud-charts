@@ -1,7 +1,7 @@
 import { NodeApi } from "react-arborist";
 import { LabelAnchorType, LabelDisplayType, PieChartItem, PieChartItemProperties, PieChartLevelProperties } from "./types/multi-level-pie-types";
 
-export const DefaultTreeItemProperties = (parentNode: NodeApi<PieChartItem> | null): PieChartItemProperties => {
+export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieChartItemProperties => {
 
     return {
         color: {
