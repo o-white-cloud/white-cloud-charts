@@ -77,12 +77,6 @@ export default function Page() {
         <section className="flex h-full flex-row bg-gray-300">
           <PanelGroup direction="horizontal">
             <Panel defaultSize={25} className="p-2 bg-white">
-              <Levels
-                onSelectionChange={onLevelSelect}
-                selectedLevel={
-                  selectedItem?.type == 'level' ? selectedItem?.item : null
-                }
-              />
               <PieTree
                 onDataChange={setData}
                 onSelectionChange={onTreeItemSelect}
@@ -90,6 +84,12 @@ export default function Page() {
             </Panel>
             <PanelResizeHandle />
             <Panel>
+              <Levels
+                onSelectionChange={onLevelSelect}
+                selectedLevel={
+                  selectedItem?.type == 'level' ? selectedItem?.item : null
+                }
+              />
               <MultiLevelPieChart data={data} />
             </Panel>
             <PanelResizeHandle />

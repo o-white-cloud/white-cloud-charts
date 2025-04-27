@@ -18,7 +18,7 @@ export interface LevelsProps {
 export const Levels: React.FC<LevelsProps> = (props) => {
   const data = useContext(MultiLevelPieChartDataContext);
   return (
-    <nav className="flex">
+    <nav className="flex m-3 mb-0 bg-white p-1">
       {data.levels.map((level) => (
         <Link
           key={level.id}

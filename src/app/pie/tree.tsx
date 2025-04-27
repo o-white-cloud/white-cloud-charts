@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Save, Upload } from 'lucide-react';
 import { useCallback, useContext, useRef, useState } from 'react';
 import {
     CreateHandler, DeleteHandler, NodeApi, RenameHandler, Tree, TreeApi
@@ -33,6 +33,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
   const { onDataChange, onSelectionChange } = props;
   const data = useContext(MultiLevelPieChartDataContext);
   const treeRef = useRef<TreeApi<PieChartItem> | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onRootItemCreate = useCallback(() => {
     treeRef.current?.create({
@@ -118,17 +119,110 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
     [onSelectionChange]
   );
 
+  const cleanItem = (item: PieChartItem): Omit<PieChartItem, 'parent'> => {
+    const clean = { ...item };
+    delete clean.parent;
+    if (clean.children) {
+      clean.children = clean.children.map(child => cleanItem(child));
+    }
+    return clean;
+  };
+
+  const onSave = useCallback(() => {
+    // Create a clean copy of the data without circular references
+    const cleanData = {
+      items: data.items.map(item => cleanItem(item)),
+      levels: data.levels
+    };
+
+    const jsonData = JSON.stringify(cleanData, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'pie-chart-data.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [data]);
+
+  const reconstructParentRelationships = (items: PieChartItem[], parent: PieChartItem | undefined = undefined): PieChartItem[] => {
+    return items.map(item => {
+      const newItem = { ...item, parent };
+      if (newItem.children) {
+        newItem.children = reconstructParentRelationships(newItem.children, newItem);
+      }
+      return newItem;
+    });
+  };
+
+  const onLoad = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const loadedData = JSON.parse(e.target?.result as string) as MultiLevelPieChartData;
+        
+        // Reconstruct parent relationships
+        const itemsWithParents = reconstructParentRelationships(loadedData.items);
+        
+        // Update the state with the loaded data
+        onDataChange({
+          items: itemsWithParents,
+          levels: loadedData.levels
+        });
+      } catch (error) {
+        console.error('Error loading file:', error);
+        alert('Error loading file. Please make sure it is a valid chart data file.');
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset the input so the same file can be selected again
+    event.target.value = '';
+  }, [onDataChange]);
+
   return (
     <div className="flex flex-col flex-1">
-      <div className="flex items-center">
-        <Input className='flex-1 h-9' placeholder='Search' startIcon={Search}/>
+      <div className="flex items-center m-4 ml-0">
+        {/* <Input className='flex-1 h-9' placeholder='Search' startIcon={Search}/> */}
         <Button
           onClick={onRootItemCreate}
           variant={'outline'}
-          className="h-9 self-end m-4"
+          className="h-9 self-end mr-4"
         >
           <Plus className="h-4 w-4" /> Add root item
         </Button>
+        <Button
+          onClick={onSave}
+          variant={'outline'}
+          className="h-9 self-end mr-1"
+          title="Save chart data"
+        >
+          <Save className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={onLoad}
+          variant={'outline'}
+          className="h-9 self-end mr-1"
+          title="Load chart data"
+        >
+          <Upload className="h-4 w-4" />
+        </Button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".json"
+          className="hidden"
+        />
       </div>
       <Tree
         className="flex-1"
