@@ -15,6 +15,7 @@ import {
 import { Button } from '../../components/ui/button';
 import Node from './node';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
+import { DefaultLevelProperties, DefaultTreeItemProperties } from '@/lib/default-values';
 
 export interface MultiLevelBuilderProps {
   onDataChange: (data: MultiLevelPieChartData) => void;
@@ -56,64 +57,7 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
         innerValue: 1,
         absoluteValue: 1,
         children: [],
-        properties: {
-          color: {
-            description: 'Color of the pie sector',
-            label: 'Color',
-            name: 'color',
-            source: args.parentNode ? 'parent' : 'level',
-            value: null
-          },
-          labelAnchor: {
-            description: 'Anchor of the pie sector label',
-            label: 'Anchor',
-            name: 'labelAnchor',
-            source: 'level',
-            value: LabelAnchorType.middle
-          },
-          labelDisplay: {
-            description: 'Display type of label',
-            label: 'Display',
-            name: 'labelDisplay',
-            source: 'level',
-            value: null
-          },
-          labelDX: {
-            description: 'X offset of the label',
-            label: 'Delta X',
-            name: 'labelDX',
-            source: 'level',
-            value: 0
-          },
-          labelDY: {
-            description: 'Y offset of the label',
-            label: 'Delta Y',
-            name: 'labelDY',
-            source: 'level',
-            value: 0
-          },
-          labelFontSize: {
-            description: "Size of the label font",
-            label: "Font size",
-            name: 'labelFontSize',
-            source: 'level',
-            value: 12
-          },
-          strokeColor: {
-            description: 'Color of the stroke',
-            label: 'Stroke color',
-            name: 'strokeColor',
-            source: 'level',
-            value: null
-          },
-          strokeWidth: {
-            description: 'Width of the stroke',
-            label: 'Stroke width',
-            name: 'strokeWidth',
-            source: 'level',
-            value: null
-          },
-        }
+        properties: DefaultTreeItemProperties(args.parentNode)
       };
 
       if (args.parentNode) {
@@ -128,73 +72,10 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
           id: `${newLevels.length + 1}`,
           innerRadius: (newLevels.length + 1) * 100,
           outerRadius: (newLevels.length + 2) * 100,
-          color: {type: 'single', value: '#ffffff'},
           cornerRadius: 0,
           padAngle: 1,
           padRadius: 0,
-          strokeColor: '#ffffff',
-          strokeWidth: 1,
-          properties: {
-            color: {
-              description: 'Color of the pie sector',
-              label: 'Color',
-              name: 'color',
-              source: 'level',
-              value: {
-                type: 'single',
-                value: '#ffffff'
-              }
-            },
-            labelAnchor: {
-              description: 'Anchor of the pie sector label',
-              label: 'Anchor',
-              name: 'labelAnchor',
-              source: 'level',
-              value: LabelAnchorType.middle
-            },
-            labelDisplay: {
-              description: 'Display type of label',
-              label: 'Display',
-              name: 'labelDisplay',
-              source: 'level',
-              value: LabelDisplayType.centroid
-            },
-            labelDX: {
-              description: 'X offset of the label',
-              label: 'Delta X',
-              name: 'labelDX',
-              source: 'level',
-              value: 0
-            },
-            labelDY: {
-              description: 'Y offset of the label',
-              label: 'Delta Y',
-              name: 'labelDY',
-              source: 'level',
-              value: 20
-            },
-            labelFontSize: {
-              description: "Size of the label font",
-              label: "Font size",
-              name: 'labelFontSize',
-              source: 'level',
-              value: 12
-            },
-            strokeColor: {
-              description: 'Color of the stroke',
-              label: 'Stroke color',
-              name: 'strokeColor',
-              source: 'level',
-              value: '#000000'
-            },
-            strokeWidth: {
-              description: 'Width of the stroke',
-              label: 'Stroke width',
-              name: 'strokeWidth',
-              source: 'level',
-              value: 1
-            },
-          }
+          properties: DefaultLevelProperties()
         });
       }
 

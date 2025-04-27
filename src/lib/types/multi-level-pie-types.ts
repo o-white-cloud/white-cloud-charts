@@ -36,13 +36,9 @@ export interface PieChartLevel {
   id: string;
   innerRadius: number;
   outerRadius: number;
-  color: Color;
   padAngle: number;
   padRadius: number;
   cornerRadius: number;
-  strokeWidth: number;
-  strokeColor: string;
-
   properties: PieChartLevelProperties;
 }
 
