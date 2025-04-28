@@ -11,10 +11,12 @@ import {
 
 import LevelEditor from './level-editor';
 import { Levels } from './levels';
-import { PieTree } from '@/components/tree';
+import { PieTree } from '@/components/tree/tree';
 import TreeItemEditor from './tree-item-editor';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 import { updateChildrenWithParent } from '@/lib/pie-chart-item-value';
+import { recomputeFromLevel } from '@/lib/pie-data';
+import { Onest } from 'next/font/google';
 
 
 
@@ -23,7 +25,6 @@ export default function Page() {
     items: [],
     levels: [],
   });
-
 
   const [selectedItem, setSelectedItem] = useState<
     | { type: 'treeItem'; item: PieChartItem }
@@ -56,6 +57,11 @@ export default function Page() {
     },
     [data]
   );
+
+  const onLevelCalibrate = useCallback((level: PieChartLevel) => {
+    const newData = recomputeFromLevel(data, level);
+    setData(newData);
+  }, [data])
 
   const updateLevelData = useCallback(
     (level: PieChartLevel, property?: Property<any>) => {
@@ -130,6 +136,7 @@ export default function Page() {
                   level={selectedItem.item}
                   onLevelUpdated={updateLevelData}
                   items={data.items.filter(i => i.level == data.levels.indexOf(selectedItem.item))}
+                  calibrateParentsToThis={onLevelCalibrate}
                 />
               )}
             </Panel>

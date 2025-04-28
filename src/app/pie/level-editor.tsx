@@ -7,11 +7,13 @@ import { Input } from '@/components/ui/input';
 import { ColorEditor, SingleColorEditor } from '@/components/editors/color-editor';
 import { NumericEditor } from '@/components/editors/numeric-editor';
 import { Divider } from '@/components/editors/divider';
+import { Button } from '@/components/ui/button';
 
 interface LevelEditorProps {
   level: PieChartLevel | null;
   items: PieChartItem[];
   onLevelUpdated: (item: PieChartLevel, property?: Property<any>) => void;
+  calibrateParentsToThis: (level: PieChartLevel) => void;
 }
 
 
@@ -117,7 +119,15 @@ const LevelEditor = (props: LevelEditorProps) => {
         level={level}
         property={level.properties.strokeColor}
         onLevelChange={(level) => onLevelUpdated(level, level.properties.strokeColor)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
+      
+      <Divider />
 
+      <Button className='mt-4 mb-1' onClick={() => {
+        if (props.level) {
+          props.calibrateParentsToThis(props.level);
+        }
+      }}>Equalize sector values</Button>
+      <p className='text-sm text-muted-foreground'>All the sectors on this level will be equal. The parent levels will adjust accordingly. Lower levels will continue to work the same way.</p>
     </div>
   );
 };

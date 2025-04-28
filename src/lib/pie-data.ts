@@ -85,3 +85,40 @@ const mapItemsToSectors = (flattenedLevels: FlattenedLevels, data: MultiLevelPie
     }),
   }));
 }
+
+export const recomputeFromLevel = (data: MultiLevelPieChartData, level: PieChartLevel): MultiLevelPieChartData => {
+  var items = [...data.items];
+  var levelIndex = data.levels.indexOf(level);
+  items.forEach(item => {
+    traverse(item, levelIndex);
+  });
+  
+  const newData = {
+    items,
+    levels: data.levels
+  }
+
+  return newData;
+}
+
+const traverse = (item: PieChartItem, level: number) => {
+  if (item.level < level) {
+    item.innerValue = 0;
+  }
+
+  if (item.level == level) {
+    item.innerValue = 1;
+    if (item.parent) {
+      item.parent.innerValue++;
+    }
+    return;
+  }
+
+  if (item.children && item.level < level) {
+    item.children.forEach(child => traverse(child, level));
+  }
+
+  if (item.parent) {
+    item.parent.innerValue += item.innerValue;
+  }
+}
