@@ -181,9 +181,9 @@ const drawPie = (
       .attr('d', edgeArcs as any)
       .attr('fill', (d) =>
         d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
-      .attr('stroke',(d) =>
+      .attr('stroke', (d) =>
         d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
-      .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m,i) => Math.max(i.properties?.strokeWidth?.value??0, m), 0));
+      .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m, i) => Math.max(i.properties?.strokeWidth?.value ?? 0, m), 0));
   }
 
   mainG
@@ -204,7 +204,13 @@ const drawPie = (
       }
 
     })
-    .attr('x', (d: any) => d.data.properties?.labelDX.value)
+    .attr('x', (d: any) => {
+      switch (d.data.properties.labelDisplay.value) {
+        case LabelDisplayType.radial:
+          return (d.endAngle <= 180 * Math.PI / 180 ? d.data.properties?.labelDX.value * (-1) : d.data.properties?.labelDX.value);
+        default: return d.data.properties?.labelDX.value;
+      }
+    })
     .text((d) => d.data.placeholder ? null : d.data.name)
     .attr('transform', (d, i) => {
       switch (d.data.properties?.labelDisplay.value) {
