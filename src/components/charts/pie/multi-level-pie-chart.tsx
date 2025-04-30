@@ -238,6 +238,9 @@ const drawPie = (
 
     })
     .attr('x', (d: any) => {
+      if(d.data.placeholder || !d.data.properties) {
+        return null;
+      }
       switch (d.data.properties.labelDisplay.value) {
         case LabelDisplayType.radial:
           return (d.endAngle <= 180 * Math.PI / 180 ? d.data.properties?.labelDX.value * (-1) : d.data.properties?.labelDX.value);
