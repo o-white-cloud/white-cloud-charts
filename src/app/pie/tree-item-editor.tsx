@@ -84,6 +84,30 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
         property={item.properties.strokeColor}
         onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
 
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={item.properties.startRadiusStrokeWidth}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={item.properties.startRadiusStrokeColor}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={item.properties.endRadiusStrokeWidth}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={item.properties.endRadiusStrokeColor}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
+
     </div>
   );
 };

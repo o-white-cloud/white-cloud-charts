@@ -60,6 +60,40 @@ export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieC
             source: 'level',
             value: null
         },
+        startRadiusStrokeColor: {
+            description: 'Color of the leading radius edge of the sector',
+            label: 'Start radius stroke color',
+            name: 'startRadiusStrokeColor',
+            source: 'override',
+            value: {
+                type: 'single',
+                value: '#000'
+            }
+        },
+        endRadiusStrokeColor: {
+            description: 'Color of the trailing radius edge of the sector',
+            label: 'End radius stroke color',
+            name: 'endRadiusStrokeColor',
+            source: 'override',
+            value: {
+                type: 'single',
+                value: '#000'
+            }
+        },
+        startRadiusStrokeWidth: {
+            description: 'Width of the leading radius edge of the sector',
+            label: 'Start radius stroke width',
+            name: 'startRadiusStrokeWidth',
+            source: 'override',
+            value: 0
+        },
+        endRadiusStrokeWidth: {
+            description: 'Width of the trailing radius edge of the sector',
+            label: 'End radius stroke width',
+            name: 'endRadiusStrokeWidth',
+            source: 'override',
+            value: 0
+        }
     }
 };
 

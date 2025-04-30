@@ -95,6 +95,7 @@ const drawPie = (
     return ((p.startAngle + p.endAngle) / 2 / Math.PI) * 180;
   });
 
+  // main sector arcs
   mainG
     .selectAll(selector)
     .data(pieData)
@@ -164,6 +165,37 @@ const drawPie = (
         ;
     });
 
+  // sector radius edge
+  pieData
+    .forEach((d, i) => {
+      const drawRadialLine = (angle: number, color: string, thickness: number) => {
+        //debugger;
+        const adjustedAngle = angle ;
+        const x1 = Math.cos(adjustedAngle) * level.innerRadius;
+        const y1 = Math.sin(adjustedAngle) * level.innerRadius;
+        const x2 = Math.cos(adjustedAngle) * level.outerRadius;
+        const y2 = Math.sin(adjustedAngle) * level.outerRadius;
+
+        mainG.append("line")
+          .attr("x1", x1)
+          .attr("y1", y1)
+          .attr("x2", x2)
+          .attr("y2", y2)
+          .attr("stroke", color)
+          .attr("stroke-width", thickness);
+      };
+
+      const startAngle = d.startAngle -Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
+      const endAngle = d.endAngle -Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
+      if (d.data.properties?.startRadiusStrokeWidth.value) {
+        drawRadialLine(startAngle, d.data.properties?.startRadiusStrokeColor.value?.value ?? "#000", d.data.properties?.startRadiusStrokeWidth.value ?? 1);
+      }
+      if (d.data.properties?.endRadiusStrokeWidth.value) {
+        drawRadialLine(endAngle, d.data.properties?.endRadiusStrokeColor.value?.value ?? "#000", d.data.properties?.endRadiusStrokeWidth.value ?? 1);
+      }
+    });
+
+  // sector arc edge
   if (level.properties.edgeThickness.value ?? 0 !== 0) {
     const edgeArcs = d3
       .arc()
@@ -186,6 +218,7 @@ const drawPie = (
       .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m, i) => Math.max(i.properties?.strokeWidth?.value ?? 0, m), 0));
   }
 
+  // sector text labels
   mainG
     .selectAll(selector)
     .data(pieData)
