@@ -237,14 +237,18 @@ const drawPie = (
       }
 
     })
-    .attr('x', (d: any) => {
+    .attr('x', (d,i) => {
       if(d.data.placeholder || !d.data.properties) {
         return null;
       }
       switch (d.data.properties.labelDisplay.value) {
+        
         case LabelDisplayType.radial:
-          return (d.endAngle <= 180 * Math.PI / 180 ? d.data.properties?.labelDX.value * (-1) : d.data.properties?.labelDX.value);
-        default: return d.data.properties?.labelDX.value;
+          const p = pieData[i];
+          let angle = pieAngle[i];
+          console.log(`${pieData[i].data.id} - ${angle}`);
+          return (angle > 0 && angle <= 180 ? (d.data.properties?.labelDX.value??0) * (-1) : d.data.properties?.labelDX.value);
+        default: return 0;//d.data.properties?.labelDX.value;
       }
     })
     .text((d) => d.data.placeholder ? null : d.data.name)
