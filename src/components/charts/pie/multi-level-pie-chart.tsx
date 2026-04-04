@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { pieLevels } from '@/lib/pie-data';
 import {
-  LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartLevel, PieSector
+  LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartItemLabelTextSpan, PieChartLevel, PieSector
 } from '@/lib/types/multi-level-pie-types';
 
 export interface MultiLevelPieChartProps {
@@ -170,7 +170,7 @@ const drawPie = (
     .forEach((d, i) => {
       const drawRadialLine = (angle: number, color: string, thickness: number) => {
         //debugger;
-        const adjustedAngle = angle ;
+        const adjustedAngle = angle;
         const x1 = Math.cos(adjustedAngle) * level.innerRadius;
         const y1 = Math.sin(adjustedAngle) * level.innerRadius;
         const x2 = Math.cos(adjustedAngle) * level.outerRadius;
@@ -185,8 +185,8 @@ const drawPie = (
           .attr("stroke-width", thickness);
       };
 
-      const startAngle = d.startAngle -Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
-      const endAngle = d.endAngle -Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
+      const startAngle = d.startAngle - Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
+      const endAngle = d.endAngle - Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
       if (d.data.properties?.startRadiusStrokeWidth.value) {
         drawRadialLine(startAngle, d.data.properties?.startRadiusStrokeColor.value?.value ?? "#000", d.data.properties?.startRadiusStrokeWidth.value ?? 1);
       }
@@ -237,17 +237,17 @@ const drawPie = (
       }
 
     })
-    .attr('x', (d,i) => {
-      if(d.data.placeholder || !d.data.properties) {
+    .attr('dx', (d, i) => {
+      if (d.data.placeholder || !d.data.properties) {
         return null;
       }
       switch (d.data.properties.labelDisplay.value) {
-        
+
         case LabelDisplayType.radial:
           const p = pieData[i];
           let angle = pieAngle[i];
           console.log(`${pieData[i].data.id} - ${angle}`);
-          return (angle > 0 && angle <= 180 ? (d.data.properties?.labelDX.value??0) * (-1) : d.data.properties?.labelDX.value);
+          return (angle > 0 && angle <= 180 ? (d.data.properties?.labelDX.value ?? 0) * (-1) : d.data.properties?.labelDX.value);
         default: return 0;//d.data.properties?.labelDX.value;
       }
     })
@@ -289,7 +289,20 @@ const drawPie = (
         default: return null;
       }
     })
-    .style('font-size', (d: any) => d.data.properties?.labelFontSize.value);
+    .style('font-size', (d: any) => d.data.properties?.labelFontSize.value)
+    .selectAll("tspan")
+    .data((d) => d.data.labelSpans)
+    .enter()
+    .append("tspan")
+    .attr("x", (d) => d.x ?? null)
+    .attr("y", (d) => d.y ?? null)
+    .attr("dx", (d) => d.dx ?? null)
+    .attr("dy", (d) => d.dy ?? null)
+    .attr("fill", (d) => d.color ?? null)
+    .text((d: any) => d.text)
+    .style('font-weight', (d) => d.fontWeight)
+    .style('font-size', (d) => d.fontSize)
+    .style('font-family', (d) => d.fontFamily)
 
   var sectorsWithPathLabels = items.filter(v => v.properties?.labelDisplay.value == LabelDisplayType.path);
 
@@ -303,6 +316,18 @@ const drawPie = (
       .style("text-anchor", (d: any) => d.data.properties.labelAnchor.value)
       .attr("startOffset", "50%")
       .text((d: any) => (d.data.placeholder ? '' : `${d.data.name}`))
+      .selectAll("tspan")
+      .data((d: any) => d.data.labelSpans)
+      .enter()
+      .append("tspan")
+      .attr("x", (d: any) => d.x)
+      .attr("y", (d: any) => d.y)
+      .attr("dx", (d: any) => d.dx)
+      .attr("dy", (d: any) => d.dy)
+      .text((d: any) => d.text)
+      .style('font-weight', (d: any) => d.fontWeight)
+      .style('font-size', (d: any) => d.fontSize)
+      .style('font-family', (d: any) => d.fontFamily)
   }
 };
 

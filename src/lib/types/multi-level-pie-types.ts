@@ -20,9 +20,23 @@ export interface PieChartItemProperties extends Record<string, Property<any>> {
   endRadiusStrokeColor: Property<SingleColor>
 }
 
+export interface PieChartItemLabelTextSpan {
+  color: string;
+  fontSize: number;
+  text: string;
+  fontWeight: string;
+  fontFamily: string;
+  x?: number;
+  y?: number;
+  dx?: number;
+  dy?: number;
+  anchor: LabelAnchorType;
+}
+
 export interface PieChartItem {
   id: string;
   name: string;
+  labelSpans: PieChartItemLabelTextSpan[];
   innerValue: number;
   absoluteValue: number;
   level: number;
@@ -62,6 +76,7 @@ export interface PieSectorProperties extends PieChartItemProperties {
 export interface PieSector {
   id: string;
   name: string;
+  labelSpans: PieChartItemLabelTextSpan[];
   value: number;
   placeholder: boolean;
   properties: PieSectorProperties | null;

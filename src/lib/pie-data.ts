@@ -46,7 +46,8 @@ export const pieLevels = (
         level: current.level + 1,
         name: 'Placeholder',
         parent: current,
-        properties: current.properties
+        properties: current.properties,
+        labelSpans: []
       });
     }
   }
@@ -75,6 +76,7 @@ const mapItemsToSectors = (flattenedLevels: FlattenedLevels, data: MultiLevelPie
       return {
         id: item.id,
         name: item.name,
+        labelSpans: item.labelSpans,
         value: item.absoluteValue,
         placeholder: item.name === 'Placeholder',
         properties: item.name === 'Placeholder' ? null : Object.keys(item.properties).reduce<PieSectorProperties>((newProperties, property: keyof PieChartItemProperties) => {

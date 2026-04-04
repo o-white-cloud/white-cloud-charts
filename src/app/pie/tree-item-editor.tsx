@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { ColorEditor, SingleColorEditor } from '@/components/editors/color-editor';
 import { NumericEditor } from '@/components/editors/numeric-editor';
 import { Divider } from '@/components/editors/divider';
+import { TextSpans } from '@/components/editors/text-spans';
 
 interface TreeItemEditorProps {
   item: PieChartItem | null;
@@ -23,11 +24,13 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
 
   return (
     <div className='p-4'>
-      <Label htmlFor="name">Label</Label>
-      <Input value={item.name} id="name" onChange={(e) => onItemUpdated({ ...item, name: e.currentTarget.value })} />
-
       <Label htmlFor='innerValue'>Value</Label>
       <Input id='innerValue' type="number" value={item.innerValue} onChange={(e) => onItemUpdated({ ...item, innerValue: e.currentTarget.valueAsNumber })} />
+
+      <Label htmlFor="name" className='mt-6'>Main text</Label>
+      <Input value={item.name} id="name" onChange={(e) => onItemUpdated({ ...item, name: e.currentTarget.value })} />
+
+      <TextSpans item={item} onItemUpdated={onItemUpdated} />
 
       <Divider className='mt-6' />
 

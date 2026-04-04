@@ -8,6 +8,7 @@ export const createNewTreeItem = (rootItems: PieChartItem[], levels: PieChartLev
         parentItem?.children ?? rootItems
     );
     const item: PieChartItem = {
+        labelSpans: [],
         level: (parentItem?.level ?? -1) + 1,
         parent: parentItem ?? undefined,
         id: newItemId,
