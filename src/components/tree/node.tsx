@@ -12,6 +12,7 @@ export interface NodeProps extends NodeRendererProps<PieChartItem> {}
 const Node = (props: NodeProps) => {
   const { node } = props;
   const thumbClassname = clsx({'invisible': node.isLeaf || !node.data.children.length});
+  const labelText = `[${node.data.id}]${node.data.name}`;
   return (
     <div style={props.style} ref={props.dragHandle} className={clsx(
           'h-9 flex flex-row items-center gap-2 group pl-3 pr-1 border-transparent border-2 hover:border-gray-200',
@@ -19,9 +20,9 @@ const Node = (props: NodeProps) => {
         )}>
       
         {props.node.isOpen ? (
-          <ChevronDown size={16} className={thumbClassname} onClick={() => node.isInternal && node.toggle()}/>
+          <ChevronDown size={16} className={clsx('shrink-0', thumbClassname)} onClick={() => node.isInternal && node.toggle()}/>
         ) : (
-          <ChevronRight size={16} className={thumbClassname} onClick={() => node.isInternal && node.toggle()}/>
+          <ChevronRight size={16} className={clsx('shrink-0', thumbClassname)} onClick={() => node.isInternal && node.toggle()}/>
         )}
 
         {/* <PieChart size={16} /> */}
@@ -40,9 +41,15 @@ const Node = (props: NodeProps) => {
             autoFocus
           />
         ) : (
-          <span className="flex-1 text-ellipsis overflow-hidden" onDoubleClick={(_) => node.edit()}>[{node.data.id}]{node.data.name}</span>
+          <span
+            className="min-w-0 flex-1 truncate"
+            title={labelText}
+            onDoubleClick={(_) => node.edit()}
+          >
+            {labelText}
+          </span>
         )}
-        <div className="collapse group-hover:visible">
+        <div className="collapse group-hover:visible shrink-0">
           <Button
             variant="ghost"
             className="w-6 h-6 p-0 mr-1"

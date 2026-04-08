@@ -1,12 +1,12 @@
 import { LabelAnchorType, PieChartItemLabelTextSpan } from "@/lib/types/multi-level-pie-types";
 import { Input } from "../ui/input";
 import { z } from "zod";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronDown, ChevronRight, Trash, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { debounce, isEqual } from "lodash";
 import { FontPicker } from "@/components/ui/font-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
@@ -46,33 +46,66 @@ const textSpanSchema = z.object({
     anchor: z.nativeEnum(LabelAnchorType)
 });
 
+function spanToFormValues(span: PieChartItemLabelTextSpan): PieChartItemLabelTextSpan {
+    return {
+        text: span.text || "",
+        color: span.color || "#000000",
+        fontSize: span.fontSize || 12,
+        fontWeight: span.fontWeight || "normal",
+        fontFamily: span.fontFamily || "Arial",
+        anchor: span.anchor || LabelAnchorType.start,
+        x: span.x ?? undefined,
+        y: span.y ?? undefined,
+        dx: span.dx ?? undefined,
+        dy: span.dy ?? undefined,
+    };
+}
+
+const POSITION_KEYS = ["x", "y", "dx", "dy"] as const;
+
 export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
     const { span, onSpanUpdated, onSpanRemoved } = props;
     const [isCollapsed, setIsCollapsed] = useState(false); // State to manage collapse/expand
+    const spanRef = useRef(span);
+    spanRef.current = span;
+    const formRef = useRef<UseFormReturn<PieChartItemLabelTextSpan> | null>(null);
+    const onSpanUpdatedRef = useRef(onSpanUpdated);
+    onSpanUpdatedRef.current = onSpanUpdated;
 
     const form = useForm<PieChartItemLabelTextSpan>({
         resolver: zodResolver(textSpanSchema),
-        defaultValues: {
-            text: span.text || "",
-            color: span.color || "#000000",
-            fontSize: span.fontSize || 12,
-            fontWeight: span.fontWeight || "normal",
-            fontFamily: span.fontFamily || "Arial",
-            anchor: span.anchor || LabelAnchorType.start,
-            x: undefined,
-            y: undefined,
-            dx: undefined,
-            dy: undefined,
-        }
+        defaultValues: spanToFormValues(span),
     });
+    formRef.current = form;
+
+    const debouncedUpdate = useMemo(
+        () =>
+            debounce((updatedData: PieChartItemLabelTextSpan) => {
+                const s = spanRef.current;
+                const f = formRef.current;
+                if (!f) return;
+                const merged: PieChartItemLabelTextSpan = { ...s, ...updatedData };
+                for (const key of POSITION_KEYS) {
+                    if (updatedData[key] === undefined) {
+                        if (f.getFieldState(key).isDirty) {
+                            merged[key] = undefined;
+                        } else {
+                            merged[key] = s[key];
+                        }
+                    }
+                }
+                if (isEqual(merged, s)) return;
+                onSpanUpdatedRef.current(merged);
+            }, 300),
+        []
+    );
+
+    useEffect(() => {
+        debouncedUpdate.cancel();
+        form.reset(spanToFormValues(span));
+    }, [span, form, debouncedUpdate]);
 
     const watchedFields = form.watch(); // Watch all fields for changes
-
-    // Debounced function to handle updates
-    const debouncedUpdate = debounce((updatedData: PieChartItemLabelTextSpan) => {
-        if (isEqual(updatedData, span)) return; // Prevent unnecessary updates if data is unchanged
-        onSpanUpdated({ ...span, ...updatedData });
-    }, 300);
 
     useEffect(() => {
         debouncedUpdate(watchedFields);

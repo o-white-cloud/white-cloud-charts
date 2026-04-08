@@ -1,7 +1,7 @@
 import { MultiLevelPieChartData, PieChartItem, Property, PieChartLevel, SingleColor } from "./types/multi-level-pie-types";
 import Gradient from 'javascript-color-gradient';
 
-export const getPropertyValue = <T,>(item: PieChartItem, property: Property<T>, data: MultiLevelPieChartData): T | null => {
+function getPropertyValueInner<T>(item: PieChartItem, property: Property<T>, data: MultiLevelPieChartData): T | null {
     const level = data.levels[item.level];
 
     switch (property.source) {
@@ -20,16 +20,24 @@ export const getPropertyValue = <T,>(item: PieChartItem, property: Property<T>, 
                     return singleColor as T;
                 }
             }
-            return (level.properties as Record<string, Property<any>>)[property.name].value;
+            return (level.properties as Record<string, Property<any>>)[property.name]?.value ?? null;
         }
         case 'parent': {
             if (!item.parent) {
                 return null;
             }
-            return getPropertyValue(item.parent, (item.parent.properties)[property.name], data);
+            return getPropertyValueInner(item.parent, (item.parent.properties)[property.name], data);
         }
         default: return null;
     }
+}
+
+export const getPropertyValue = <T,>(item: PieChartItem, property: Property<T>, data: MultiLevelPieChartData): T | null => {
+    const value = getPropertyValueInner(item, property, data);
+    if (property.name === 'textLineHeight' && (value === null || value === undefined)) {
+        return 16 as T;
+    }
+    return value;
 }
 
 const getLevelColorsForItems = (level: PieChartLevel, items: PieChartItem[]) => {

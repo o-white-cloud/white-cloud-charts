@@ -12,6 +12,7 @@ export interface PieChartItemProperties extends Record<string, Property<any>> {
   labelDX: Property<number>,
   labelDY: Property<number>,
   labelFontSize: Property<number>,
+  textLineHeight: Property<number>,
   strokeWidth: Property<number>,
   strokeColor: Property<SingleColor>,
   startRadiusStrokeWidth: Property<number>,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { LabelDisplayType, PieChartItem, Property, PieChartLevel, LabelAnchorType } from '@/lib/types/multi-level-pie-types';
+import { DefaultTreeItemProperties } from '@/lib/default-values';
 import { PropertyEditor } from '@/components/editors/property-editor';
 import { EnumEditor } from '@/components/editors/enum-editor';
 import { Label } from '@/components/ui/label';
@@ -107,6 +108,11 @@ const LevelEditor = (props: LevelEditorProps) => {
         level={level}
         property={level.properties.labelFontSize}
         onLevelChange={(level) => onLevelUpdated(level, level.properties.labelFontSize)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        property={level.properties.textLineHeight ?? DefaultTreeItemProperties(null).textLineHeight}
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.textLineHeight)} render={(valueProps) => <NumericEditor {...valueProps} min={1} />} />
 
       <Divider />
 

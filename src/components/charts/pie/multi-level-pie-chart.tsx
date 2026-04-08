@@ -1,10 +1,12 @@
 'use client';
 import * as d3 from 'd3';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { SaveFileNameDialog } from '@/components/save-file-name-dialog';
 import { Button } from '@/components/ui/button';
 import { pieLevels } from '@/lib/pie-data';
 import {
+  LabelAnchorType,
   LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartItemLabelTextSpan, PieChartLevel, PieSector
 } from '@/lib/types/multi-level-pie-types';
 
@@ -18,6 +20,64 @@ const arcId = (pieSector: PieSector) => `arc-${pieSector.id}`;
 const arcHiddenId = (pieSector: PieSector) => `arc-hidden-${pieSector.id}`;
 const textId = (pieSector: PieSector) => `text-${pieSector.id}`;
 const textClass = (pieSector: PieSector) => `text-${pieSector.properties?.labelDisplay.value}`;
+
+/** User anchor → SVG text-anchor for radial labels; swaps start/end on the opposite semicircle (same 0°–180° split as dx/transform) so anchoring matches rotation. */
+function radialLabelAnchorToSvg(
+  userAnchor: LabelAnchorType | null | undefined,
+  angleDeg: number
+): string {
+  const onFirstHalf = angleDeg > 0 && angleDeg <= 180;
+  const anchor = userAnchor ?? LabelAnchorType.middle;
+  switch (anchor) {
+    case LabelAnchorType.middle:
+      return 'middle';
+    case LabelAnchorType.start:
+      return onFirstHalf ? 'start' : 'end';
+    case LabelAnchorType.end:
+      return onFirstHalf ? 'end' : 'start';
+    default:
+      return 'middle';
+  }
+}
+
+/** d3 pie angles: 0 at 12 o'clock, clockwise. True when slice center is on bottom semicircle (3–9 o'clock): path reversal for textPath labels. */
+function pathLabelNeedsBottomHalfCorrection(midAngleRad: number): boolean {
+  return midAngleRad > Math.PI / 2 && midAngleRad < (3 * Math.PI) / 2;
+}
+
+/** Positive labelDY moves the label toward the center → smaller radius. Radius is clamped to the ring. */
+function pathLabelRadius(
+  level: PieChartLevel,
+  labelDY: number | null | undefined
+): number {
+  const raw = labelDY ?? 0;
+  const r = level.outerRadius - raw;
+  return Math.max(
+    level.innerRadius + 1e-6,
+    Math.min(level.outerRadius, r)
+  );
+}
+
+/**
+ * Single arc line for textPath. d3 arc() with inner===outer emits two consecutive A commands
+ * (outer then inner); thin annulus uses L between rings. We must not feed textPath both arcs.
+ */
+function firstArcOnlyFromD3ArcPath(pathStr: string): string | null {
+  const normalized = pathStr.replace(/,/g, ' ');
+  const beforeLine = /(^.+?)L/.exec(normalized);
+  if (beforeLine) {
+    return beforeLine[1].trim();
+  }
+  const firstA = normalized.indexOf('A');
+  if (firstA === -1) {
+    return null;
+  }
+  const secondA = normalized.indexOf('A', firstA + 1);
+  if (secondA === -1) {
+    return normalized.replace(/Z\s*$/i, '').trim();
+  }
+  return normalized.slice(0, secondA).trim();
+}
 
 const draw = (
   data: {
@@ -116,53 +176,54 @@ const drawPie = (
         onSectorClick(d.data.id);
       }
     })
-    .each(function (d, i) { // create hidden arc paths on which labels can be placed
+    .each(function (d) {
+      // Hidden path at the label radius (bakes in Delta Y) so textPath arc length matches where text sits
       if (!d || d.data.placeholder || !d.data.properties || d.data.properties.labelDisplay.value !== 'path') {
-        return; // skip placeholder sectors and the ones that don't have path labels 
-      }
-
-      // get the full path of the main sector
-      const firstArcSection = /(^.+?)L/;
-      const thisArc = firstArcSection.exec(d3.select(this).attr("d"));
-
-      if (!thisArc || thisArc.length == 0) {
         return;
       }
-      let newArc = thisArc[1];
-      newArc = newArc.replace(/,/g, " ");
 
-      // if the sector is on the bottom half of the pie, we need to invert the path(so that labels don't appear upside-down)
-      if (d.endAngle > 90 * Math.PI / 180) {
+      const labelR = pathLabelRadius(level, d.data.properties.labelDY?.value);
+      const labelArcGen = d3
+        .arc<d3.PieArcDatum<PieSector>>()
+        .innerRadius(labelR)
+        .outerRadius(labelR)
+        .padAngle(level.properties.padAngle.value ?? 0)
+        .cornerRadius(0);
 
-        var startLoc = /M(.*?)A/;
+      const pathStr = labelArcGen(d as d3.PieArcDatum<PieSector>);
+      if (!pathStr) {
+        return;
+      }
 
-        var middleLoc = /A(.*?)0 0 1/;
+      let newArc = firstArcOnlyFromD3ArcPath(pathStr);
+      if (!newArc) {
+        return;
+      }
 
-        var endLoc = /0 0 1 (.*?)$/;
-        //Flip the direction of the arc by switching the start and end point
-        //and using a 0 (instead of 1) sweep flag
-        var newStart = endLoc.exec(newArc);
-        var newEnd = startLoc.exec(newArc);
-        var middleSec = middleLoc.exec(newArc);
-        if (!newStart || newStart.length == 0 ||
-          !newEnd || newEnd.length == 0 ||
-          !middleSec || middleSec.length == 0
+      const midAngle = (d.startAngle + d.endAngle) / 2;
+      if (pathLabelNeedsBottomHalfCorrection(midAngle)) {
+        const startLoc = /M(.*?)A/;
+        const middleLoc = /A(.*?)0 0 1/;
+        const endLoc = /0 0 1 (.*?)$/;
+        const newStart = endLoc.exec(newArc);
+        const newEnd = startLoc.exec(newArc);
+        const middleSec = middleLoc.exec(newArc);
+        if (
+          !newStart?.length ||
+          !newEnd?.length ||
+          !middleSec?.length
         ) {
           return;
         }
-        //Build up the new arc notation, set the sweep-flag to 0
-        newArc = "M" + newStart[1] + "A" + middleSec[1] + "0 0 0 " + newEnd[1];
-      }//if
+        newArc = 'M' + newStart[1] + 'A' + middleSec[1] + '0 0 0 ' + newEnd[1];
+      }
 
       const hiddenPathId = arcHiddenId((d as any).data);
-      // add the hidden path to the svg
-      mainG.append("path")
-        .attr("id", hiddenPathId)
-        .attr("d", newArc)
-        .attr("fill", "none")
-        //.attr('stroke', "red")
-        //.attr('stroke-width', 1)
-        ;
+      mainG
+        .append('path')
+        .attr('id', hiddenPathId)
+        .attr('d', newArc)
+        .attr('fill', 'none');
     });
 
   // sector radius edge
@@ -232,7 +293,8 @@ const drawPie = (
       }
       switch (d.data.properties.labelDisplay.value) {
         case LabelDisplayType.path:
-          return (d.endAngle > 90 * Math.PI / 180 ? d.data.properties?.labelDY.value * (-1) * 0.3/* for some reason this is needed to align properly*/ : d.data.properties?.labelDY.value);
+          // Delta Y is baked into the hidden path radius so arc length matches label position
+          return null;
         default: return d.data.properties?.labelDY.value;
       }
 
@@ -246,7 +308,6 @@ const drawPie = (
         case LabelDisplayType.radial:
           const p = pieData[i];
           let angle = pieAngle[i];
-          console.log(`${pieData[i].data.id} - ${angle}`);
           return (angle > 0 && angle <= 180 ? (d.data.properties?.labelDX.value ?? 0) * (-1) : d.data.properties?.labelDX.value);
         default: return 0;//d.data.properties?.labelDX.value;
       }
@@ -274,16 +335,14 @@ const drawPie = (
     })
     .style('text-anchor', (d, i) => {
       switch (d.data.properties?.labelDisplay.value) {
-        case LabelDisplayType.radial: {
-
-          const p = pieData[i];
-          const angle = pieAngle[i];
-          if (angle > 0 && angle <= 180) {
-            //text-anchor depends on the angle
-            return 'start';
+        case LabelDisplayType.radial:
+          if (!d.data.properties) {
+            return null;
           }
-          return 'end';
-        }
+          return radialLabelAnchorToSvg(
+            d.data.properties.labelAnchor?.value,
+            pieAngle[i]
+          );
         case LabelDisplayType.centroid:
           return 'middle';
         default: return null;
@@ -310,6 +369,7 @@ const drawPie = (
     mainG
       .selectAll("text")
       .filter(`.${textClass(sectorsWithPathLabels[0])}`)
+      .style('dominant-baseline', 'central')
       .html(null)
       .append("textPath")
       .attr("href", (d: any) => `#${arcHiddenId(d.data)}`)
@@ -336,6 +396,7 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
 ) => {
   const { data, onSectorClick } = props;
   const chartData = pieLevels(data);
+  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
 
   useEffect(() => {
     if (data.levels.length > 0) {
@@ -343,7 +404,7 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
     }
   }, [chartData, onSectorClick]);
 
-  const onDownload = () => {
+  const downloadSvgAsFile = (fileName: string) => {
     const svgElement = document.querySelector('.pieRoot svg');
     if (!svgElement) {
       console.error('SVG element not found!');
@@ -358,13 +419,13 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'chart.svg';
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
-  }
+  };
 
   return (
     <div className="h-full w-full flex flex-1 flex-col items-center p-1 red">
@@ -377,9 +438,17 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
         >
           Reset zoom
         </Button>
-        <Button variant={'outline'} onClick={onDownload}>
+        <Button variant={'outline'} onClick={() => setDownloadDialogOpen(true)}>
           Download
         </Button>
+        <SaveFileNameDialog
+          open={downloadDialogOpen}
+          onOpenChange={setDownloadDialogOpen}
+          title="Download chart as SVG"
+          defaultBaseName="chart"
+          extension=".svg"
+          onConfirm={downloadSvgAsFile}
+        />
       </div>
       <div className="pieRoot h-full w-full "></div>
     </div>

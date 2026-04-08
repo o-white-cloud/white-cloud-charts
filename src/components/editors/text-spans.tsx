@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LabelAnchorType, PieChartItem, PieChartItemLabelTextSpan } from "@/lib/types/multi-level-pie-types";
 import { TextSpanEditor } from "./text-span-editor";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,10 @@ export interface TextSpansProps {
 
 export const TextSpans: React.FC<TextSpansProps> = ({ item, onItemUpdated }) => {
     const [labelSpans, setLabelSpans] = useState<PieChartItemLabelTextSpan[]>(item.labelSpans);
+
+    useEffect(() => {
+        setLabelSpans(item.labelSpans);
+    }, [item.id, item.labelSpans]);
 
     const handleSpanUpdated = (updatedSpan: PieChartItemLabelTextSpan, index: number) => {
         const updatedSpans = [...labelSpans];

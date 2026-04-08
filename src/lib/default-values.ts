@@ -46,6 +46,13 @@ export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieC
             source: 'level',
             value: 12
         },
+        textLineHeight: {
+            description: 'Vertical spacing between stacked label lines when splitting main text into spans',
+            label: 'Text line height',
+            name: 'textLineHeight',
+            source: 'level',
+            value: 16
+        },
         strokeColor: {
             description: 'Color of the stroke',
             label: 'Stroke color',
@@ -154,6 +161,7 @@ export const DefaultLevelProperties = (): PieChartLevelProperties => {
     levelProps.labelDX.value = 0;
     levelProps.labelDY.value = 0;
     levelProps.labelFontSize.value = 12;
+    levelProps.textLineHeight.value = 16;
     levelProps.strokeColor.value = {  type: 'single',
         value: '#000'};
     levelProps.strokeWidth.value = 1;

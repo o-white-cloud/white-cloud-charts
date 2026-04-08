@@ -1,0 +1,10 @@
+---
+description: Load project context from ai-overview.md at the start of work in this repo
+alwaysApply: true
+---
+
+# Project context
+
+At the **start of a conversation or task** in this repository, read **`ai-overview.md`** in the project root for an accurate description of the app, stack, data model, and main file locations.
+
+If you change architecture, major dependencies, or primary entry points, **update `ai-overview.md`** so it stays current.

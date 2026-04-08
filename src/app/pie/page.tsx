@@ -126,6 +126,7 @@ export default function Page() {
             <Panel defaultSize={25} className="bg-white !overflow-auto">
               {selectedItem && selectedItem.type === 'treeItem' && (
                 <TreeItemEditor
+                  key={selectedItem.item.id}
                   item={selectedItem.item}
                   level={data.levels[selectedItem.item.level]}
                   onItemUpdated={updateItemData}

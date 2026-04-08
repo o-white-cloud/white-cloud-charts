@@ -17,6 +17,7 @@ import Node from './node';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 import { DefaultLevelProperties, DefaultTreeItemProperties } from '@/lib/default-values';
 import { BulkItemDialog } from '../../app/pie/bulk-item-dialog';
+import { SaveFileNameDialog } from '@/components/save-file-name-dialog';
 import { createNewTreeItem, createTree } from './tree-utils';
 
 export interface MultiLevelBuilderProps {
@@ -31,11 +32,21 @@ function createTreeItemId(parentId: string, siblings: { id: string }[]) {
   return `${parentId}${parentId ? '.' : ''}${maxSiblingId + 1}`;
 }
 
+function cleanItemForJson(item: PieChartItem): Omit<PieChartItem, 'parent'> {
+  const clean = { ...item };
+  delete clean.parent;
+  if (clean.children) {
+    clean.children = clean.children.map(child => cleanItemForJson(child));
+  }
+  return clean;
+}
+
 export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
   const { onDataChange, onSelectionChange } = props;
   const data = useContext(MultiLevelPieChartDataContext);
   const treeRef = useRef<TreeApi<PieChartItem> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 
   const onRootItemCreate = useCallback(() => {
     treeRef.current?.create({
@@ -108,33 +119,26 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
     [onSelectionChange]
   );
 
-  const cleanItem = (item: PieChartItem): Omit<PieChartItem, 'parent'> => {
-    const clean = { ...item };
-    delete clean.parent;
-    if (clean.children) {
-      clean.children = clean.children.map(child => cleanItem(child));
-    }
-    return clean;
-  };
+  const saveJsonAsFile = useCallback(
+    (fileName: string) => {
+      const cleanData = {
+        items: data.items.map(item => cleanItemForJson(item)),
+        levels: data.levels
+      };
 
-  const onSave = useCallback(() => {
-    // Create a clean copy of the data without circular references
-    const cleanData = {
-      items: data.items.map(item => cleanItem(item)),
-      levels: data.levels
-    };
-
-    const jsonData = JSON.stringify(cleanData, null, 2);
-    const blob = new Blob([jsonData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'pie-chart-data.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [data]);
+      const jsonData = JSON.stringify(cleanData, null, 2);
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    },
+    [data]
+  );
 
   const reconstructParentRelationships = (items: PieChartItem[], parent: PieChartItem | undefined = undefined): PieChartItem[] => {
     return items.map(item => {
@@ -201,13 +205,21 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
         }
       />
         <Button
-          onClick={onSave}
+          onClick={() => setSaveDialogOpen(true)}
           variant={'outline'}
           className="h-9 self-end mr-1"
           title="Save chart data"
         >
           <Save className="h-4 w-4" />
         </Button>
+        <SaveFileNameDialog
+          open={saveDialogOpen}
+          onOpenChange={setSaveDialogOpen}
+          title="Save chart data"
+          defaultBaseName="pie-chart-data"
+          extension=".json"
+          onConfirm={saveJsonAsFile}
+        />
         <Button
           onClick={onLoad}
           variant={'outline'}
