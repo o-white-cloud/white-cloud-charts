@@ -1,10 +1,21 @@
 {
   "items": [
     {
-      "labelSpans": [],
+      "labelSpans": [
+        {
+          "text": "direcționare",
+          "x": 0,
+          "y": "22",
+          "color": "#000000",
+          "fontSize": "20",
+          "fontWeight": "normal",
+          "fontFamily": "Arial",
+          "anchor": "start"
+        }
+      ],
       "level": 0,
       "id": "1",
-      "name": "Auto-direcționare",
+      "name": "Auto",
       "innerValue": 5,
       "absoluteValue": 5,
       "children": [
@@ -189,7 +200,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -425,7 +436,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -661,7 +672,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -887,7 +898,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -1143,7 +1154,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -1243,7 +1254,7 @@
           "label": "Font size",
           "name": "labelFontSize",
           "source": "level",
-          "value": 12
+          "value": 18
         },
         "strokeColor": {
           "description": "Color of the stroke",
@@ -1299,10 +1310,21 @@
       }
     },
     {
-      "labelSpans": [],
+      "labelSpans": [
+        {
+          "text": "reglare",
+          "x": 0,
+          "y": "22",
+          "color": "#000000",
+          "fontSize": "18",
+          "fontWeight": "normal",
+          "fontFamily": "Arial",
+          "anchor": "start"
+        }
+      ],
       "level": 0,
       "id": "2",
-      "name": "Auto-reglare",
+      "name": "Auto",
       "innerValue": 5,
       "absoluteValue": 5,
       "children": [
@@ -1487,7 +1509,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -1713,7 +1735,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -1959,7 +1981,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -2205,7 +2227,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -2441,7 +2463,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -2541,7 +2563,7 @@
           "label": "Font size",
           "name": "labelFontSize",
           "source": "level",
-          "value": 12
+          "value": 18
         },
         "strokeColor": {
           "description": "Color of the stroke",
@@ -2613,10 +2635,41 @@
           "absoluteValue": 1,
           "children": [
             {
-              "labelSpans": [],
+              "labelSpans": [
+                {
+                  "text": "sentimentele altor persoane; ",
+                  "x": 0,
+                  "y": 16,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "poate trăi lucrurile din ",
+                  "x": 0,
+                  "y": 32,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "perspectiva altor persoane",
+                  "x": 0,
+                  "y": 48,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                }
+              ],
               "level": 2,
               "id": "3.1.1",
-              "name": "Simte și înțelege sentimentele altor persoane; poate trăi lucrurile din perspectiva altor persoane",
+              "name": "Simte și înțelege ",
               "innerValue": 1,
               "absoluteValue": 1,
               "children": [],
@@ -2764,7 +2817,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -2828,10 +2881,51 @@
           "absoluteValue": 1,
           "children": [
             {
-              "labelSpans": [],
+              "labelSpans": [
+                {
+                  "text": "suferința altor persoane, ",
+                  "x": 0,
+                  "y": 16,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "arată bunătate, grijă si ",
+                  "x": 0,
+                  "y": 32,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "disponibilitate în a-i ajuta ",
+                  "x": 0,
+                  "y": 48,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "pe alții; are auto-compasiune",
+                  "x": 0,
+                  "y": 64,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                }
+              ],
               "level": 2,
               "id": "3.2.1",
-              "name": "Dorește să ușureze suferința altor persoane, arată bunătate, grijă si disponibilitate în a-i ajuta pe alții; are auto-compasiune",
+              "name": "Dorește să ușureze ",
               "innerValue": 1,
               "absoluteValue": 1,
               "children": [],
@@ -2979,7 +3073,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -3043,10 +3137,41 @@
           "absoluteValue": 1,
           "children": [
             {
-              "labelSpans": [],
+              "labelSpans": [
+                {
+                  "text": "împărtășește glume si zâmbete; ",
+                  "x": 0,
+                  "y": 16,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "apreciază absurdul propriu, ",
+                  "x": 0,
+                  "y": 32,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "al altora și al vieții",
+                  "x": 0,
+                  "y": 48,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                }
+              ],
               "level": 2,
               "id": "3.3.1",
-              "name": "Jucăuș, amuzant, iubitor; împărtășește glume si zâmbete; apreciază absurdul propriu, al altora și al vieții",
+              "name": "Jucăuș, amuzant, iubitor; ",
               "innerValue": 1,
               "absoluteValue": 1,
               "children": [],
@@ -3194,7 +3319,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -3258,10 +3383,31 @@
           "absoluteValue": 1,
           "children": [
             {
-              "labelSpans": [],
+              "labelSpans": [
+                {
+                  "text": "își ia în serios propriile ",
+                  "x": 0,
+                  "y": 16,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "roluri si obligații",
+                  "x": 0,
+                  "y": 32,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                }
+              ],
               "level": 2,
               "id": "3.4.1",
-              "name": "Este de încredere, își ia în serios propriile roluri si obligații",
+              "name": "Este de încredere, ",
               "innerValue": 1,
               "absoluteValue": 1,
               "children": [],
@@ -3409,7 +3555,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -3509,7 +3655,7 @@
           "label": "Font size",
           "name": "labelFontSize",
           "source": "level",
-          "value": 12
+          "value": 18
         },
         "strokeColor": {
           "description": "Color of the stroke",
@@ -3568,7 +3714,7 @@
       "labelSpans": [],
       "level": 0,
       "id": "4",
-      "name": "Transcendenta",
+      "name": "Transcendență",
       "innerValue": 2,
       "absoluteValue": 2,
       "children": [
@@ -3581,10 +3727,51 @@
           "absoluteValue": 1,
           "children": [
             {
-              "labelSpans": [],
+              "labelSpans": [
+                {
+                  "text": "pentru ce primește; ",
+                  "x": 0,
+                  "y": 16,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "apreciază mai degrabă ",
+                  "x": 0,
+                  "y": 32,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "decât să ia ca dat de la sine ",
+                  "x": 0,
+                  "y": 48,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "ceea ce are",
+                  "x": 0,
+                  "y": 64,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                }
+              ],
               "level": 2,
               "id": "4.1.1",
-              "name": "Recunoscător, fericit pentru ce primește; apreciază mai degrabă decât să ia ca dat de la sine ceea ce are",
+              "name": "Recunoscător, fericit ",
               "innerValue": 1,
               "absoluteValue": 1,
               "children": [],
@@ -3732,7 +3919,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -3796,10 +3983,31 @@
           "absoluteValue": 1,
           "children": [
             {
-              "labelSpans": [],
+              "labelSpans": [
+                {
+                  "text": "arată o bună judecată și ",
+                  "x": 0,
+                  "y": 16,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                },
+                {
+                  "text": "învață din experiențe",
+                  "x": 0,
+                  "y": 32,
+                  "color": "#000000",
+                  "fontSize": 12,
+                  "fontWeight": "normal",
+                  "fontFamily": "Arial",
+                  "anchor": "start"
+                }
+              ],
               "level": 2,
               "id": "4.2.1",
-              "name": "Caută adevărul și lecțiile vieții; arată o bună judecată și învață din experiențe",
+              "name": "Caută adevărul și lecțiile vieții; ",
               "innerValue": 1,
               "absoluteValue": 1,
               "children": [],
@@ -3947,7 +4155,7 @@
               "label": "Font size",
               "name": "labelFontSize",
               "source": "level",
-              "value": 12
+              "value": 18
             },
             "strokeColor": {
               "description": "Color of the stroke",
@@ -4047,7 +4255,7 @@
           "label": "Font size",
           "name": "labelFontSize",
           "source": "level",
-          "value": 12
+          "value": 18
         },
         "strokeColor": {
           "description": "Color of the stroke",
@@ -4152,7 +4360,7 @@
           "label": "Font size",
           "name": "labelFontSize",
           "source": "level",
-          "value": 12
+          "value": 18
         },
         "strokeColor": {
           "description": "Color of the stroke",
@@ -4242,6 +4450,13 @@
           "name": "edgeThickness",
           "source": "level",
           "value": 0
+        },
+        "textLineHeight": {
+          "description": "Vertical spacing between stacked label lines when splitting main text into spans",
+          "label": "Text line height",
+          "name": "textLineHeight",
+          "source": "level",
+          "value": 22
         }
       }
     },
@@ -4293,7 +4508,7 @@
           "label": "Font size",
           "name": "labelFontSize",
           "source": "level",
-          "value": 12
+          "value": 18
         },
         "strokeColor": {
           "description": "Color of the stroke",
