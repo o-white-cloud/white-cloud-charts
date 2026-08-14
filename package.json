@@ -33,7 +33,7 @@
     "javascript-color-gradient": "^2.4.4",
     "lodash": "^4.17.21",
     "lucide-react": "^0.330.0",
-    "next": "^15.1.7",
+    "next": "15.1.11",
     "react": "^18",
     "react-arborist": "^3.4.0",
     "react-colorful": "^5.6.1",
