@@ -1,5 +1,5 @@
 import {
-    getEnumKeys, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger,
+    Select, SelectContent, SelectGroup, SelectItem, SelectTrigger,
     SelectValue
 } from '@/components/ui/select';
 import { ValueEditorProps } from './property-editor';
