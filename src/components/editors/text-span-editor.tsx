@@ -1,10 +1,11 @@
+import { DEFAULT_CHART_FONT_FAMILY } from "@/lib/chart-typography";
 import { LabelAnchorType, PieChartItemLabelTextSpan } from "@/lib/types/multi-level-pie-types";
 import { Input } from "../ui/input";
 import { z } from "zod";
-import { useForm, Controller, UseFormReturn } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronDown, ChevronRight, Trash, Save } from "lucide-react";
+import { ChevronDown, ChevronRight, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { debounce, isEqual } from "lodash";
@@ -20,9 +21,15 @@ export interface TextSpanEditorProps {
 const textSpanSchema = z.object({
     text: z.string().min(1, "Text is required").max(100, "Text must be at most 100 characters"),
     color: z.string(),
-    fontSize: z.number().min(1, "Font size is required").max(100, "Font size must be at most 100"),
+    fontSizeOverrideEnabled: z.boolean(),
+    fontSize: z.preprocess((val) => {
+        if (val === "" || val === null || val === undefined) return undefined;
+        const parsed = parseFloat(val as string);
+        return isNaN(parsed) ? undefined : parsed;
+    }, z.number().min(1, "Font size must be at least 1").max(100, "Font size must be at most 100").optional()),
     fontWeight: z.enum(["normal", "bold", "bolder", "lighter"]),
-    fontFamily: z.string().min(1, "Font family is required").max(100, "Font family must be at most 100 characters"),
+    fontFamilyOverrideEnabled: z.boolean(),
+    fontFamily: z.string().max(100, "Font family must be at most 100 characters").optional(),
     x: z.preprocess((val) => {
         if (val === "" || val === null || val === undefined) return undefined;
         const parsed = parseFloat(val as string);
@@ -46,13 +53,17 @@ const textSpanSchema = z.object({
     anchor: z.nativeEnum(LabelAnchorType)
 });
 
-function spanToFormValues(span: PieChartItemLabelTextSpan): PieChartItemLabelTextSpan {
+type TextSpanFormValues = z.infer<typeof textSpanSchema>;
+
+function spanToFormValues(span: PieChartItemLabelTextSpan): TextSpanFormValues {
     return {
         text: span.text || "",
         color: span.color || "#000000",
-        fontSize: span.fontSize || 12,
-        fontWeight: span.fontWeight || "normal",
-        fontFamily: span.fontFamily || "Arial",
+        fontSizeOverrideEnabled: span.fontSize !== undefined,
+        fontSize: span.fontSize ?? 12,
+        fontWeight: (span.fontWeight || "normal") as TextSpanFormValues["fontWeight"],
+        fontFamilyOverrideEnabled: span.fontFamily !== undefined,
+        fontFamily: span.fontFamily ?? DEFAULT_CHART_FONT_FAMILY,
         anchor: span.anchor || LabelAnchorType.start,
         x: span.x ?? undefined,
         y: span.y ?? undefined,
@@ -61,18 +72,49 @@ function spanToFormValues(span: PieChartItemLabelTextSpan): PieChartItemLabelTex
     };
 }
 
+function formValuesToSpan(
+    span: PieChartItemLabelTextSpan,
+    formValues: TextSpanFormValues
+): PieChartItemLabelTextSpan {
+    const merged: PieChartItemLabelTextSpan = {
+        ...span,
+        text: formValues.text,
+        color: formValues.color,
+        fontWeight: formValues.fontWeight,
+        anchor: formValues.anchor,
+        x: formValues.x,
+        y: formValues.y,
+        dx: formValues.dx,
+        dy: formValues.dy,
+    };
+
+    if (formValues.fontSizeOverrideEnabled && formValues.fontSize !== undefined) {
+        merged.fontSize = formValues.fontSize;
+    } else {
+        delete merged.fontSize;
+    }
+
+    if (formValues.fontFamilyOverrideEnabled && formValues.fontFamily) {
+        merged.fontFamily = formValues.fontFamily;
+    } else {
+        delete merged.fontFamily;
+    }
+
+    return merged;
+}
+
 const POSITION_KEYS = ["x", "y", "dx", "dy"] as const;
 
 export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
     const { span, onSpanUpdated, onSpanRemoved } = props;
-    const [isCollapsed, setIsCollapsed] = useState(false); // State to manage collapse/expand
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const spanRef = useRef(span);
     spanRef.current = span;
-    const formRef = useRef<UseFormReturn<PieChartItemLabelTextSpan> | null>(null);
+    const formRef = useRef<UseFormReturn<TextSpanFormValues> | null>(null);
     const onSpanUpdatedRef = useRef(onSpanUpdated);
     onSpanUpdatedRef.current = onSpanUpdated;
 
-    const form = useForm<PieChartItemLabelTextSpan>({
+    const form = useForm<TextSpanFormValues>({
         resolver: zodResolver(textSpanSchema),
         defaultValues: spanToFormValues(span),
     });
@@ -80,11 +122,11 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
 
     const debouncedUpdate = useMemo(
         () =>
-            debounce((updatedData: PieChartItemLabelTextSpan) => {
+            debounce((updatedData: TextSpanFormValues) => {
                 const s = spanRef.current;
                 const f = formRef.current;
                 if (!f) return;
-                const merged: PieChartItemLabelTextSpan = { ...s, ...updatedData };
+                const merged = formValuesToSpan(s, updatedData);
                 for (const key of POSITION_KEYS) {
                     if (updatedData[key] === undefined) {
                         if (f.getFieldState(key).isDirty) {
@@ -105,25 +147,26 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
         form.reset(spanToFormValues(span));
     }, [span, form, debouncedUpdate]);
 
-    const watchedFields = form.watch(); // Watch all fields for changes
+    const watchedFields = form.watch();
 
     useEffect(() => {
         debouncedUpdate(watchedFields);
-        return () => debouncedUpdate.cancel(); // Cleanup debounce on unmount
+        return () => debouncedUpdate.cancel();
     }, [watchedFields, debouncedUpdate]);
 
+    const fontSizeOverrideEnabled = form.watch("fontSizeOverrideEnabled");
+    const fontFamilyOverrideEnabled = form.watch("fontFamilyOverrideEnabled");
 
     return (
         <div className="border rounded-md">
-            {/* Header Section */}
             <div
                 role="button"
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 className="flex items-center justify-between w-full pl-2 py-1 bg-gray-100 cursor-pointer"
-                tabIndex={0} // Makes it focusable for accessibility
+                tabIndex={0}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                        setIsCollapsed(!isCollapsed); // Toggle on Enter or Space key
+                        setIsCollapsed(!isCollapsed);
                     }
                 }}
             >
@@ -135,7 +178,7 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
-                        e.stopPropagation(); // Prevent collapsing/expanding when clicking the delete button
+                        e.stopPropagation();
                         onSpanRemoved(span);
                     }}
                     className="text-red-500 hover:text-red-700"
@@ -144,7 +187,6 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                 </Button>
             </div>
 
-            {/* Collapsible Content */}
             {!isCollapsed && (
                 <Form {...form}>
                     <div className="space-y-4 p-4">
@@ -170,39 +212,97 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
 
                         <FormField
                             control={form.control}
-                            name="fontFamily"
+                            name="fontFamilyOverrideEnabled"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Font</FormLabel>
                                     <FormControl>
-                                        <FontPicker width={200}
-                                            className="px-2 py-0 m-0 h-8 w-full radius-sm shadow-none"
-                                            value={span.fontFamily}
-                                            onChange={(value) => {
-                                                field.onChange(value);
-                                            }} />
-                                    </FormControl></FormItem>)} />
+                                        <label className="flex items-center gap-2 text-sm h-8">
+                                            <input
+                                                type="checkbox"
+                                                checked={field.value}
+                                                onChange={(e) => field.onChange(e.target.checked)}
+                                                className="rounded border-gray-300"
+                                            />
+                                            Override
+                                        </label>
+                                    </FormControl>
+                                </FormItem>
+                            )} />
 
-
-                        <div className="flex space-x-4">
+                        {fontFamilyOverrideEnabled && (
                             <FormField
                                 control={form.control}
-                                name="fontSize"
+                                name="fontFamily"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <FontPicker width={200}
+                                                className="px-2 py-0 m-0 h-8 w-full radius-sm shadow-none"
+                                                value={field.value}
+                                                onChange={(value) => {
+                                                    field.onChange(value);
+                                                }} />
+                                        </FormControl></FormItem>)} />
+                        )}
+                        {!fontFamilyOverrideEnabled && (
+                            <p className="text-xs text-muted-foreground">Inherits the sector or level font family.</p>
+                        )}
+
+                        <div className="flex space-x-4 items-end">
+                            <FormField
+                                control={form.control}
+                                name="fontSizeOverrideEnabled"
                                 render={({ field }) => (
                                     <FormItem className="flex-none">
+                                        <FormLabel className="text-xs">Font size</FormLabel>
                                         <FormControl>
-                                            <Input {...field} className="px-2 py-0 m-0 h-8 rounded-sm"/>
-                                        </FormControl></FormItem>)} />
+                                            <label className="flex items-center gap-2 text-sm h-8">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={field.value}
+                                                    onChange={(e) => field.onChange(e.target.checked)}
+                                                    className="rounded border-gray-300"
+                                                />
+                                                Override
+                                            </label>
+                                        </FormControl>
+                                    </FormItem>
+                                )} />
+
+                            {fontSizeOverrideEnabled && (
+                                <FormField
+                                    control={form.control}
+                                    name="fontSize"
+                                    render={({ field }) => (
+                                        <FormItem className="flex-none">
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    type="number"
+                                                    min={1}
+                                                    max={100}
+                                                    value={field.value ?? ''}
+                                                    onChange={(e) => {
+                                                        const next = e.currentTarget.valueAsNumber;
+                                                        field.onChange(Number.isNaN(next) ? undefined : next);
+                                                    }}
+                                                    className="px-2 py-0 m-0 h-8 rounded-sm w-20"
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )} />
+                            )}
 
                             <FormField
                                 control={form.control}
                                 name="fontWeight"
                                 render={({ field }) => (
-                                    <FormItem className="flex-2">
+                                    <FormItem className="flex-1 min-w-0">
                                         <FormControl>
                                             <Select
                                                 onValueChange={field.onChange}
-                                                defaultValue={field.value}
+                                                value={field.value}
                                             >
                                                 <SelectTrigger id="font-weight-input" className="px-2 py-0 m-0 h-8 rounded-sm shadow-none">
                                                     <SelectValue placeholder="Select weight" />
@@ -216,6 +316,9 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                             </Select>
                                         </FormControl></FormItem>)} />
                         </div>
+                        {!fontSizeOverrideEnabled && (
+                            <p className="text-xs text-muted-foreground">Inherits the sector or level font size.</p>
+                        )}
                         <div>
                             <FormLabel>Position</FormLabel>
                             <div className="flex space-x-4 mt-2"><FormField
@@ -261,7 +364,7 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                     <FormControl>
                                         <Select
                                             onValueChange={field.onChange}
-                                            defaultValue={field.value}
+                                            value={field.value}
                                         >
                                             <SelectTrigger id="font-weight-input" className="px-2 py-0 m-0 h-8 rounded-sm shadow-none">
                                                 <SelectValue placeholder="Select weight" />

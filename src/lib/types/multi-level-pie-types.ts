@@ -1,6 +1,8 @@
 import { LucideIcon } from 'lucide-react';
 
 export interface MultiLevelPieChartData {
+  /** Optional schema version for migration on load. */
+  schemaVersion?: number;
   levels: PieChartLevel[];
   items: PieChartItem[];
 }
@@ -12,6 +14,7 @@ export interface PieChartItemProperties extends Record<string, Property<any>> {
   labelDX: Property<number>,
   labelDY: Property<number>,
   labelFontSize: Property<number>,
+  labelFontFamily: Property<string>,
   textLineHeight: Property<number>,
   strokeWidth: Property<number>,
   strokeColor: Property<SingleColor>,
@@ -23,10 +26,12 @@ export interface PieChartItemProperties extends Record<string, Property<any>> {
 
 export interface PieChartItemLabelTextSpan {
   color: string;
-  fontSize: number;
+  /** When omitted, inherits the sector's resolved label font size. */
+  fontSize?: number;
   text: string;
   fontWeight: string;
-  fontFamily: string;
+  /** When omitted, inherits the sector's resolved label font family. */
+  fontFamily?: string;
   x?: number;
   y?: number;
   dx?: number;

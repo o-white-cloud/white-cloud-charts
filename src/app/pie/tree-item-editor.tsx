@@ -6,6 +6,7 @@ import { PropertyEditor } from '@/components/editors/property-editor';
 import { EnumEditor } from '@/components/editors/enum-editor';
 import { Input } from '@/components/ui/input';
 import { ColorEditor, SingleColorEditor } from '@/components/editors/color-editor';
+import { FontFamilyEditor } from '@/components/editors/font-family-editor';
 import { NumericEditor } from '@/components/editors/numeric-editor';
 import { Divider } from '@/components/editors/divider';
 import { TextSpans } from '@/components/editors/text-spans';
@@ -105,13 +106,13 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
         level={level}
         item={item}
         property={item.properties.labelDX}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />} />
 
       <PropertyEditor
         level={level}
         item={item}
         property={item.properties.labelDY}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />} />
 
       <Divider />
 
@@ -120,6 +121,12 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
         item={item}
         property={item.properties.labelFontSize}
         onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        item={item}
+        property={item.properties.labelFontFamily}
+        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <FontFamilyEditor {...valueProps} />} />
 
       <Divider />
 

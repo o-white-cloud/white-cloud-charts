@@ -7,9 +7,7 @@
           "x": 0,
           "y": "22",
           "color": "#000000",
-          "fontSize": "20",
           "fontWeight": "normal",
-          "fontFamily": "Arial",
           "anchor": "start"
         }
       ],
@@ -34,9 +32,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -44,9 +40,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -79,7 +73,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -92,15 +86,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -10.256507873535156
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -109,7 +103,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -152,6 +146,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -209,7 +210,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -252,6 +253,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -270,9 +278,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -280,9 +286,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -315,7 +319,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -328,15 +332,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -10.83085823059082
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -345,7 +349,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -388,6 +392,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -445,7 +456,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -488,6 +499,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -506,9 +524,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -516,9 +532,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -551,7 +565,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -564,15 +578,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -10.256507873535156
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -581,7 +595,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -624,6 +638,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -681,7 +702,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -724,6 +745,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -742,9 +770,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -777,7 +803,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -790,15 +816,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -2.2565078735351562
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -807,7 +833,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -850,6 +876,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -907,7 +940,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -950,6 +983,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -968,9 +1008,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -978,9 +1016,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -988,9 +1024,7 @@
                   "x": 0,
                   "y": 48,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -998,9 +1032,7 @@
                   "x": 0,
                   "y": 64,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -1033,7 +1065,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -1046,15 +1078,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -26.25650405883789
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -1063,7 +1095,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -1106,6 +1138,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -1163,7 +1202,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -1206,6 +1245,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         }
@@ -1263,7 +1309,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "strokeWidth": {
@@ -1306,6 +1352,13 @@
           "name": "endRadiusStrokeWidth",
           "source": "override",
           "value": 0
+        },
+        "labelFontFamily": {
+          "description": "Font family for sector labels",
+          "label": "Font family",
+          "name": "labelFontFamily",
+          "source": "level",
+          "value": "Onest"
         }
       }
     },
@@ -1316,9 +1369,7 @@
           "x": 0,
           "y": "22",
           "color": "#000000",
-          "fontSize": "18",
           "fontWeight": "normal",
-          "fontFamily": "Arial",
           "anchor": "start"
         }
       ],
@@ -1339,29 +1390,25 @@
             {
               "labelSpans": [
                 {
-                  "text": "echilibru, se recuperează repede după",
+                  "text": "în echilibru, se recuperează repede ",
                   "x": 0,
-                  "y": 16,
+                  "y": 20,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
-                  "text": "declanșatori emoționali",
+                  "text": "după declanșatori emoționali",
                   "x": 0,
-                  "y": 32,
+                  "y": 40,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
               "level": 2,
               "id": "2.1.1",
-              "name": "Stă centrat, păstrează emoțiile în",
+              "name": "Stă centrat, păstrează emoțiile ",
               "innerValue": 1,
               "absoluteValue": 1,
               "children": [],
@@ -1388,7 +1435,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -1401,15 +1448,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -14.830856323242188
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -1418,7 +1465,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -1461,6 +1508,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -1518,7 +1572,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -1561,6 +1615,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -1579,9 +1640,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -1614,7 +1673,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -1627,15 +1686,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -2.8308582305908203
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -1644,7 +1703,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -1687,6 +1746,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -1744,7 +1810,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -1787,6 +1853,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -1805,9 +1878,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -1815,9 +1886,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -1825,9 +1894,7 @@
                   "x": 0,
                   "y": 48,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -1860,7 +1927,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -1873,15 +1940,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -18.830860137939453
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -1890,7 +1957,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -1933,6 +2000,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -1990,7 +2064,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -2033,6 +2107,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -2051,9 +2132,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2061,9 +2140,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2071,9 +2148,7 @@
                   "x": 0,
                   "y": 48,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -2106,7 +2181,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -2119,15 +2194,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -18.256507873535156
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -2136,7 +2211,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -2179,6 +2254,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -2236,7 +2318,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -2279,6 +2361,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -2297,9 +2386,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2307,9 +2394,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -2342,7 +2427,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -2355,15 +2440,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -10.83085823059082
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -2372,7 +2457,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -2415,6 +2500,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -2472,7 +2564,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -2515,6 +2607,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         }
@@ -2548,15 +2647,15 @@
           "description": "X offset of the label",
           "label": "Delta X",
           "name": "labelDX",
-          "source": "level",
-          "value": 0
+          "source": "override",
+          "value": -4
         },
         "labelDY": {
           "description": "Y offset of the label",
           "label": "Delta Y",
           "name": "labelDY",
-          "source": "level",
-          "value": 0
+          "source": "override",
+          "value": -11
         },
         "labelFontSize": {
           "description": "Size of the label font",
@@ -2572,7 +2671,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "strokeWidth": {
@@ -2615,6 +2714,13 @@
           "name": "endRadiusStrokeWidth",
           "source": "override",
           "value": 0
+        },
+        "labelFontFamily": {
+          "description": "Font family for sector labels",
+          "label": "Font family",
+          "name": "labelFontFamily",
+          "source": "level",
+          "value": "Onest"
         }
       }
     },
@@ -2641,9 +2747,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2651,9 +2755,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2661,9 +2763,7 @@
                   "x": 0,
                   "y": 48,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -2696,7 +2796,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -2709,15 +2809,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -18.256507873535156
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -2726,7 +2826,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -2769,6 +2869,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -2826,7 +2933,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -2869,6 +2976,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -2887,9 +3001,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2897,9 +3009,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2907,9 +3017,7 @@
                   "x": 0,
                   "y": 48,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -2917,9 +3025,7 @@
                   "x": 0,
                   "y": 64,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -2952,7 +3058,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -2965,15 +3071,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -26.830860137939453
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -2982,7 +3088,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -3025,6 +3131,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -3082,7 +3195,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -3125,6 +3238,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -3143,9 +3263,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -3153,9 +3271,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -3163,9 +3279,7 @@
                   "x": 0,
                   "y": 48,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -3198,7 +3312,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -3211,15 +3325,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -18.830860137939453
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -3228,7 +3342,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -3271,6 +3385,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -3328,7 +3449,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -3371,6 +3492,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -3389,9 +3517,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -3399,9 +3525,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -3434,7 +3558,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -3447,15 +3571,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -10.83085823059082
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -3464,7 +3588,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -3507,6 +3631,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -3564,7 +3695,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -3607,6 +3738,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         }
@@ -3664,7 +3802,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "strokeWidth": {
@@ -3707,6 +3845,13 @@
           "name": "endRadiusStrokeWidth",
           "source": "override",
           "value": 0
+        },
+        "labelFontFamily": {
+          "description": "Font family for sector labels",
+          "label": "Font family",
+          "name": "labelFontFamily",
+          "source": "level",
+          "value": "Onest"
         }
       }
     },
@@ -3733,9 +3878,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -3743,9 +3886,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -3753,9 +3894,7 @@
                   "x": 0,
                   "y": 48,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -3763,9 +3902,7 @@
                   "x": 0,
                   "y": 64,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -3798,7 +3935,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -3811,15 +3948,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -26.25650405883789
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -3828,7 +3965,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -3871,6 +4008,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -3928,7 +4072,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -3971,6 +4115,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         },
@@ -3989,9 +4140,7 @@
                   "x": 0,
                   "y": 16,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 },
                 {
@@ -3999,9 +4148,7 @@
                   "x": 0,
                   "y": 32,
                   "color": "#000000",
-                  "fontSize": 12,
                   "fontWeight": "normal",
-                  "fontFamily": "Arial",
                   "anchor": "start"
                 }
               ],
@@ -4034,7 +4181,7 @@
                   "label": "Display",
                   "name": "labelDisplay",
                   "source": "level",
-                  "value": "centroid"
+                  "value": "radial"
                 },
                 "labelDX": {
                   "description": "X offset of the label",
@@ -4047,15 +4194,15 @@
                   "description": "Y offset of the label",
                   "label": "Delta Y",
                   "name": "labelDY",
-                  "source": "level",
-                  "value": 0
+                  "source": "override",
+                  "value": -10.83085823059082
                 },
                 "labelFontSize": {
                   "description": "Size of the label font",
                   "label": "Font size",
                   "name": "labelFontSize",
                   "source": "level",
-                  "value": 12
+                  "value": 16
                 },
                 "strokeColor": {
                   "description": "Color of the stroke",
@@ -4064,7 +4211,7 @@
                   "source": "level",
                   "value": {
                     "type": "single",
-                    "value": "#000"
+                    "value": "#3F3F3F"
                   }
                 },
                 "strokeWidth": {
@@ -4107,6 +4254,13 @@
                   "name": "endRadiusStrokeWidth",
                   "source": "override",
                   "value": 0
+                },
+                "labelFontFamily": {
+                  "description": "Font family for sector labels",
+                  "label": "Font family",
+                  "name": "labelFontFamily",
+                  "source": "level",
+                  "value": "Onest"
                 }
               }
             }
@@ -4164,7 +4318,7 @@
               "source": "level",
               "value": {
                 "type": "single",
-                "value": "#000"
+                "value": "#3F3F3F"
               }
             },
             "strokeWidth": {
@@ -4207,6 +4361,13 @@
               "name": "endRadiusStrokeWidth",
               "source": "override",
               "value": 0
+            },
+            "labelFontFamily": {
+              "description": "Font family for sector labels",
+              "label": "Font family",
+              "name": "labelFontFamily",
+              "source": "level",
+              "value": "Onest"
             }
           }
         }
@@ -4240,8 +4401,8 @@
           "description": "X offset of the label",
           "label": "Delta X",
           "name": "labelDX",
-          "source": "level",
-          "value": 0
+          "source": "override",
+          "value": -7
         },
         "labelDY": {
           "description": "Y offset of the label",
@@ -4264,7 +4425,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "strokeWidth": {
@@ -4307,6 +4468,13 @@
           "name": "endRadiusStrokeWidth",
           "source": "override",
           "value": 0
+        },
+        "labelFontFamily": {
+          "description": "Font family for sector labels",
+          "label": "Font family",
+          "name": "labelFontFamily",
+          "source": "level",
+          "value": "Onest"
         }
       }
     }
@@ -4369,7 +4537,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "strokeWidth": {
@@ -4441,7 +4609,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "edgeThickness": {
@@ -4457,6 +4625,13 @@
           "name": "textLineHeight",
           "source": "level",
           "value": 22
+        },
+        "labelFontFamily": {
+          "description": "Font family for sector labels",
+          "label": "Font family",
+          "name": "labelFontFamily",
+          "source": "level",
+          "value": "Onest"
         }
       }
     },
@@ -4517,7 +4692,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "strokeWidth": {
@@ -4589,7 +4764,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "edgeThickness": {
@@ -4598,13 +4773,20 @@
           "name": "edgeThickness",
           "source": "level",
           "value": 0
+        },
+        "labelFontFamily": {
+          "description": "Font family for sector labels",
+          "label": "Font family",
+          "name": "labelFontFamily",
+          "source": "level",
+          "value": "Onest"
         }
       }
     },
     {
       "id": "3",
       "innerRadius": 420,
-      "outerRadius": 670,
+      "outerRadius": 690,
       "properties": {
         "color": {
           "description": "Color of the pie sector",
@@ -4628,7 +4810,7 @@
           "label": "Display",
           "name": "labelDisplay",
           "source": "level",
-          "value": "centroid"
+          "value": "radial"
         },
         "labelDX": {
           "description": "X offset of the label",
@@ -4649,7 +4831,7 @@
           "label": "Font size",
           "name": "labelFontSize",
           "source": "level",
-          "value": 12
+          "value": 16
         },
         "strokeColor": {
           "description": "Color of the stroke",
@@ -4658,7 +4840,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "strokeWidth": {
@@ -4730,7 +4912,7 @@
           "source": "level",
           "value": {
             "type": "single",
-            "value": "#000"
+            "value": "#3F3F3F"
           }
         },
         "edgeThickness": {
@@ -4739,8 +4921,23 @@
           "name": "edgeThickness",
           "source": "level",
           "value": 0
+        },
+        "textLineHeight": {
+          "description": "Vertical spacing between stacked label lines when splitting main text into spans",
+          "label": "Text line height",
+          "name": "textLineHeight",
+          "source": "level",
+          "value": 20
+        },
+        "labelFontFamily": {
+          "description": "Font family for sector labels",
+          "label": "Font family",
+          "name": "labelFontFamily",
+          "source": "level",
+          "value": "Onest"
         }
       }
     }
-  ]
+  ],
+  "schemaVersion": 2
 }

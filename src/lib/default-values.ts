@@ -1,4 +1,5 @@
 import { NodeApi } from "react-arborist";
+import { DEFAULT_CHART_FONT_FAMILY } from "./chart-typography";
 import { LabelAnchorType, LabelDisplayType, PieChartItem, PieChartItemProperties, PieChartLevelProperties } from "./types/multi-level-pie-types";
 
 export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieChartItemProperties => {
@@ -46,6 +47,13 @@ export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieC
             source: 'level',
             value: 12
         },
+        labelFontFamily: {
+            description: 'Font family for sector labels',
+            label: 'Font family',
+            name: 'labelFontFamily',
+            source: 'level',
+            value: DEFAULT_CHART_FONT_FAMILY
+        },
         textLineHeight: {
             description: 'Vertical spacing between stacked label lines when splitting main text into spans',
             label: 'Text line height',
@@ -74,7 +82,7 @@ export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieC
             source: 'override',
             value: {
                 type: 'single',
-                value: '#000'
+                value: '#3F3F3F'
             }
         },
         endRadiusStrokeColor: {
@@ -84,7 +92,7 @@ export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieC
             source: 'override',
             value: {
                 type: 'single',
-                value: '#000'
+                value: '#3F3F3F'
             }
         },
         startRadiusStrokeWidth: {
@@ -135,7 +143,7 @@ export const DefaultLevelProperties = (): PieChartLevelProperties => {
             source: 'level',
             value: {
                 type: 'single',
-                value: '#000'
+                value: '#3F3F3F'
             }
         },
         edgeThickness: {
@@ -161,9 +169,10 @@ export const DefaultLevelProperties = (): PieChartLevelProperties => {
     levelProps.labelDX.value = 0;
     levelProps.labelDY.value = 0;
     levelProps.labelFontSize.value = 12;
+    levelProps.labelFontFamily.value = DEFAULT_CHART_FONT_FAMILY;
     levelProps.textLineHeight.value = 16;
     levelProps.strokeColor.value = {  type: 'single',
-        value: '#000'};
+        value: '#3F3F3F'};
     levelProps.strokeWidth.value = 1;
 
     return levelProps;

@@ -36,9 +36,7 @@ function buildSpansFromLines(
       x: 0,
       y: i * lineHeight,
       color: '#000000',
-      fontSize: 12,
       fontWeight: 'normal',
-      fontFamily: 'Arial',
       anchor: LabelAnchorType.start,
     });
   }

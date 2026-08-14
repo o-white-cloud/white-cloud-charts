@@ -124,3 +124,57 @@ const traverse = (item: PieChartItem, level: number) => {
     item.parent.innerValue += item.innerValue;
   }
 }
+
+/** Clears per-span font-size overrides for all sectors on the given level. */
+export const resetSpanFontSizesOnLevel = (
+  data: MultiLevelPieChartData,
+  level: PieChartLevel
+): MultiLevelPieChartData => {
+  const levelIndex = data.levels.indexOf(level);
+  const items = [...data.items];
+
+  const clearSpanFontSizes = (item: PieChartItem) => {
+    if (item.level === levelIndex && item.labelSpans.length > 0) {
+      item.labelSpans = item.labelSpans.map((span) => {
+        const next = { ...span };
+        delete next.fontSize;
+        return next;
+      });
+    }
+    item.children.forEach(clearSpanFontSizes);
+  };
+
+  items.forEach(clearSpanFontSizes);
+
+  return {
+    items,
+    levels: data.levels,
+  };
+};
+
+/** Clears per-span font-family overrides for all sectors on the given level. */
+export const resetSpanFontFamiliesOnLevel = (
+  data: MultiLevelPieChartData,
+  level: PieChartLevel
+): MultiLevelPieChartData => {
+  const levelIndex = data.levels.indexOf(level);
+  const items = [...data.items];
+
+  const clearSpanFontFamilies = (item: PieChartItem) => {
+    if (item.level === levelIndex && item.labelSpans.length > 0) {
+      item.labelSpans = item.labelSpans.map((span) => {
+        const next = { ...span };
+        delete next.fontFamily;
+        return next;
+      });
+    }
+    item.children.forEach(clearSpanFontFamilies);
+  };
+
+  items.forEach(clearSpanFontFamilies);
+
+  return {
+    items,
+    levels: data.levels,
+  };
+};

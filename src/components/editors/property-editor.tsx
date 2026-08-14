@@ -52,6 +52,7 @@ export const PropertyEditor = <T,>(props: React.PropsWithChildren<PropertyEditor
                     ...item.properties,
                     [property.name]: {
                         ...property,
+                        source: 'override',
                         value: newValue
                     }
                 }

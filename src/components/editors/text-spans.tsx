@@ -34,9 +34,7 @@ export const TextSpans: React.FC<TextSpansProps> = ({ item, onItemUpdated }) => 
         const newSpan: PieChartItemLabelTextSpan = {
             text: "",
             color: "#000000",
-            fontSize: 12,
             fontWeight: "normal",
-            fontFamily: "Arial",
             anchor: LabelAnchorType.start,
         };
         const updatedSpans = [...labelSpans, newSpan];

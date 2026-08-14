@@ -1,3 +1,4 @@
+import { DEFAULT_CHART_FONT_FAMILY } from "./chart-typography";
 import { MultiLevelPieChartData, PieChartItem, Property, PieChartLevel, SingleColor } from "./types/multi-level-pie-types";
 import Gradient from 'javascript-color-gradient';
 
@@ -36,6 +37,9 @@ export const getPropertyValue = <T,>(item: PieChartItem, property: Property<T>, 
     const value = getPropertyValueInner(item, property, data);
     if (property.name === 'textLineHeight' && (value === null || value === undefined)) {
         return 16 as T;
+    }
+    if (property.name === 'labelFontFamily' && (value === null || value === undefined)) {
+        return DEFAULT_CHART_FONT_FAMILY as T;
     }
     return value;
 }

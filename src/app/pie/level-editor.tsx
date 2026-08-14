@@ -6,6 +6,7 @@ import { EnumEditor } from '@/components/editors/enum-editor';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ColorEditor, SingleColorEditor } from '@/components/editors/color-editor';
+import { FontFamilyEditor } from '@/components/editors/font-family-editor';
 import { NumericEditor } from '@/components/editors/numeric-editor';
 import { Divider } from '@/components/editors/divider';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,9 @@ interface LevelEditorProps {
   items: PieChartItem[];
   onLevelUpdated: (item: PieChartLevel, property?: Property<any>) => void;
   calibrateParentsToThis: (level: PieChartLevel) => void;
+  resetSpanFontSizesOnLevel: (level: PieChartLevel) => void;
+  resetSpanFontFamiliesOnLevel: (level: PieChartLevel) => void;
+  centerAllSectorText: (level: PieChartLevel) => void;
 }
 
 
@@ -95,12 +99,24 @@ const LevelEditor = (props: LevelEditorProps) => {
       <PropertyEditor
         level={level}
         property={level.properties.labelDX}
-        onLevelChange={(level) => onLevelUpdated(level, level.properties.labelDX)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.labelDX)} render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />} />
 
       <PropertyEditor
         level={level}
         property={level.properties.labelDY}
-        onLevelChange={(level) => onLevelUpdated(level, level.properties.labelDY)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.labelDY)} render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />} />
+
+      <Button
+        type="button"
+        variant="outline"
+        className="mt-2"
+        onClick={() => props.centerAllSectorText(level)}
+      >
+        Center all sector text
+      </Button>
+      <p className="text-sm text-muted-foreground mt-1">
+        Centers each centroid or radial label block on this level. Click again after changing text or spans.
+      </p>
 
       <Divider />
 
@@ -108,6 +124,35 @@ const LevelEditor = (props: LevelEditorProps) => {
         level={level}
         property={level.properties.labelFontSize}
         onLevelChange={(level) => onLevelUpdated(level, level.properties.labelFontSize)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+
+      <PropertyEditor
+        level={level}
+        property={level.properties.labelFontFamily}
+        onLevelChange={(level) => onLevelUpdated(level, level.properties.labelFontFamily)} render={(valueProps) => <FontFamilyEditor {...valueProps} />} />
+
+      <Button
+        type="button"
+        variant="outline"
+        className="mt-2"
+        onClick={() => props.resetSpanFontSizesOnLevel(level)}
+      >
+        Reset span sizes to inherit
+      </Button>
+      <p className="text-sm text-muted-foreground mt-1">
+        Clears per-span font-size overrides on this level so spans use the level or sector font size.
+      </p>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="mt-2"
+        onClick={() => props.resetSpanFontFamiliesOnLevel(level)}
+      >
+        Reset span fonts to inherit
+      </Button>
+      <p className="text-sm text-muted-foreground mt-1">
+        Clears per-span font-family overrides on this level so spans use the level or sector font.
+      </p>
 
       <PropertyEditor
         level={level}

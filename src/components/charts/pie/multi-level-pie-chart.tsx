@@ -1,10 +1,13 @@
 'use client';
 import * as d3 from 'd3';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { SaveFileNameDialog } from '@/components/save-file-name-dialog';
 import { Button } from '@/components/ui/button';
+import { formatFontFamilyStack } from '@/lib/chart-typography';
 import { pieLevels } from '@/lib/pie-data';
+import { collectChartFontFamilies, embedFontsInSvg, prepareSvgForExport } from '@/lib/svg-font-export';
+import { loadFont } from '@/lib/fonts';
 import {
   LabelAnchorType,
   LabelDisplayType, MultiLevelPieChartData, PieChartItem, PieChartItemLabelTextSpan, PieChartLevel, PieSector
@@ -20,6 +23,7 @@ const arcId = (pieSector: PieSector) => `arc-${pieSector.id}`;
 const arcHiddenId = (pieSector: PieSector) => `arc-hidden-${pieSector.id}`;
 const textId = (pieSector: PieSector) => `text-${pieSector.id}`;
 const textClass = (pieSector: PieSector) => `text-${pieSector.properties?.labelDisplay.value}`;
+const chartLogoUrl = '/logo_mop.svg';
 
 /** User anchor → SVG text-anchor for radial labels; swaps start/end on the opposite semicircle (same 0°–180° split as dx/transform) so anchoring matches rotation. */
 function radialLabelAnchorToSvg(
@@ -79,6 +83,52 @@ function firstArcOnlyFromD3ArcPath(pathStr: string): string | null {
   return normalized.slice(0, secondA).trim();
 }
 
+function radialLabelLocalDx(labelDX: number, angleDeg: number): number {
+  return angleDeg > 0 && angleDeg <= 180 ? -labelDX : labelDX;
+}
+
+function buildCentroidRadialLabelTransform(
+  d: d3.PieArcDatum<PieSector>,
+  i: number,
+  path: d3.Arc<unknown, d3.PieArcDatum<PieSector>>,
+  pieData: d3.PieArcDatum<PieSector>[],
+  pieAngle: number[]
+): string | null {
+  if (!d.data.properties) {
+    return null;
+  }
+
+  const labelDX = d.data.properties.labelDX?.value ?? 0;
+  const labelDY = d.data.properties.labelDY?.value ?? 0;
+
+  switch (d.data.properties.labelDisplay.value) {
+    case LabelDisplayType.radial: {
+      const p = pieData[i];
+      let angle = pieAngle[i];
+      if (angle > 0 && angle <= 180) {
+        angle = angle - 180;
+      }
+      const localDx = radialLabelLocalDx(labelDX, pieAngle[i]);
+      return `translate(${path.centroid(p as any)}) rotate(${angle + 90}) translate(${localDx}, ${labelDY})`;
+    }
+    case LabelDisplayType.centroid:
+      return `translate(${path.centroid(d as any)}) translate(${labelDX}, ${labelDY})`;
+    default:
+      return null;
+  }
+}
+
+let chartZoomTransform = d3.zoomIdentity;
+
+function resetChartZoom() {
+  chartZoomTransform = d3.zoomIdentity;
+  const svg = d3.select<SVGSVGElement, unknown>('.pieRoot svg');
+  if (!svg.empty()) {
+    d3.select('#zoomG').attr('transform', chartZoomTransform.toString());
+    svg.property('__zoom', chartZoomTransform);
+  }
+}
+
 const draw = (
   data: {
     level: PieChartLevel;
@@ -96,6 +146,11 @@ const draw = (
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
+  const existingSvg = d3.select<SVGSVGElement, unknown>('.pieRoot svg').node();
+  if (existingSvg) {
+    chartZoomTransform = d3.zoomTransform(existingSvg);
+  }
+
   d3.select('#chart').remove();
 
   const svg = d3
@@ -108,20 +163,44 @@ const draw = (
 
 
   const g = svg.append('g')
-    .attr('id', 'zoomG')
-    .attr('transform', 'translate(0,0)');
+    .attr('id', 'zoomG');
 
   const zoom = d3.zoom<SVGSVGElement, unknown>()
     .scaleExtent([0.5, 5]) // Min and max zoom scale
     .on('zoom', (event) => {
+      chartZoomTransform = event.transform;
       g.attr('transform', event.transform);
     });
 
   svg.call(zoom);
+  svg.call(zoom.transform, chartZoomTransform);
 
-  data.reverse().map((l) => {
+  const renderedLevels = [...data].filter(Boolean).reverse();
+  renderedLevels.forEach((l) => {
     drawPie(l.level, l.items, g, innerWidth, innerHeight, onSectorClick);
   });
+
+  /*
+  if (renderedLevels.length > 0) {
+    const innermostLevel = renderedLevels.reduce((current, entry) =>
+      entry.level.innerRadius < current.level.innerRadius ? entry : current
+    );
+    const logoRadius = innermostLevel.level.innerRadius > 0
+      ? innermostLevel.level.innerRadius
+      : innermostLevel.level.outerRadius * 0.3;
+    const logoSize = logoRadius * 2.4;
+
+    g.append('image')
+      .attr('data-chart-logo', 'true')
+      .attr('href', chartLogoUrl)
+      .attr('x', innerWidth / 2 - logoSize / 2)
+      .attr('y', innerHeight / 2 - logoSize / 2)
+      .attr('width', logoSize)
+      .attr('height', logoSize)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .style('pointer-events', 'none');
+  }
+  */
 };
 
 const drawPie = (
@@ -155,6 +234,16 @@ const drawPie = (
     return ((p.startAngle + p.endAngle) / 2 / Math.PI) * 180;
   });
 
+  const handleSectorClick = (
+    event: MouseEvent,
+    d: d3.PieArcDatum<PieSector>
+  ) => {
+    event.stopPropagation();
+    if (!d.data.placeholder && onSectorClick) {
+      onSectorClick(d.data.id);
+    }
+  };
+
   // main sector arcs
   mainG
     .selectAll(selector)
@@ -168,14 +257,11 @@ const drawPie = (
     .attr('fill', (d) =>
       d.data.placeholder ? 'transparent' : d.data.properties?.color.value?.value ?? '#ddd'
     )
-    .attr('stroke', (d) => d.data.properties?.strokeColor?.value?.value ?? '#000')
+    .attr('stroke', (d) => d.data.properties?.strokeColor?.value?.value ?? '#3F3F3F')
     .attr('stroke-width', (d) => d.data.placeholder ? 0 : d.data.properties?.strokeWidth.value ?? 1)
-    .style('cursor', 'pointer')
-    .on('click', (event, d) => {
-      if (!d.data.placeholder && onSectorClick) {
-        onSectorClick(d.data.id);
-      }
-    })
+    .style('cursor', (d) => (d.data.placeholder ? null : 'pointer'))
+    .style('pointer-events', (d) => (d.data.placeholder ? 'none' : 'auto'))
+    .on('click', handleSectorClick)
     .each(function (d) {
       // Hidden path at the label radius (bakes in Delta Y) so textPath arc length matches where text sits
       if (!d || d.data.placeholder || !d.data.properties || d.data.properties.labelDisplay.value !== 'path') {
@@ -243,16 +329,17 @@ const drawPie = (
           .attr("x2", x2)
           .attr("y2", y2)
           .attr("stroke", color)
-          .attr("stroke-width", thickness);
+          .attr("stroke-width", thickness)
+          .style("pointer-events", "none");
       };
 
       const startAngle = d.startAngle - Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
       const endAngle = d.endAngle - Math.PI / 2;//+ (level.properties.startAngle.value ?? 90) * (Math.PI / 180);
       if (d.data.properties?.startRadiusStrokeWidth.value) {
-        drawRadialLine(startAngle, d.data.properties?.startRadiusStrokeColor.value?.value ?? "#000", d.data.properties?.startRadiusStrokeWidth.value ?? 1);
+        drawRadialLine(startAngle, d.data.properties?.startRadiusStrokeColor.value?.value ?? "#3F3F3F", d.data.properties?.startRadiusStrokeWidth.value ?? 1);
       }
       if (d.data.properties?.endRadiusStrokeWidth.value) {
-        drawRadialLine(endAngle, d.data.properties?.endRadiusStrokeColor.value?.value ?? "#000", d.data.properties?.endRadiusStrokeWidth.value ?? 1);
+        drawRadialLine(endAngle, d.data.properties?.endRadiusStrokeColor.value?.value ?? "#3F3F3F", d.data.properties?.endRadiusStrokeWidth.value ?? 1);
       }
     });
 
@@ -273,10 +360,13 @@ const drawPie = (
       .attr('class', 'edge')
       .attr('d', edgeArcs as any)
       .attr('fill', (d) =>
-        d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
+        d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#3F3F3F')
       .attr('stroke', (d) =>
-        d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#000')
-      .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m, i) => Math.max(i.properties?.strokeWidth?.value ?? 0, m), 0));
+        d.data.placeholder ? 'transparent' : level.properties.edgeColor.value?.value ?? '#3F3F3F')
+      .attr('stroke-width', (d) => d.data.placeholder ? 0 : items.reduce((m, i) => Math.max(i.properties?.strokeWidth?.value ?? 0, m), 0))
+      .style('pointer-events', (d) => (d.data.placeholder ? 'none' : 'auto'))
+      .style('cursor', (d) => (d.data.placeholder ? null : 'pointer'))
+      .on('click', handleSectorClick);
   }
 
   // sector text labels
@@ -287,51 +377,24 @@ const drawPie = (
     .append('text')
     .attr(sectorIdAttr, (d) => d.data.id)
     .attr('class', (d) => textClass(d.data))
-    .attr('dy', (d: any) => {
-      if (!d.data.properties) {
-        return null;
-      }
-      switch (d.data.properties.labelDisplay.value) {
-        case LabelDisplayType.path:
-          // Delta Y is baked into the hidden path radius so arc length matches label position
-          return null;
-        default: return d.data.properties?.labelDY.value;
-      }
-
-    })
-    .attr('dx', (d, i) => {
-      if (d.data.placeholder || !d.data.properties) {
-        return null;
-      }
-      switch (d.data.properties.labelDisplay.value) {
-
-        case LabelDisplayType.radial:
-          const p = pieData[i];
-          let angle = pieAngle[i];
-          return (angle > 0 && angle <= 180 ? (d.data.properties?.labelDX.value ?? 0) * (-1) : d.data.properties?.labelDX.value);
-        default: return 0;//d.data.properties?.labelDX.value;
-      }
-    })
+    .style('pointer-events', 'none')
     .text((d) => d.data.placeholder ? null : d.data.name)
     .attr('transform', (d, i) => {
       switch (d.data.properties?.labelDisplay.value) {
-        case LabelDisplayType.radial: {
-          const p = pieData[i];
-          let angle = pieAngle[i];
-          if (angle > 0 && angle <= 180) {
-            //rotation depends on the angle
-            angle = angle - 180;
-          }
-          return `translate(${path.centroid(p as any)}) rotate(${angle + 90
-            } 0 0) `;
-        }
+        case LabelDisplayType.radial:
         case LabelDisplayType.centroid:
-          return `translate(${path.centroid(d as any)})`;
+          return buildCentroidRadialLabelTransform(
+            d,
+            i,
+            path as unknown as d3.Arc<unknown, d3.PieArcDatum<PieSector>>,
+            pieData,
+            pieAngle
+          );
         case LabelDisplayType.path:
           return null;
-        default: return `translate(${path.centroid(d as any)})`;
+        default:
+          return `translate(${path.centroid(d as any)})`;
       }
-
     })
     .style('text-anchor', (d, i) => {
       switch (d.data.properties?.labelDisplay.value) {
@@ -349,6 +412,11 @@ const drawPie = (
       }
     })
     .style('font-size', (d: any) => d.data.properties?.labelFontSize.value)
+    .style('font-family', (d: any) =>
+      d.data.placeholder || !d.data.properties
+        ? null
+        : formatFontFamilyStack(d.data.properties.labelFontFamily?.value ?? 'Onest')
+    )
     .selectAll("tspan")
     .data((d) => d.data.labelSpans)
     .enter()
@@ -360,8 +428,8 @@ const drawPie = (
     .attr("fill", (d) => d.color ?? null)
     .text((d: any) => d.text)
     .style('font-weight', (d) => d.fontWeight)
-    .style('font-size', (d) => d.fontSize)
-    .style('font-family', (d) => d.fontFamily)
+    .style('font-size', (d) => d.fontSize ?? null)
+    .style('font-family', (d) => (d.fontFamily ? formatFontFamilyStack(d.fontFamily) : null))
 
   var sectorsWithPathLabels = items.filter(v => v.properties?.labelDisplay.value == LabelDisplayType.path);
 
@@ -370,6 +438,11 @@ const drawPie = (
       .selectAll("text")
       .filter(`.${textClass(sectorsWithPathLabels[0])}`)
       .style('dominant-baseline', 'central')
+      .style('font-family', (d: any) =>
+        d.data.placeholder || !d.data.properties
+          ? null
+          : formatFontFamilyStack(d.data.properties.labelFontFamily?.value ?? 'Onest')
+      )
       .html(null)
       .append("textPath")
       .attr("href", (d: any) => `#${arcHiddenId(d.data)}`)
@@ -386,8 +459,8 @@ const drawPie = (
       .attr("dy", (d: any) => d.dy)
       .text((d: any) => d.text)
       .style('font-weight', (d: any) => d.fontWeight)
-      .style('font-size', (d: any) => d.fontSize)
-      .style('font-family', (d: any) => d.fontFamily)
+      .style('font-size', (d: any) => d.fontSize ?? null)
+      .style('font-family', (d: any) => (d.fontFamily ? formatFontFamilyStack(d.fontFamily) : null))
   }
 };
 
@@ -395,24 +468,55 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
   props
 ) => {
   const { data, onSectorClick } = props;
-  const chartData = pieLevels(data);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const onSectorClickRef = useRef(onSectorClick);
+  onSectorClickRef.current = onSectorClick;
 
   useEffect(() => {
     if (data.levels.length > 0) {
-      draw(chartData, onSectorClick);
+      draw(pieLevels(data), (sectorId) => onSectorClickRef.current?.(sectorId));
     }
-  }, [chartData, onSectorClick]);
+  }, [data]);
 
-  const downloadSvgAsFile = (fileName: string) => {
+  useEffect(() => {
+    const families = collectChartFontFamilies(data);
+    families.forEach((family) => {
+      loadFont(family).catch((error) => {
+        console.error(`Failed to preload chart font ${family}:`, error);
+      });
+    });
+  }, [data]);
+
+  const downloadSvgAsFile = async (fileName: string) => {
     const svgElement = document.querySelector('.pieRoot svg');
     if (!svgElement) {
       console.error('SVG element not found!');
       return;
     }
 
+    const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
+    prepareSvgForExport(clonedSvg);
+    embedFontsInSvg(clonedSvg, data);
+
+    const logoImage = clonedSvg.querySelector<SVGImageElement>('image[data-chart-logo]');
+    if (logoImage) {
+      try {
+        const logoResponse = await fetch(chartLogoUrl);
+        if (!logoResponse.ok) {
+          throw new Error(`Logo request failed with status ${logoResponse.status}`);
+        }
+        const logoSvg = await logoResponse.text();
+        logoImage.setAttribute(
+          'href',
+          `data:image/svg+xml;charset=utf-8,${encodeURIComponent(logoSvg)}`
+        );
+      } catch (error) {
+        console.error('Failed to embed the chart logo in the SVG export:', error);
+      }
+    }
+
     const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svgElement);
+    const svgString = serializer.serializeToString(clonedSvg);
 
     const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -432,9 +536,7 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
       <div className='w-full ml-4 mt-5 flex flex-row space-x-4 items-center'>
         <Button
           variant={'outline'}
-          onClick={() =>
-            d3.select('#zoomG').attr('transform', 'translate(0,0) scale(1)')
-          }
+          onClick={resetChartZoom}
         >
           Reset zoom
         </Button>

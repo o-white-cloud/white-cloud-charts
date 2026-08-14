@@ -1,7 +1,8 @@
 'use client';
 
-import { Plus, Search, Save, Upload, FileText } from 'lucide-react';
+import { Plus, Save, Upload, FileText, Route } from 'lucide-react';
 import { useCallback, useContext, useRef, useState } from 'react';
+import useResizeObserver from 'use-resize-observer';
 import {
   CreateHandler, DeleteHandler, NodeApi, RenameHandler, Tree, TreeApi
 } from 'react-arborist';
@@ -17,12 +18,16 @@ import Node from './node';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 import { DefaultLevelProperties, DefaultTreeItemProperties } from '@/lib/default-values';
 import { BulkItemDialog } from '../../app/pie/bulk-item-dialog';
+import { ApplySpineStrokesDialog } from '../../app/pie/apply-spine-strokes-dialog';
 import { SaveFileNameDialog } from '@/components/save-file-name-dialog';
+import { applySpineStartRadiusStrokes } from '@/lib/apply-spine-strokes';
+import { migrateChartData, serializeChartData } from '@/lib/chart-data-migration';
 import { createNewTreeItem, createTree } from './tree-utils';
 
 export interface MultiLevelBuilderProps {
   onDataChange: (data: MultiLevelPieChartData) => void;
   onSelectionChange: (item: PieChartItem | null) => void;
+  selectedItemId?: string | null;
 }
 
 function createTreeItemId(parentId: string, siblings: { id: string }[]) {
@@ -42,11 +47,12 @@ function cleanItemForJson(item: PieChartItem): Omit<PieChartItem, 'parent'> {
 }
 
 export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
-  const { onDataChange, onSelectionChange } = props;
+  const { onDataChange, onSelectionChange, selectedItemId } = props;
   const data = useContext(MultiLevelPieChartDataContext);
   const treeRef = useRef<TreeApi<PieChartItem> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const { ref: treeContainerRef, width, height } = useResizeObserver();
 
   const onRootItemCreate = useCallback(() => {
     treeRef.current?.create({
@@ -83,6 +89,13 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
     const newData = createTree(text);
     onDataChange(newData);
   }, [data, onDataChange]);
+
+  const onApplySpineStrokes = useCallback((strokeWidth: number) => {
+    onDataChange({
+      items: applySpineStartRadiusStrokes(data.items, strokeWidth),
+      levels: data.levels,
+    });
+  }, [data.items, data.levels, onDataChange]);
 
   const onItemDelete = useCallback<DeleteHandler<PieChartItem>>(
     (args) => {
@@ -121,10 +134,10 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
 
   const saveJsonAsFile = useCallback(
     (fileName: string) => {
-      const cleanData = {
+      const cleanData = serializeChartData({
         items: data.items.map(item => cleanItemForJson(item)),
         levels: data.levels
-      };
+      });
 
       const jsonData = JSON.stringify(cleanData, null, 2);
       const blob = new Blob([jsonData], { type: 'application/json' });
@@ -161,7 +174,9 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const loadedData = JSON.parse(e.target?.result as string) as MultiLevelPieChartData;
+        const loadedData = migrateChartData(
+          JSON.parse(e.target?.result as string) as MultiLevelPieChartData
+        );
 
         // Reconstruct parent relationships
         const itemsWithParents = reconstructParentRelationships(loadedData.items);
@@ -183,8 +198,8 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
   }, [onDataChange]);
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex items-center m-4 ml-0">
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex shrink-0 items-center m-4 ml-0">
         {/* <Input className='flex-1 h-9' placeholder='Search' startIcon={Search}/> */}
         <Button
           onClick={onRootItemCreate}
@@ -204,6 +219,18 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
           </Button>
         }
       />
+        <ApplySpineStrokesDialog
+          onApply={onApplySpineStrokes}
+          trigger={
+            <Button
+              variant="outline"
+              className="h-9 self-end mr-4"
+              title="Apply start radius strokes along first-child chains"
+            >
+              <Route className="h-4 w-4" /> Spine strokes
+            </Button>
+          }
+        />
         <Button
           onClick={() => setSaveDialogOpen(true)}
           variant={'outline'}
@@ -236,19 +263,24 @@ export const PieTree: React.FC<MultiLevelBuilderProps> = (props) => {
           className="hidden"
         />
       </div>
-      <Tree
-        className="flex-1"
-        width="100%"
-        rowHeight={36}
-        data={data.items}
-        onCreate={onItemCreate}
-        onDelete={onItemDelete}
-        onRename={onItemRename}
-        onSelect={onTreeSelectionChanged}
-        ref={treeRef}
-      >
-        {Node}
-      </Tree>
+      <div ref={treeContainerRef} className="min-h-0 flex-1">
+        {height != null && height > 0 && (
+          <Tree
+            width={width ?? '100%'}
+            height={height}
+            rowHeight={36}
+            data={data.items}
+            selection={selectedItemId ?? undefined}
+            onCreate={onItemCreate}
+            onDelete={onItemDelete}
+            onRename={onItemRename}
+            onSelect={onTreeSelectionChanged}
+            ref={treeRef}
+          >
+            {Node}
+          </Tree>
+        )}
+      </div>
     </div>
   );
 };

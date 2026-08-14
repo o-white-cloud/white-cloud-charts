@@ -15,10 +15,11 @@ import { PieTree } from '@/components/tree/tree';
 import TreeItemEditor from './tree-item-editor';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 import { updateChildrenWithParent } from '@/lib/pie-chart-item-value';
-import { recomputeFromLevel } from '@/lib/pie-data';
-import { Onest } from 'next/font/google';
-
-
+import { recomputeFromLevel, resetSpanFontFamiliesOnLevel, resetSpanFontSizesOnLevel } from '@/lib/pie-data';
+import {
+  applyLabelCenteringCorrectionsOnLevel,
+  measureLabelCenteringCorrectionsForLevel,
+} from '@/lib/label-centering';
 
 export default function Page() {
   const [data, setData] = useState<MultiLevelPieChartData>({
@@ -63,6 +64,23 @@ export default function Page() {
     setData(newData);
   }, [data])
 
+  const onResetSpanFontSizes = useCallback((level: PieChartLevel) => {
+    const newData = resetSpanFontSizesOnLevel(data, level);
+    setData(newData);
+  }, [data]);
+
+  const onResetSpanFontFamilies = useCallback((level: PieChartLevel) => {
+    const newData = resetSpanFontFamiliesOnLevel(data, level);
+    setData(newData);
+  }, [data]);
+
+  const onCenterAllSectorText = useCallback((level: PieChartLevel) => {
+    const levelIndex = data.levels.indexOf(level);
+    const corrections = measureLabelCenteringCorrectionsForLevel(levelIndex, data);
+    const newData = applyLabelCenteringCorrectionsOnLevel(data, level, corrections);
+    setData(newData);
+  }, [data]);
+
   const updateLevelData = useCallback(
     (level: PieChartLevel, property?: Property<any>) => {
       const newLevels = [...data.levels];
@@ -103,11 +121,16 @@ export default function Page() {
       <main className="h-screen overflow-hidden">
         {/* <Navbar /> */}
         <section className="flex h-full flex-row bg-gray-300">
-          <PanelGroup direction="horizontal">
-            <Panel defaultSize={25} className="p-2 bg-white">
+          <PanelGroup direction="horizontal" className="h-full">
+            <Panel defaultSize={25} className="flex h-full min-h-0 flex-col bg-white p-2">
               <PieTree
                 onDataChange={setData}
                 onSelectionChange={onTreeItemSelect}
+                selectedItemId={
+                  selectedItem?.type === 'treeItem'
+                    ? selectedItem.item.id
+                    : null
+                }
               />
             </Panel>
             <PanelResizeHandle />
@@ -138,6 +161,9 @@ export default function Page() {
                   onLevelUpdated={updateLevelData}
                   items={data.items.filter(i => i.level == data.levels.indexOf(selectedItem.item))}
                   calibrateParentsToThis={onLevelCalibrate}
+                  resetSpanFontSizesOnLevel={onResetSpanFontSizes}
+                  resetSpanFontFamiliesOnLevel={onResetSpanFontFamilies}
+                  centerAllSectorText={onCenterAllSectorText}
                 />
               )}
             </Panel>
