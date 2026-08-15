@@ -1,10 +1,9 @@
 import { DefaultTreeItemProperties } from '@/lib/default-values';
-import type { SingleColor } from '@/lib/types/multi-level-pie-types';
 import {
   MultiLevelPieChartData,
   PieChartItem,
   PieChartItemLabelTextSpan,
-  SingleColor,
+  type SingleColor,
 } from '@/lib/types/multi-level-pie-types';
 
 import { getForegroundColor, mixColors } from './color-utils';

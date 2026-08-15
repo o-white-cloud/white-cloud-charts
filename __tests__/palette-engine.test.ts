@@ -1,4 +1,4 @@
-import { contrastRatio, getForegroundColor, mixColors } from '@/lib/palettes/color-utils';
+import { contrastRatio, getForegroundColor, mixColors, relativeLuminance } from '@/lib/palettes/color-utils';
 import { jewelPalette, softPastelPalette } from '@/lib/palettes/built-in-palettes';
 import {
   applyPalette,
@@ -86,8 +86,22 @@ describe('palette engine', () => {
     expect(depth1).not.toBe(ancestor);
     expect(depth2).not.toBe(depth1);
     expect(depth2).toBe(
-      mixColors(ancestor, softPastelPalette.descendantStrategy.target, 0.52)
+      mixColors(ancestor, softPastelPalette.descendantStrategy.target, 0.66)
     );
+  });
+
+  it('produces lighter descendants than the previous default progression', () => {
+    const ancestor = '#E99A9A';
+    const depth1 = generateDescendantColor(ancestor, 1, softPastelPalette);
+    const depth2 = generateDescendantColor(ancestor, 2, softPastelPalette);
+
+    const previousDepth1 = mixColors(ancestor, '#FFFFFF', 0.27);
+    const previousDepth2 = mixColors(ancestor, '#FFFFFF', 0.52);
+
+    expect(depth1).toBe(mixColors(ancestor, '#FFFFFF', 0.36));
+    expect(depth2).toBe(mixColors(ancestor, '#FFFFFF', 0.66));
+    expect(relativeLuminance(depth1)).toBeGreaterThan(relativeLuminance(previousDepth1));
+    expect(relativeLuminance(depth2)).toBeGreaterThan(relativeLuminance(previousDepth2));
   });
 
   it('uses the same shade for siblings at the same depth', () => {
@@ -105,7 +119,7 @@ describe('palette engine', () => {
 
   it('extrapolates mix amounts for deep hierarchies below the max target', () => {
     const deepAmount = getDescendantMixAmount(10, softPastelPalette);
-    expect(deepAmount).toBeGreaterThan(0.82);
+    expect(deepAmount).toBeGreaterThan(0.86);
     expect(deepAmount).toBeLessThanOrEqual(0.89);
   });
 

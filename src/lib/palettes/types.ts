@@ -23,7 +23,7 @@ export interface ChartPalette {
 export const DEFAULT_DESCENDANT_STRATEGY: DescendantMixStrategy = {
   type: 'mix',
   target: '#FFFFFF',
-  amounts: [0, 0.27, 0.52, 0.7, 0.82],
+  amounts: [0, 0.36, 0.66, 0.78, 0.86],
 };
 
 export const DEFAULT_FOREGROUND_STRATEGY: ForegroundAutoStrategy = {

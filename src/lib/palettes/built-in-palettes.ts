@@ -4,14 +4,21 @@ import {
   DEFAULT_FOREGROUND_STRATEGY,
 } from './types';
 
-function createPalette(
+export function createPalette(
   config: Pick<ChartPalette, 'id' | 'name' | 'description' | 'colors'> &
-    Partial<Pick<ChartPalette, 'previewBackground'>>
+    Partial<
+      Pick<
+        ChartPalette,
+        'previewBackground' | 'descendantStrategy' | 'foregroundStrategy'
+      >
+    >
 ): ChartPalette {
   return {
     ...config,
-    descendantStrategy: DEFAULT_DESCENDANT_STRATEGY,
-    foregroundStrategy: DEFAULT_FOREGROUND_STRATEGY,
+    descendantStrategy:
+      config.descendantStrategy ?? DEFAULT_DESCENDANT_STRATEGY,
+    foregroundStrategy:
+      config.foregroundStrategy ?? DEFAULT_FOREGROUND_STRATEGY,
   };
 }
 
@@ -36,14 +43,14 @@ export const vibrantPalette = createPalette({
   name: 'Vibrant',
   description: 'Bright, energetic, high contrast.',
   colors: [
-    '#D94B5B',
-    '#168C72',
-    '#3568C8',
-    '#7651C9',
-    '#D97732',
-    '#167E99',
-    '#B74583',
-    '#788B32',
+    '#E63946',
+    '#00A878',
+    '#2878D0',
+    '#7B2CBF',
+    '#F28C28',
+    '#0096A6',
+    '#D63384',
+    '#8A9A18',
   ],
 });
 
@@ -52,14 +59,14 @@ export const earthPalette = createPalette({
   name: 'Earth',
   description: 'Natural, grounded, warm organic hues.',
   colors: [
-    '#B8614B',
-    '#7D8A56',
-    '#C18B63',
-    '#547463',
-    '#C49A4A',
-    '#896979',
-    '#71858A',
-    '#8B6958',
+    '#B85C3C',
+    '#768A45',
+    '#C48658',
+    '#4F735E',
+    '#C29A3A',
+    '#875D67',
+    '#667F82',
+    '#8B6247',
   ],
 });
 
@@ -68,14 +75,14 @@ export const dreamyPalette = createPalette({
   name: 'Dreamy',
   description: 'Introspective lavender, blue, pink, and aqua.',
   colors: [
-    '#9298DA',
-    '#BA8FC8',
-    '#D99AAF',
-    '#83B5CE',
-    '#78C2B5',
-    '#A986A5',
-    '#9F83CF',
-    '#738BB8',
+    '#9A8FE3',
+    '#C093D6',
+    '#E3A1BE',
+    '#83B9D8',
+    '#72C8BD',
+    '#B99AC9',
+    '#8878D0',
+    '#7FA7C9',
   ],
 });
 
@@ -84,14 +91,14 @@ export const nordicPalette = createPalette({
   name: 'Nordic',
   description: 'Restrained, editorial, sophisticated.',
   colors: [
-    '#597A8A',
-    '#75968C',
-    '#A97971',
-    '#817B9B',
-    '#B28B58',
-    '#668D9C',
-    '#8C9970',
-    '#A36F82',
+    '#527482',
+    '#6F928A',
+    '#8498A3',
+    '#7D7A91',
+    '#A48D69',
+    '#668998',
+    '#839274',
+    '#9B7480',
   ],
 });
 
@@ -100,13 +107,13 @@ export const jewelPalette = createPalette({
   name: 'Jewel',
   description: 'Rich, premium, deeper high-contrast tones.',
   colors: [
-    '#A83F55',
-    '#237A63',
-    '#315A9D',
-    '#694A91',
-    '#B56B32',
-    '#277887',
-    '#9B477A',
-    '#687536',
+    '#9E2945',
+    '#126B57',
+    '#264C8C',
+    '#603A83',
+    '#A95721',
+    '#176878',
+    '#8E286A',
+    '#596B23',
   ],
 });
