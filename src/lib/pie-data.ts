@@ -96,9 +96,10 @@ export const recomputeFromLevel = (data: MultiLevelPieChartData, level: PieChart
   });
   
   const newData = {
+    ...data,
     items,
-    levels: data.levels
-  }
+    levels: data.levels,
+  };
 
   return newData;
 }
@@ -147,6 +148,7 @@ export const resetSpanFontSizesOnLevel = (
   items.forEach(clearSpanFontSizes);
 
   return {
+    ...data,
     items,
     levels: data.levels,
   };
@@ -174,6 +176,7 @@ export const resetSpanFontFamiliesOnLevel = (
   items.forEach(clearSpanFontFamilies);
 
   return {
+    ...data,
     items,
     levels: data.levels,
   };

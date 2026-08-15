@@ -3,12 +3,15 @@ import { LucideIcon } from 'lucide-react';
 export interface MultiLevelPieChartData {
   /** Optional schema version for migration on load. */
   schemaVersion?: number;
+  /** ID of the most recently applied color palette. */
+  paletteId?: string;
   levels: PieChartLevel[];
   items: PieChartItem[];
 }
 
 export interface PieChartItemProperties extends Record<string, Property<any>> {
   color: Property<SingleColor>,
+  labelColor: Property<SingleColor>,
   labelDisplay: Property<LabelDisplayType>,
   labelAnchor: Property<LabelAnchorType>,
   labelDX: Property<number>,

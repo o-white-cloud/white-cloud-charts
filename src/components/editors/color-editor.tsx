@@ -17,7 +17,7 @@ export interface ColorEditorProps<T extends Color = Color> extends ValueEditorPr
 
 export function ColorEditor(props: ColorEditorProps) {
   return (
-    <>
+    <div className="space-y-2">
       <Select
         value={props.value?.type}
         onValueChange={(selectedType) => {
@@ -30,7 +30,7 @@ export function ColorEditor(props: ColorEditorProps) {
           props.onChange(newColor);
         }}
       >
-        <SelectTrigger className="w-[280px]">
+        <SelectTrigger className="h-8 w-full max-w-full text-sm">
           <SelectValue placeholder="Color type" />
         </SelectTrigger>
         <SelectContent>
@@ -52,7 +52,7 @@ export function ColorEditor(props: ColorEditorProps) {
       {props.value?.type === 'gradient' && (
         <GradientColorEditor value={props.value} onChange={props.onChange} readonly={props.readonly}/>
       )}
-    </>
+    </div>
   );
 };
 

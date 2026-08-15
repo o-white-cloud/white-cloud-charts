@@ -12,6 +12,16 @@ export const DefaultTreeItemProperties = (parentNode: PieChartItem | null): PieC
             source: parentNode ? 'parent' : 'level',
             value: null
         },
+        labelColor: {
+            description: 'Color of the primary sector label text',
+            label: 'Label color',
+            name: 'labelColor',
+            source: 'level',
+            value: {
+                type: 'single',
+                value: '#202020',
+            },
+        },
         labelAnchor: {
             description: 'Anchor of the pie sector label',
             label: 'Anchor',

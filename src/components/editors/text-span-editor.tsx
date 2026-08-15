@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { debounce, isEqual } from "lodash";
 import { FontPicker } from "@/components/ui/font-picker";
+import { ColorPicker } from "@/components/ui/color-picker";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 
 export interface TextSpanEditorProps {
@@ -158,11 +159,11 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
     const fontFamilyOverrideEnabled = form.watch("fontFamilyOverrideEnabled");
 
     return (
-        <div className="border rounded-md">
+        <div className="rounded-md border border-border/60">
             <div
                 role="button"
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="flex items-center justify-between w-full pl-2 py-1 bg-gray-100 cursor-pointer"
+                className="flex w-full cursor-pointer items-center justify-between bg-muted/40 px-2 py-1.5"
                 tabIndex={0}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -170,54 +171,63 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                     }
                 }}
             >
-                <div className="flex items-center space-x-2">
-                    {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    <h3 className="text-sm font-medium">{span.text || "Untitled"}</h3>
+                <div className="flex min-w-0 items-center gap-2">
+                    {isCollapsed ? <ChevronRight className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
+                    <h4 className="truncate text-sm font-medium">{span.text || "Untitled"}</h4>
                 </div>
                 <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
+                    className="h-7 w-7 shrink-0 text-destructive hover:text-destructive"
                     onClick={(e) => {
                         e.stopPropagation();
                         onSpanRemoved(span);
                     }}
-                    className="text-red-500 hover:text-red-700"
                 >
-                    <Trash className="w-4 h-4" />
+                    <Trash className="h-4 w-4" />
                 </Button>
             </div>
 
             {!isCollapsed && (
                 <Form {...form}>
-                    <div className="space-y-4 p-4">
+                    <div className="space-y-3 p-3">
                         <FormField
                             control={form.control}
                             name="text"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Text</FormLabel>
+                                <FormItem className="space-y-1">
+                                    <FormLabel className="text-sm">Text</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="text" {...field} />
-                                    </FormControl></FormItem>)} />
+                                        <Input placeholder="Text" compact {...field} />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
                             name="color"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Color</FormLabel>
+                                <FormItem className="space-y-1">
+                                    <FormLabel className="text-sm">Color</FormLabel>
                                     <FormControl>
-                                        <Input type="color" {...field} />
-                                    </FormControl></FormItem>)} />
+                                        <ColorPicker
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
                             name="fontFamilyOverrideEnabled"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Font</FormLabel>
+                                <FormItem className="space-y-1">
+                                    <FormLabel className="text-sm">Font</FormLabel>
                                     <FormControl>
-                                        <label className="flex items-center gap-2 text-sm h-8">
+                                        <label className="flex h-8 items-center gap-2 text-sm">
                                             <input
                                                 type="checkbox"
                                                 checked={field.value}
@@ -228,7 +238,8 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                         </label>
                                     </FormControl>
                                 </FormItem>
-                            )} />
+                            )}
+                        />
 
                         {fontFamilyOverrideEnabled && (
                             <FormField
@@ -249,15 +260,15 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                             <p className="text-xs text-muted-foreground">Inherits the sector or level font family.</p>
                         )}
 
-                        <div className="flex space-x-4 items-end">
+                        <div className="flex flex-wrap items-end gap-3">
                             <FormField
                                 control={form.control}
                                 name="fontSizeOverrideEnabled"
                                 render={({ field }) => (
-                                    <FormItem className="flex-none">
-                                        <FormLabel className="text-xs">Font size</FormLabel>
+                                    <FormItem className="flex-none space-y-1">
+                                        <FormLabel className="text-sm">Font size</FormLabel>
                                         <FormControl>
-                                            <label className="flex items-center gap-2 text-sm h-8">
+                                            <label className="flex h-8 items-center gap-2 text-sm">
                                                 <input
                                                     type="checkbox"
                                                     checked={field.value}
@@ -268,7 +279,8 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                             </label>
                                         </FormControl>
                                     </FormItem>
-                                )} />
+                                )}
+                            />
 
                             {fontSizeOverrideEnabled && (
                                 <FormField
@@ -279,6 +291,7 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                             <FormControl>
                                                 <Input
                                                     {...field}
+                                                    compact
                                                     type="number"
                                                     min={1}
                                                     max={100}
@@ -287,24 +300,26 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                                         const next = e.currentTarget.valueAsNumber;
                                                         field.onChange(Number.isNaN(next) ? undefined : next);
                                                     }}
-                                                    className="px-2 py-0 m-0 h-8 rounded-sm w-20"
+                                                    className="max-w-[5rem]"
                                                 />
                                             </FormControl>
                                         </FormItem>
-                                    )} />
+                                    )}
+                                />
                             )}
 
                             <FormField
                                 control={form.control}
                                 name="fontWeight"
                                 render={({ field }) => (
-                                    <FormItem className="flex-1 min-w-0">
+                                    <FormItem className="min-w-0 flex-1 space-y-1">
+                                        <FormLabel className="text-sm">Weight</FormLabel>
                                         <FormControl>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 value={field.value}
                                             >
-                                                <SelectTrigger id="font-weight-input" className="px-2 py-0 m-0 h-8 rounded-sm shadow-none">
+                                                <SelectTrigger className="h-8 shadow-none">
                                                     <SelectValue placeholder="Select weight" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -314,60 +329,76 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                                     <SelectItem value="lighter">Lighter</SelectItem>
                                                 </SelectContent>
                                             </Select>
-                                        </FormControl></FormItem>)} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
                         </div>
                         {!fontSizeOverrideEnabled && (
                             <p className="text-xs text-muted-foreground">Inherits the sector or level font size.</p>
                         )}
-                        <div>
-                            <FormLabel>Position</FormLabel>
-                            <div className="flex space-x-4 mt-2"><FormField
-                                control={form.control}
-                                name="x"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Input placeholder="x" {...field} type="number" className="px-2 py-0 m-0 h-8 rounded-sm" />
-                                        </FormControl></FormItem>)} />
+                        <div className="space-y-1.5">
+                            <FormLabel className="text-sm">Position</FormLabel>
+                            <div className="flex flex-wrap gap-2">
+                                <FormField
+                                    control={form.control}
+                                    name="x"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input placeholder="x" compact {...field} type="number" className="max-w-[4.5rem]" />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField
                                     control={form.control}
                                     name="y"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
-                                                <Input placeholder="y" {...field} type="number" className="px-2 py-0 m-0 h-8 rounded-sm" />
-                                            </FormControl></FormItem>)} />
+                                                <Input placeholder="y" compact {...field} type="number" className="max-w-[4.5rem]" />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField
                                     control={form.control}
                                     name="dx"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
-                                                <Input placeholder="dX" {...field} type="number" className="px-2 py-0 m-0 h-8 rounded-sm" />
-                                            </FormControl></FormItem>)} />
+                                                <Input placeholder="dX" compact {...field} type="number" className="max-w-[4.5rem]" />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField
                                     control={form.control}
                                     name="dy"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
-                                                <Input placeholder="dY" {...field} type="number" className="px-2 py-0 m-0 h-8 rounded-sm" />
-                                            </FormControl></FormItem>)} />
+                                                <Input placeholder="dY" compact {...field} type="number" className="max-w-[4.5rem]" />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                             </div>
                         </div>
                         <FormField
                             control={form.control}
                             name="anchor"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Anchor</FormLabel>
+                                <FormItem className="space-y-1">
+                                    <FormLabel className="text-sm">Anchor</FormLabel>
                                     <FormControl>
                                         <Select
                                             onValueChange={field.onChange}
                                             value={field.value}
                                         >
-                                            <SelectTrigger id="font-weight-input" className="px-2 py-0 m-0 h-8 rounded-sm shadow-none">
-                                                <SelectValue placeholder="Select weight" />
+                                            <SelectTrigger className="h-8 shadow-none">
+                                                <SelectValue placeholder="Select anchor" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {Object.values(LabelAnchorType).map((anchor) => (
@@ -377,7 +408,10 @@ export const TextSpanEditor: React.FC<TextSpanEditorProps> = (props) => {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                    </FormControl></FormItem>)} />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
                     </div>
                 </Form>
             )}

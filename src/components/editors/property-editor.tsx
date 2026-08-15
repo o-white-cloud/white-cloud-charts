@@ -1,6 +1,6 @@
 import { PieChartItem, Property, PieChartLevel } from "@/lib/types/multi-level-pie-types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext } from "react";
 import { getPropertyValue } from "@/lib/pie-chart-item-value";
 import { Label } from "../ui/label";
 import { MultiLevelPieChartDataContext } from "../contexts/MultiLevelPieChartDataContext";
@@ -42,7 +42,7 @@ export const PropertyEditor = <T,>(props: React.PropsWithChildren<PropertyEditor
         };
 
         onItemChange(newItem);
-    }, [property.source, item, level, onItemChange]);
+    }, [property, item, onItemChange, data]);
 
     const valueChanged = useCallback((newValue: T) => {
         if (item && onItemChange) {
@@ -74,29 +74,37 @@ export const PropertyEditor = <T,>(props: React.PropsWithChildren<PropertyEditor
         }
     }, [item, level, property, onItemChange, onLevelChange]);
 
-    return <div className="mt-5 mb-5">
-        <Label className="flex-1">{props.property.label}</Label>
-        <div className="flex flex-row items-center mb-2">
-            <div className="flex-1">
-                {props.render({
-                value: item ? getPropertyValue(item, property, data) : property.value,
-                onChange: valueChanged,
-                readonly: item !== undefined && (property.source !== 'override')
-            })}
+    return (
+        <div className="space-y-1.5">
+            <div className="space-y-0.5">
+                <Label className="text-sm font-medium">{props.property.label}</Label>
+                {property.description && (
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                        {property.description}
+                    </p>
+                )}
             </div>
-            {item && (<Select value={property.source} onValueChange={sourceChanged}>
-                <SelectTrigger className="w-[100px] px-2 py-0 h-[28px] ml-4">
-                    <SelectValue placeholder="Source" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="level">Level</SelectItem>
-                    {props.item?.parent && <SelectItem value="parent">Parent</SelectItem>}
-                    <SelectItem value="override">Override</SelectItem>
-                </SelectContent>
-            </Select>)}
-
+            <div className="flex flex-row items-start gap-2">
+                <div className="min-w-0 flex-1">
+                    {props.render({
+                        value: item ? getPropertyValue(item, property, data) : property.value,
+                        onChange: valueChanged,
+                        readonly: item !== undefined && (property.source !== 'override')
+                    })}
+                </div>
+                {item && (
+                    <Select value={property.source} onValueChange={sourceChanged}>
+                        <SelectTrigger className="h-8 w-[6.5rem] shrink-0 px-2 py-0 text-xs">
+                            <SelectValue placeholder="Source" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="level">Level</SelectItem>
+                            {props.item?.parent && <SelectItem value="parent">Parent</SelectItem>}
+                            <SelectItem value="override">Override</SelectItem>
+                        </SelectContent>
+                    </Select>
+                )}
+            </div>
         </div>
-        {/* <span>{property.description}</span> */}
-    </div>;
+    );
 }
-

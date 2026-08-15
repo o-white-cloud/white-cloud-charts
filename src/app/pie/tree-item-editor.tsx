@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Label } from "@/components/ui/label"
-import { LabelAnchorType, LabelDisplayType, PieChartItem, PieChartLevel, SingleColor } from '@/lib/types/multi-level-pie-types';
+import { LabelAnchorType, LabelDisplayType, PieChartItem, PieChartLevel } from '@/lib/types/multi-level-pie-types';
 import { DefaultTreeItemProperties } from '@/lib/default-values';
 import { PropertyEditor } from '@/components/editors/property-editor';
 import { EnumEditor } from '@/components/editors/enum-editor';
 import { Input } from '@/components/ui/input';
-import { ColorEditor, SingleColorEditor } from '@/components/editors/color-editor';
+import { SingleColorEditor } from '@/components/editors/color-editor';
 import { FontFamilyEditor } from '@/components/editors/font-family-editor';
 import { NumericEditor } from '@/components/editors/numeric-editor';
-import { Divider } from '@/components/editors/divider';
+import { EditorSection } from '@/components/editors/editor-section';
 import { TextSpans } from '@/components/editors/text-spans';
 import { Button } from '@/components/ui/button';
 import { SplitLabelLinesDialog } from '@/components/split-label-lines-dialog';
@@ -25,153 +25,218 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
   const [splitDialogOpen, setSplitDialogOpen] = useState(false);
 
   if (!item) {
-    return <div>No item selected</div>;
+    return <div className="p-3 text-sm text-muted-foreground">No item selected</div>;
   }
 
   return (
-    <div className='p-4'>
-      <Label htmlFor='innerValue'>Value</Label>
-      <Input id='innerValue' type="number" value={item.innerValue} onChange={(e) => onItemUpdated({ ...item, innerValue: e.currentTarget.valueAsNumber })} />
+    <div className="space-y-3 p-3">
+      <EditorSection
+        title="Value"
+        subtitle="How large this sector is relative to siblings on the same ring."
+      >
+        <div className="space-y-1.5">
+          <Label htmlFor="innerValue" className="text-sm font-medium">
+            Inner value
+          </Label>
+          <Input
+            id="innerValue"
+            type="number"
+            compact
+            className="max-w-[6.5rem]"
+            value={item.innerValue}
+            onChange={(e) =>
+              onItemUpdated({ ...item, innerValue: e.currentTarget.valueAsNumber })
+            }
+          />
+        </div>
+      </EditorSection>
 
-      <Label htmlFor="name" className='mt-6'>Main text</Label>
-      <div className="flex gap-2 items-center mt-1">
-        <Input
-          value={item.name}
-          id="name"
-          className="flex-1 min-w-0"
-          onChange={(e) => onItemUpdated({ ...item, name: e.currentTarget.value })}
+      <EditorSection
+        title="Label text"
+        subtitle="Main label shown on the chart. Split into lines to create additional styled spans below."
+      >
+        <div className="space-y-1.5">
+          <Label htmlFor="name" className="text-sm font-medium">
+            Main text
+          </Label>
+          <div className="flex items-center gap-2">
+            <Input
+              value={item.name}
+              id="name"
+              compact
+              className="min-w-0 flex-1"
+              onChange={(e) => onItemUpdated({ ...item, name: e.currentTarget.value })}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              title="Split into lines"
+              aria-label="Split main text into lines"
+              onClick={() => setSplitDialogOpen(true)}
+            >
+              <Rows3 className="h-4 w-4" />
+            </Button>
+            {item.labelSpans.length > 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 shrink-0"
+                title="Merge spans into main text"
+                aria-label="Merge all spans into main text and remove spans"
+                onClick={() => {
+                  const mergedName = [item.name, ...item.labelSpans.map((s) => s.text)].join('\n');
+                  onItemUpdated({ ...item, name: mergedName, labelSpans: [] });
+                }}
+              >
+                <FoldVertical className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.textLineHeight ?? DefaultTreeItemProperties(null).textLineHeight}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} min={1} />}
         />
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="shrink-0"
-          title="Split into lines"
-          aria-label="Split main text into lines"
-          onClick={() => setSplitDialogOpen(true)}
-        >
-          <Rows3 className="h-4 w-4" />
-        </Button>
-        {item.labelSpans.length > 1 && (
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="shrink-0"
-            title="Merge spans into main text"
-            aria-label="Merge all spans into main text and remove spans"
-            onClick={() => {
-              const mergedName = [item.name, ...item.labelSpans.map((s) => s.text)].join('\n');
-              onItemUpdated({ ...item, name: mergedName, labelSpans: [] });
-            }}
-          >
-            <FoldVertical className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.textLineHeight ?? DefaultTreeItemProperties(null).textLineHeight}
-        onItemChange={(item) => onItemUpdated(item)}
-        render={(valueProps) => <NumericEditor {...valueProps} min={1} />}
-      />
+        <SplitLabelLinesDialog
+          open={splitDialogOpen}
+          onOpenChange={setSplitDialogOpen}
+          item={item}
+          onApply={onItemUpdated}
+        />
 
-      <SplitLabelLinesDialog
-        open={splitDialogOpen}
-        onOpenChange={setSplitDialogOpen}
-        item={item}
-        onApply={onItemUpdated}
-      />
+        <TextSpans item={item} onItemUpdated={onItemUpdated} />
+      </EditorSection>
 
-      <TextSpans item={item} onItemUpdated={onItemUpdated} />
+      <EditorSection
+        title="Label layout"
+        subtitle="How and where the label is placed on this sector."
+      >
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelDisplay}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => (
+            <EnumEditor {...valueProps} options={Object.keys(LabelDisplayType)} />
+          )}
+        />
 
-      <Divider className='mt-6' />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelAnchor}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => (
+            <EnumEditor {...valueProps} options={Object.keys(LabelAnchorType)} />
+          )}
+        />
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.labelDisplay}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <EnumEditor {...valueProps} options={Object.keys(LabelDisplayType)} />} />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelDX}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />}
+        />
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.labelAnchor}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <EnumEditor {...valueProps} options={Object.keys(LabelAnchorType)} />} />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelDY}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />}
+        />
+      </EditorSection>
 
+      <EditorSection
+        title="Typography"
+        subtitle="Font settings for this sector's labels."
+      >
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelFontSize}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} />}
+        />
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.labelDX}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />} />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelFontFamily}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <FontFamilyEditor {...valueProps} />}
+        />
+      </EditorSection>
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.labelDY}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />} />
+      <EditorSection
+        title="Fill and strokes"
+        subtitle="Sector fill color, outer border, and radial edge lines at the start and end of each slice."
+      >
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.color}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <SingleColorEditor {...valueProps} />}
+        />
 
-      <Divider />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.strokeWidth}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} />}
+        />
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.labelFontSize}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.strokeColor}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <SingleColorEditor {...valueProps} />}
+        />
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.labelFontFamily}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <FontFamilyEditor {...valueProps} />} />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.startRadiusStrokeWidth}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} />}
+        />
 
-      <Divider />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.startRadiusStrokeColor}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <SingleColorEditor {...valueProps} />}
+        />
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.color}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.endRadiusStrokeWidth}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} />}
+        />
 
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.strokeWidth}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
-
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.strokeColor}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
-
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.startRadiusStrokeWidth}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
-
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.startRadiusStrokeColor}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
-
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.endRadiusStrokeWidth}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <NumericEditor {...valueProps} />} />
-
-      <PropertyEditor
-        level={level}
-        item={item}
-        property={item.properties.endRadiusStrokeColor}
-        onItemChange={(item) => onItemUpdated(item)} render={(valueProps) => <SingleColorEditor {...valueProps} />} />
-
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.endRadiusStrokeColor}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <SingleColorEditor {...valueProps} />}
+        />
+      </EditorSection>
     </div>
   );
 };

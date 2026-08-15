@@ -1,12 +1,9 @@
 'use client';
 import * as d3 from 'd3';
-import { useEffect, useRef, useState } from 'react';
-
-import { SaveFileNameDialog } from '@/components/save-file-name-dialog';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef } from 'react';
 import { formatFontFamilyStack } from '@/lib/chart-typography';
 import { pieLevels } from '@/lib/pie-data';
-import { collectChartFontFamilies, embedFontsInSvg, prepareSvgForExport } from '@/lib/svg-font-export';
+import { collectChartFontFamilies } from '@/lib/svg-font-export';
 import { loadFont } from '@/lib/fonts';
 import {
   LabelAnchorType,
@@ -23,8 +20,6 @@ const arcId = (pieSector: PieSector) => `arc-${pieSector.id}`;
 const arcHiddenId = (pieSector: PieSector) => `arc-hidden-${pieSector.id}`;
 const textId = (pieSector: PieSector) => `text-${pieSector.id}`;
 const textClass = (pieSector: PieSector) => `text-${pieSector.properties?.labelDisplay.value}`;
-const chartLogoUrl = '/logo_mop.svg';
-
 /** User anchor → SVG text-anchor for radial labels; swaps start/end on the opposite semicircle (same 0°–180° split as dx/transform) so anchoring matches rotation. */
 function radialLabelAnchorToSvg(
   userAnchor: LabelAnchorType | null | undefined,
@@ -119,15 +114,6 @@ function buildCentroidRadialLabelTransform(
 }
 
 let chartZoomTransform = d3.zoomIdentity;
-
-function resetChartZoom() {
-  chartZoomTransform = d3.zoomIdentity;
-  const svg = d3.select<SVGSVGElement, unknown>('.pieRoot svg');
-  if (!svg.empty()) {
-    d3.select('#zoomG').attr('transform', chartZoomTransform.toString());
-    svg.property('__zoom', chartZoomTransform);
-  }
-}
 
 const draw = (
   data: {
@@ -417,6 +403,11 @@ const drawPie = (
         ? null
         : formatFontFamilyStack(d.data.properties.labelFontFamily?.value ?? 'Onest')
     )
+    .attr('fill', (d: any) =>
+      d.data.placeholder || !d.data.properties
+        ? null
+        : d.data.properties.labelColor?.value?.value ?? null
+    )
     .selectAll("tspan")
     .data((d) => d.data.labelSpans)
     .enter()
@@ -448,6 +439,7 @@ const drawPie = (
       .attr("href", (d: any) => `#${arcHiddenId(d.data)}`)
       .style("text-anchor", (d: any) => d.data.properties.labelAnchor.value)
       .attr("startOffset", "50%")
+      .attr('fill', (d: any) => d.data.properties.labelColor?.value?.value ?? null)
       .text((d: any) => (d.data.placeholder ? '' : `${d.data.name}`))
       .selectAll("tspan")
       .data((d: any) => d.data.labelSpans)
@@ -457,6 +449,7 @@ const drawPie = (
       .attr("y", (d: any) => d.y)
       .attr("dx", (d: any) => d.dx)
       .attr("dy", (d: any) => d.dy)
+      .attr("fill", (d: any) => d.color ?? null)
       .text((d: any) => d.text)
       .style('font-weight', (d: any) => d.fontWeight)
       .style('font-size', (d: any) => d.fontSize ?? null)
@@ -468,7 +461,6 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
   props
 ) => {
   const { data, onSectorClick } = props;
-  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const onSectorClickRef = useRef(onSectorClick);
   onSectorClickRef.current = onSectorClick;
 
@@ -487,72 +479,5 @@ export const MultiLevelPieChart: React.FC<MultiLevelPieChartProps> = (
     });
   }, [data]);
 
-  const downloadSvgAsFile = async (fileName: string) => {
-    const svgElement = document.querySelector('.pieRoot svg');
-    if (!svgElement) {
-      console.error('SVG element not found!');
-      return;
-    }
-
-    const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
-    prepareSvgForExport(clonedSvg);
-    embedFontsInSvg(clonedSvg, data);
-
-    const logoImage = clonedSvg.querySelector<SVGImageElement>('image[data-chart-logo]');
-    if (logoImage) {
-      try {
-        const logoResponse = await fetch(chartLogoUrl);
-        if (!logoResponse.ok) {
-          throw new Error(`Logo request failed with status ${logoResponse.status}`);
-        }
-        const logoSvg = await logoResponse.text();
-        logoImage.setAttribute(
-          'href',
-          `data:image/svg+xml;charset=utf-8,${encodeURIComponent(logoSvg)}`
-        );
-      } catch (error) {
-        console.error('Failed to embed the chart logo in the SVG export:', error);
-      }
-    }
-
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(clonedSvg);
-
-    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
-  };
-
-  return (
-    <div className="h-full w-full flex flex-1 flex-col items-center p-1 red">
-      <div className='w-full ml-4 mt-5 flex flex-row space-x-4 items-center'>
-        <Button
-          variant={'outline'}
-          onClick={resetChartZoom}
-        >
-          Reset zoom
-        </Button>
-        <Button variant={'outline'} onClick={() => setDownloadDialogOpen(true)}>
-          Download
-        </Button>
-        <SaveFileNameDialog
-          open={downloadDialogOpen}
-          onOpenChange={setDownloadDialogOpen}
-          title="Download chart as SVG"
-          defaultBaseName="chart"
-          extension=".svg"
-          onConfirm={downloadSvgAsFile}
-        />
-      </div>
-      <div className="pieRoot h-full w-full "></div>
-    </div>
-  );
+  return <div className="pieRoot h-full min-h-0 w-full" />;
 };

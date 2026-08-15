@@ -42,22 +42,45 @@ export const TextSpans: React.FC<TextSpansProps> = ({ item, onItemUpdated }) => 
         onItemUpdated({ ...item, labelSpans: updatedSpans });
     };
 
+    if (labelSpans.length === 0) {
+        return (
+            <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Text spans</Label>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={handleAddSpan}
+                        title="Add text span"
+                        aria-label="Add text span"
+                    >
+                        <Plus className="h-4 w-4" />
+                    </Button>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                    No extra lines yet. Split main text or add a span for additional styled label lines.
+                </p>
+            </div>
+        );
+    }
+
     return (
-        <div className="space-y-2 mt-4">
-            {/* Header Section */}
+        <div className="space-y-2 pt-1">
             <div className="flex items-center justify-between">
-            <Label>Text spans</Label>
-            <Button
-                    variant="ghost"
-                    size="sm"
+                <Label className="text-sm font-medium">Text spans</Label>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
                     onClick={handleAddSpan}
-                    className="flex items-center space-x-2"
+                    title="Add text span"
+                    aria-label="Add text span"
                 >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="h-4 w-4" />
                 </Button>
             </div>
 
-            {/* Text Span Editors */}
             {labelSpans.map((span, index) => (
                 <TextSpanEditor
                     key={index}

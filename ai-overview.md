@@ -23,12 +23,13 @@
 
 ## Data model
 
-- **`MultiLevelPieChartData`** (`src/lib/types/multi-level-pie-types.ts`): `items` (tree roots) + `levels` (one **PieChartLevel** per ring: inner/outer radius, angles, padding, colors, edges). Optional `schemaVersion` for JSON migration.
+- **`MultiLevelPieChartData`** (`src/lib/types/multi-level-pie-types.ts`): `items` (tree roots) + `levels` (one **PieChartLevel** per ring: inner/outer radius, angles, padding, colors, edges). Optional `schemaVersion` for JSON migration; optional `paletteId` for the last applied color palette.
 - **`PieChartItem`**: tree node with `innerValue` / `absoluteValue`, `level`, parent/children, labels (`labelSpans`), and **properties** (colors, label layout, strokes, typography). Properties use **`Property<T>`** with `source`: `override` | `parent` | `level`.
 - **Label typography**: `labelFontFamily` and `labelFontSize` inherit level → parent → sector override. Span `fontFamily` / `fontSize` are optional overrides. Default chart font is **Onest** (`src/lib/chart-typography.ts`).
 - **`pieLevels`** (`src/lib/pie-data.ts`) flattens the tree by level, inserts **Placeholder** leaves when a branch stops early but deeper rings exist, then computes slice **values** so each ring partitions correctly under parents.
 - **`getPropertyValue`** (`src/lib/pie-chart-item-value.ts`) resolves colors (including gradient/enumeration per sibling) and inheritance.
 - **`migrateChartData`** / **`serializeChartData`** (`src/lib/chart-data-migration.ts`) normalize legacy chart JSON and version exports.
+- **Color palettes** (`src/lib/palettes/`): registry of built-in palettes, generic palette engine (descendant shading, foreground contrast), and palette browser UI in the pie editor.
 - SVG export embeds Google Fonts used by labels (`src/lib/svg-font-export.ts`).
 - **`recomputeFromLevel`** recalibrates inner values from a chosen level.
 

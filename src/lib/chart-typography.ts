@@ -8,7 +8,7 @@ export const DEFAULT_CHART_FONT_STACK = `${DEFAULT_CHART_FONT_FAMILY}, sans-seri
 export const LEGACY_GENERATED_SPAN_FONT_FAMILY = 'Arial';
 
 /** Current chart JSON schema version (increment when migration rules change). */
-export const CHART_DATA_SCHEMA_VERSION = 2;
+export const CHART_DATA_SCHEMA_VERSION = 3;
 
 export function formatFontFamilyStack(fontFamily: string): string {
   const trimmed = fontFamily.trim();

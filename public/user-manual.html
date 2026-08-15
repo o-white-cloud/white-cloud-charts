@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>White Cloud Charts — User Manual</title>
+  <style>
+    :root {
+      --bg: #f8f9fb;
+      --surface: #ffffff;
+      --text: #1a1a2e;
+      --muted: #5c6370;
+      --accent: #3568c8;
+      --accent-light: #e8eef8;
+      --border: #e2e6ed;
+      --code-bg: #f1f3f6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+    }
+
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 42rem;
+    }
+
+    .page-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 15rem;
+      gap: 2rem;
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      align-items: start;
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .toc-sidebar {
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    nav.toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.25rem;
+    }
+
+    nav.toc h2 {
+      margin: 0 0 0.75rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    nav.toc ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    nav.toc a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    nav.toc a:hover { text-decoration: underline; }
+
+    nav.toc li {
+      margin: 0.4rem 0;
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 900px) {
+      .page-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .toc-sidebar {
+        position: static;
+        order: -1;
+      }
+    }
+
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    section h2 {
+      margin: 0 0 1rem;
+      font-size: 1.35rem;
+      border-bottom: 2px solid var(--accent-light);
+      padding-bottom: 0.5rem;
+    }
+
+    section h3 {
+      margin: 1.5rem 0 0.5rem;
+      font-size: 1.05rem;
+    }
+
+    p { margin: 0.75rem 0; }
+
+    ul, ol { margin: 0.75rem 0; padding-left: 1.35rem; }
+
+    li { margin: 0.35rem 0; }
+
+    .layout-diagram {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .layout-diagram div {
+      background: var(--accent-light);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem 0.5rem;
+    }
+
+    .layout-diagram strong { display: block; margin-bottom: 0.25rem; }
+
+    pre, code {
+      font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+      font-size: 0.88em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.15rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      line-height: 1.5;
+    }
+
+    .tip {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 0.85rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    .tip strong { color: var(--accent); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.75rem;
+      text-align: left;
+    }
+
+    th {
+      background: var(--code-bg);
+      font-weight: 600;
+    }
+
+    .figure {
+      text-align: center;
+      margin: 1rem 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 2rem 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>White Cloud Charts — User Manual</h1>
+    <p>A guide to creating, editing, and exporting multi-level pie charts. No technical background required.</p>
+  </header>
+
+  <main class="page-layout">
+    <div class="content">
+  <section id="overview">
+    <h2>1. Overview of the editor</h2>
+    <p>
+      When you open the chart editor, the screen is divided into three main areas:
+    </p>
+    <div class="layout-diagram" role="img" aria-label="Editor layout: tree on left, chart in center, properties on right">
+      <div><strong>Left</strong>Data tree</div>
+      <div><strong>Center</strong>Level tabs + chart</div>
+      <div><strong>Right</strong>Property editor</div>
+    </div>
+    <ul>
+      <li><strong>Left — Data tree:</strong> Shows your chart data as a hierarchy. Each branch becomes a slice (sector) on the chart. Deeper branches appear on outer rings.</li>
+      <li><strong>Center — Chart:</strong> The live preview of your pie chart. Above the chart you will see tabs for each <em>level</em> (ring) of the chart.</li>
+      <li><strong>Right — Property editor:</strong> When you select a tree item, a sector on the chart, or a level tab, this panel shows settings you can change. Options are grouped into labeled sections (for example <strong>Label text</strong>, <strong>Typography</strong>, <strong>Ring geometry</strong>) so related fields stay together.</li>
+    </ul>
+    <p>
+      At the top of the screen is a toolbar with buttons for adding data, applying styles, saving, loading, and downloading.
+    </p>
+  </section>
+
+  <section id="create-from-file">
+    <h2>2. Creating a chart from a text file</h2>
+    <p>
+      The fastest way to build a chart is to paste structured text that describes your hierarchy.
+    </p>
+    <h3>Steps</h3>
+    <ol>
+      <li>Click <strong>From file</strong> in the top toolbar.</li>
+      <li>Paste or type your data into the text box. Each line is one item. Use spaces at the start of a line to show which item is the parent.</li>
+      <li>Click <strong>Create Items</strong>. The tree and chart update immediately.</li>
+    </ol>
+    <h3>Text format</h3>
+    <p>
+      Indent child items with spaces. More spaces means deeper in the tree (further out on the chart). Lines with no leading spaces are top-level (inner ring) items.
+    </p>
+    <pre>Animals
+ Birds
+  Eagle
+  Robin
+ Mammals
+  Dog
+  Cat
+Reptiles
+ Snake</pre>
+    <p>
+      In this example, <em>Animals</em> and <em>Reptiles</em> are on the first ring. <em>Birds</em> and <em>Mammals</em> are children of <em>Animals</em> on the second ring, and so on.
+    </p>
+    <div class="tip">
+      <strong>Tip:</strong> You can also add items one at a time with <strong>Add root item</strong> and use the tree’s own controls to add children, rename, or delete nodes.
+    </div>
+    <h3>Values (slice sizes)</h3>
+    <p>
+      Each item has a <strong>Value</strong> section in the property editor. The <strong>Inner value</strong> field controls how large the sector is relative to its siblings on the same ring. Larger values produce wider sectors. Sibling sectors on the same ring share the parent’s arc proportionally.
+    </p>
+  </section>
+
+  <section id="selecting">
+    <h2>3. Selecting items and levels</h2>
+    <p>You can select what to edit in three ways:</p>
+    <h3>Select a tree item (left panel)</h3>
+    <p>Click any name in the data tree. The matching sector is highlighted on the chart, and the right panel shows that item’s properties.</p>
+    <h3>Select a sector on the chart (center)</h3>
+    <p>Click directly on a colored slice in the chart. The corresponding tree item is selected and its properties appear on the right.</p>
+    <h3>Select a level (ring)</h3>
+    <p>Click a <strong>Level 1</strong>, <strong>Level 2</strong>, etc. tab above the chart. The right panel switches to level-wide settings that apply to every sector on that ring (unless overridden individually).</p>
+    <div class="tip">
+      <strong>Tip:</strong> Level settings are great for changing font size, colors, or label style for an entire ring at once.
+    </div>
+  </section>
+
+  <section id="properties">
+    <h2>4. Editing properties on the right</h2>
+    <p>
+      The property editor on the right shows fields such as color, font size, label style, and stroke settings. Related options are grouped into <strong>sections</strong> — each section has a title, a short explanation at the top, and its own fields below. Under each field name you will also see a one-line description of what it does.
+    </p>
+    <h3>When a sector (tree item) is selected</h3>
+    <p>The panel is organized into these sections:</p>
+    <ul>
+      <li><strong>Value</strong> — How large this slice is on its ring (<strong>Inner value</strong>).</li>
+      <li><strong>Label text</strong> — Main text, line height, and extra <strong>Text spans</strong>.</li>
+      <li><strong>Label layout</strong> — How and where the label sits (<strong>Display</strong>, <strong>Anchor</strong>, <strong>Delta X</strong>, <strong>Delta Y</strong>).</li>
+      <li><strong>Typography</strong> — <strong>Font size</strong> and <strong>Font family</strong> for this sector’s labels.</li>
+      <li><strong>Fill and strokes</strong> — Sector fill color, outer stroke, and start/end radius edge lines.</li>
+    </ul>
+    <h3>When a level (ring) is selected</h3>
+    <p>The panel is organized into these sections:</p>
+    <ul>
+      <li><strong>Ring geometry</strong> — Inner and outer radius, start angle, pad angle, corner radius.</li>
+      <li><strong>Fill</strong> — Default fill color for the ring (single color, gradient, or per-sibling colors).</li>
+      <li><strong>Outer edge</strong> — Color and thickness of the border along the outside of each sector.</li>
+      <li><strong>Label layout</strong> — Default label placement for the whole ring, plus <strong>Center all sector text</strong>.</li>
+      <li><strong>Typography</strong> — Default fonts, span reset buttons, and <strong>Text line height</strong>.</li>
+      <li><strong>Stroke</strong> — Default outline around each sector on the ring.</li>
+      <li><strong>Sector values</strong> — <strong>Equalize sector values</strong> to make every slice on the ring the same size.</li>
+    </ul>
+    <h3>Three ways a property can be set</h3>
+    <p>When editing an individual sector (tree item), you may see a small dropdown next to each property:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Setting</th>
+          <th>What it means</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Level</strong></td>
+          <td>Use the value defined for the entire ring (level). Changes to the level affect this sector automatically.</td>
+        </tr>
+        <tr>
+          <td><strong>Parent</strong></td>
+          <td>Use the value from the parent sector. Useful when children should match their parent’s style.</td>
+        </tr>
+        <tr>
+          <td><strong>Override</strong></td>
+          <td>Set a custom value for this sector only. Other sectors are unaffected.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      To override a property, choose <strong>Override</strong> in the dropdown (or simply change the value — this usually switches to Override automatically). To go back to shared settings, choose <strong>Level</strong> or <strong>Parent</strong> again.
+    </p>
+    <h3>Common properties</h3>
+    <ul>
+      <li><strong>Color</strong> — Fill color of the sector (in <strong>Fill and strokes</strong> for a sector, or <strong>Fill</strong> for a level).</li>
+      <li><strong>Display</strong> — How text is drawn (see next section). Found under <strong>Label layout</strong>.</li>
+      <li><strong>Font size / Font family</strong> — Typography for sector labels. Found under <strong>Typography</strong>.</li>
+      <li><strong>Delta X / Delta Y</strong> — Fine-tune label position (horizontal and vertical offset). Found under <strong>Label layout</strong>.</li>
+      <li><strong>Stroke width / Stroke color</strong> — Outline around the sector.</li>
+      <li><strong>Start / end radius stroke</strong> — Lines along the leading or trailing radial edge of a slice (sector editor, <strong>Fill and strokes</strong> section).</li>
+      <li><strong>Level thickness</strong> (level only) — Inner and outer radius of the ring (<strong>Ring geometry</strong> section).</li>
+      <li><strong>Equalize sector values</strong> (level only) — In the <strong>Sector values</strong> section; makes all sectors on that ring the same size and adjusts parent levels accordingly.</li>
+    </ul>
+  </section>
+
+  <section id="labels">
+    <h2>5. Text labels on sectors</h2>
+    <p>
+      Each sector can show a label — usually the item name. You control how that text is placed using <strong>Display</strong> under the <strong>Label layout</strong> section in the property editor.
+    </p>
+    <h3>Centroid</h3>
+    <p>
+      Text sits at the geometric center of the slice. Best for short labels on medium-sized sectors. Use <strong>Delta X</strong> and <strong>Delta Y</strong> (in <strong>Label layout</strong>) to nudge the text horizontally and vertically.
+    </p>
+    <h3>Radial</h3>
+    <p>
+      Text is rotated to follow the direction of the slice, like spokes on a wheel. Good for labels that should read along the radius. Position offsets still apply.
+    </p>
+    <h3>Path</h3>
+    <p>
+      Text follows the curved arc of the slice, bending along the ring. Ideal for longer labels on outer rings. The text flows along the inner curve of the sector.
+    </p>
+    <h3>Label anchor</h3>
+    <p>
+      For centroid and radial labels, <strong>Anchor</strong> (in <strong>Label layout</strong>) controls alignment: <strong>start</strong> (left), <strong>middle</strong> (center), or <strong>end</strong> (right) relative to the label position.
+    </p>
+    <h3>Center all sector text (level editor)</h3>
+    <p>
+      When editing a level, open the <strong>Label layout</strong> section and click <strong>Center all sector text</strong> to automatically center centroid and radial label blocks on every sector on that ring. Run it again after you change text or spans.
+    </p>
+  </section>
+
+  <section id="spans">
+    <h2>6. Splitting text into spans</h2>
+    <p>
+      Sometimes one label needs multiple lines or differently styled pieces — for example a title and a subtitle, or numbers in a different color. You can split the main text into <strong>spans</strong>.
+    </p>
+    <h3>Split main text into lines</h3>
+    <ol>
+      <li>Select a sector and open the <strong>Label text</strong> section in the property editor.</li>
+      <li>Find <strong>Main text</strong> and click the <strong>split lines</strong> button (icon with horizontal rows) next to the text field.</li>
+      <li>In the dialog, type or paste your text with line breaks. The <strong>first line</strong> becomes the main text; each additional line becomes its own span, stacked below using the text line height.</li>
+      <li>Click <strong>Create spans</strong>.</li>
+    </ol>
+    <h3>Text spans section</h3>
+    <p>
+      In the same <strong>Label text</strong> section, below main text, you will see <strong>Text spans</strong>. Each span is an extra piece of label text. Click <strong>+</strong> to add a span manually. Click a span to expand it and edit:
+    </p>
+    <ul>
+      <li><strong>Text</strong> — The characters shown.</li>
+      <li><strong>Color</strong> — Text color for this span only.</li>
+      <li><strong>Font</strong> — Optional override; otherwise inherits from the sector or level.</li>
+      <li><strong>Font size</strong> — Optional override; otherwise inherits.</li>
+      <li><strong>Font weight</strong> — Normal, bold, etc.</li>
+      <li><strong>Position (x, y, dX, dY)</strong> — Place the span relative to the label anchor. <strong>dX</strong> and <strong>dY</strong> are small shifts; <strong>x</strong> and <strong>y</strong> set absolute offsets when you need precise placement.</li>
+      <li><strong>Anchor</strong> — How this span aligns (start, middle, end).</li>
+    </ul>
+    <p>
+      To combine spans back into a single main text field, use the <strong>merge</strong> button (fold icon) next to Main text when multiple spans exist.
+    </p>
+    <div class="tip">
+      <strong>Tip:</strong> In the level editor’s <strong>Typography</strong> section, <strong>Reset span sizes to inherit</strong> and <strong>Reset span fonts to inherit</strong> clear per-span overrides for every sector on that ring.
+    </div>
+  </section>
+
+  <section id="spine-strokes">
+    <h2>7. Spine strokes</h2>
+    <p>
+      In a multi-level chart, a “spine” is the line running through the middle of a branch — from a top-level sector down through its first child, first grandchild, and so on. These connected wedges can be hard to see when slices are similar colors.
+    </p>
+    <p>
+      <strong>Spine strokes</strong> adds a visible line along the inner (start-radius) edge of that chain so the branch reads as one connected wedge.
+    </p>
+    <h3>How to use it</h3>
+    <ol>
+      <li>Click <strong>Spine strokes</strong> in the top toolbar.</li>
+      <li>Enter a <strong>Start radius stroke width</strong> (for example 2). This is the thickness of the line in pixels.</li>
+      <li>Click <strong>Apply</strong>.</li>
+    </ol>
+    <p>
+      The tool walks each top-level sector and applies the stroke along the first-child chain only (not sibling branches). You can still adjust start-radius stroke color per sector in the <strong>Fill and strokes</strong> section of the property editor if needed.
+    </p>
+  </section>
+
+  <section id="palettes">
+    <h2>8. Color palettes</h2>
+    <p>
+      Palettes give your chart a coordinated set of colors without picking each sector by hand.
+    </p>
+    <h3>Applying a palette</h3>
+    <ol>
+      <li>Click <strong>Palettes</strong> in the top toolbar.</li>
+      <li>Browse the available palettes (for example Soft Pastel, Vibrant, Earth tones).</li>
+      <li>Click a palette to <strong>preview</strong> it on your chart immediately.</li>
+      <li>Click <strong>Apply</strong> on the palette you want to keep. This saves your color choice with the chart.</li>
+      <li>Click <strong>Cancel</strong> to close without applying — your chart reverts to how it looked before you opened the dialog.</li>
+    </ol>
+    <p>
+      Palettes assign colors to top-level sectors and automatically shade child sectors so related branches stay visually connected. Text colors are adjusted for readability on each background.
+    </p>
+    <div class="tip">
+      <strong>Tip:</strong> After applying a palette you can still override individual sector colors using Override in the property editor.
+    </div>
+  </section>
+
+  <section id="save-load">
+    <h2>9. Saving and loading your work</h2>
+    <p>
+      Your chart — tree structure, levels, colors, labels, and all settings — can be saved as a JSON file so you can reopen it later or share it with colleagues.
+    </p>
+    <h3>Save (export JSON)</h3>
+    <ol>
+      <li>Click the <strong>Save</strong> button (disk icon) in the toolbar.</li>
+      <li>Enter a file name (for example <code>my-chart</code>). The file will be saved as <code>my-chart.json</code>.</li>
+      <li>Confirm. The file downloads to your computer.</li>
+    </ol>
+    <h3>Load (import JSON)</h3>
+    <ol>
+      <li>Click the <strong>Upload</strong> button (arrow icon) in the toolbar.</li>
+      <li>Choose a <code>.json</code> chart file you saved earlier.</li>
+      <li>The editor replaces the current chart with the loaded data.</li>
+    </ol>
+    <div class="tip">
+      <strong>Tip:</strong> Save your work regularly. Loading a file replaces everything currently on screen, so save first if you want to keep your current chart.
+    </div>
+  </section>
+
+  <section id="download-svg">
+    <h2>10. Downloading as SVG</h2>
+    <p>
+      When your chart is ready for a report, presentation, or print, export it as an SVG image — a high-quality vector format that scales without losing sharpness.
+    </p>
+    <h3>Steps</h3>
+    <ol>
+      <li>Click <strong>Download</strong> on the right side of the toolbar.</li>
+      <li>Enter a file name (for example <code>chart</code>). The file will be saved as <code>chart.svg</code>.</li>
+      <li>Confirm. The SVG file downloads to your computer.</li>
+    </ol>
+    <p>
+      The exported SVG includes your chart geometry, colors, strokes, and text. Fonts used in labels are embedded so the file looks correct when opened in browsers, design tools, or document editors that support SVG.
+    </p>
+    <p>
+      <strong>Workflow summary:</strong> Build your chart → save JSON to preserve your editable project → download SVG when you need the final image.
+    </p>
+  </section>
+    </div>
+
+    <aside class="toc-sidebar">
+      <nav class="toc" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#overview">Overview of the editor</a></li>
+          <li><a href="#create-from-file">Creating a chart from a text file</a></li>
+          <li><a href="#selecting">Selecting items and levels</a></li>
+          <li><a href="#properties">Editing properties on the right</a></li>
+          <li><a href="#labels">Text labels on sectors</a></li>
+          <li><a href="#spans">Splitting text into spans</a></li>
+          <li><a href="#spine-strokes">Spine strokes</a></li>
+          <li><a href="#palettes">Color palettes</a></li>
+          <li><a href="#save-load">Saving and loading your work</a></li>
+          <li><a href="#download-svg">Downloading as SVG</a></li>
+        </ol>
+      </nav>
+    </aside>
+  </main>
+
+  <footer>
+  White Cloud Charts — User Manual
+  </footer>
+</body>
+</html>

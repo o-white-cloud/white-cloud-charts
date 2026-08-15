@@ -15,12 +15,17 @@ import {
 function ensureItemProperties(properties: PieChartItemProperties): PieChartItemProperties {
   const defaults = DefaultTreeItemProperties(null);
   const labelFontFamily = properties.labelFontFamily ?? defaults.labelFontFamily;
+  const labelColor = properties.labelColor ?? defaults.labelColor;
 
   return {
     ...properties,
     labelFontFamily: {
       ...labelFontFamily,
       value: labelFontFamily.value ?? DEFAULT_CHART_FONT_FAMILY,
+    },
+    labelColor: {
+      ...labelColor,
+      value: labelColor.value ?? defaults.labelColor.value,
     },
   };
 }
@@ -66,12 +71,14 @@ export function migrateChartData(data: MultiLevelPieChartData): MultiLevelPieCha
     return data;
   }
 
-  return {
+  const migrated: MultiLevelPieChartData = {
     ...data,
     schemaVersion: CHART_DATA_SCHEMA_VERSION,
     levels: data.levels.map(ensureLevelProperties),
     items: data.items.map(normalizeSpanFonts),
   };
+
+  return migrated;
 }
 
 /** Prepare chart data for JSON export with current schema version. */

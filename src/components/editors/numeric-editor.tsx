@@ -146,9 +146,10 @@ export const NumericEditor = <T,>(
   }, [wheelAdjust, debouncedOnChange]);
 
   return (
-    <div ref={containerRef} className="w-full">
+    <div ref={containerRef} className="max-w-[6.5rem]">
       <Input
         type="number"
+        compact
         readOnly={readonly}
         value={displayValue ?? ''}
         min={min}

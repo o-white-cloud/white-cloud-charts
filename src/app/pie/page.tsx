@@ -1,10 +1,10 @@
 'use client';
-import { createContext, useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { TreeApi } from 'react-arborist';
 
-import Canvas from '@/components/Canvas';
 import { MultiLevelPieChart } from '@/components/charts/pie/multi-level-pie-chart';
-import Navbar from '@/components/Navbar';
+import { PieEditorToolbar } from '@/components/pie-editor-toolbar';
 import {
   MultiLevelPieChartData, PieChartItem, Property, PieChartLevel
 } from '@/lib/types/multi-level-pie-types';
@@ -22,6 +22,7 @@ import {
 } from '@/lib/label-centering';
 
 export default function Page() {
+  const treeRef = useRef<TreeApi<PieChartItem> | null>(null);
   const [data, setData] = useState<MultiLevelPieChartData>({
     items: [],
     levels: [],
@@ -52,7 +53,7 @@ export default function Page() {
       if (index !== -1) {
         siblingsArray.splice(index, 1, item);
         updateChildrenWithParent(item);
-        setData({ items: newItems, levels: data.levels });
+        setData({ ...data, items: newItems, levels: data.levels });
         setSelectedItem({ item, type: 'treeItem' });
       }
     },
@@ -87,7 +88,7 @@ export default function Page() {
       const index = newLevels.findIndex((x) => x.id === level.id);
       if (index !== -1) {
         newLevels.splice(index, 1, level);
-        setData({ items: data.items, levels: newLevels });
+        setData({ ...data, items: data.items, levels: newLevels });
         setSelectedItem({ item: level, type: 'level' });
       }
     },
@@ -118,12 +119,13 @@ export default function Page() {
 
   return (
     <MultiLevelPieChartDataContext.Provider value={data}>
-      <main className="h-screen overflow-hidden">
-        {/* <Navbar /> */}
-        <section className="flex h-full flex-row bg-gray-300">
+      <main className="flex h-screen flex-col overflow-hidden">
+        <PieEditorToolbar onDataChange={setData} treeRef={treeRef} />
+        <section className="flex min-h-0 flex-1 flex-row bg-gray-300">
           <PanelGroup direction="horizontal" className="h-full">
             <Panel defaultSize={25} className="flex h-full min-h-0 flex-col bg-white p-2">
               <PieTree
+                treeRef={treeRef}
                 onDataChange={setData}
                 onSelectionChange={onTreeItemSelect}
                 selectedItemId={
@@ -134,16 +136,18 @@ export default function Page() {
               />
             </Panel>
             <PanelResizeHandle />
-            <Panel>
+            <Panel className="flex min-h-0 flex-col">
             <Levels
                 onSelectionChange={onLevelSelect}
                 selectedLevel={
                   selectedItem?.type == 'level' ? selectedItem?.item : null
                 }/>
+              <div className="min-h-0 flex-1">
               <MultiLevelPieChart 
                 data={data} 
                 onSectorClick={onSectorClick}
               />
+              </div>
             </Panel>
             <PanelResizeHandle />
             <Panel defaultSize={25} className="bg-white !overflow-auto">
