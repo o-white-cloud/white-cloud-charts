@@ -196,8 +196,15 @@ const LevelEditor = (props: LevelEditorProps) => {
 
       <EditorSection
         title="Typography"
-        subtitle="Default font settings for labels on this ring."
+        subtitle="Default font and color settings for labels on this ring."
       >
+        <PropertyEditor
+          level={level}
+          property={level.properties.labelColor}
+          onLevelChange={(level) => onLevelUpdated(level, level.properties.labelColor)}
+          render={(valueProps) => <SingleColorEditor {...valueProps} />}
+        />
+
         <PropertyEditor
           level={level}
           property={level.properties.labelFontSize}

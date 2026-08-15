@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { LabelAnchorType, PieChartItem, PieChartItemLabelTextSpan } from "@/lib/types/multi-level-pie-types";
 import { TextSpanEditor } from "./text-span-editor";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Label } from "../ui/label";
+import { MultiLevelPieChartDataContext } from "../contexts/MultiLevelPieChartDataContext";
+import { getPropertyValue } from "@/lib/pie-chart-item-value";
+import { DEFAULT_CHART_FONT_FAMILY } from "@/lib/chart-typography";
 
 export interface TextSpansProps {
     item: PieChartItem;
@@ -12,6 +15,10 @@ export interface TextSpansProps {
 
 export const TextSpans: React.FC<TextSpansProps> = ({ item, onItemUpdated }) => {
     const [labelSpans, setLabelSpans] = useState<PieChartItemLabelTextSpan[]>(item.labelSpans);
+    const data = useContext(MultiLevelPieChartDataContext);
+    const inheritedFontFamily =
+        getPropertyValue(item, item.properties.labelFontFamily, data) ?? DEFAULT_CHART_FONT_FAMILY;
+    const inheritedFontSize = getPropertyValue(item, item.properties.labelFontSize, data) ?? 12;
 
     useEffect(() => {
         setLabelSpans(item.labelSpans);
@@ -85,6 +92,8 @@ export const TextSpans: React.FC<TextSpansProps> = ({ item, onItemUpdated }) => 
                 <TextSpanEditor
                     key={index}
                     span={span}
+                    inheritedFontFamily={inheritedFontFamily}
+                    inheritedFontSize={inheritedFontSize}
                     onSpanUpdated={(updatedSpan) => handleSpanUpdated(updatedSpan, index)}
                     onSpanRemoved={() => handleSpanRemoved(index)}
                 />

@@ -53,7 +53,7 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
 
       <EditorSection
         title="Label text"
-        subtitle="Main label shown on the chart. Split into lines to create additional styled spans below."
+        subtitle="Main label text, typography, and any additional styled lines."
       >
         <div className="space-y-1.5">
           <Label htmlFor="name" className="text-sm font-medium">
@@ -96,6 +96,30 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
             )}
           </div>
         </div>
+
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelColor}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <SingleColorEditor {...valueProps} />}
+        />
+
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelFontSize}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <NumericEditor {...valueProps} />}
+        />
+
+        <PropertyEditor
+          level={level}
+          item={item}
+          property={item.properties.labelFontFamily}
+          onItemChange={(item) => onItemUpdated(item)}
+          render={(valueProps) => <FontFamilyEditor {...valueProps} />}
+        />
 
         <PropertyEditor
           level={level}
@@ -153,27 +177,6 @@ const TreeItemEditor = (props: TreeItemEditorProps) => {
           property={item.properties.labelDY}
           onItemChange={(item) => onItemUpdated(item)}
           render={(valueProps) => <NumericEditor {...valueProps} wheelAdjust />}
-        />
-      </EditorSection>
-
-      <EditorSection
-        title="Typography"
-        subtitle="Font settings for this sector's labels."
-      >
-        <PropertyEditor
-          level={level}
-          item={item}
-          property={item.properties.labelFontSize}
-          onItemChange={(item) => onItemUpdated(item)}
-          render={(valueProps) => <NumericEditor {...valueProps} />}
-        />
-
-        <PropertyEditor
-          level={level}
-          item={item}
-          property={item.properties.labelFontFamily}
-          onItemChange={(item) => onItemUpdated(item)}
-          render={(valueProps) => <FontFamilyEditor {...valueProps} />}
         />
       </EditorSection>
 
