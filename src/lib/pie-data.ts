@@ -1,3 +1,4 @@
+import { layoutLabelSpans } from './label-span-layout';
 import { getPropertyValue } from './pie-chart-item-value';
 import {
   MultiLevelPieChartData, PieChartItem, PieChartItemProperties, Property, PieChartLevel, PieSector,
@@ -73,10 +74,16 @@ const mapItemsToSectors = (flattenedLevels: FlattenedLevels, data: MultiLevelPie
   return flattenedLevels.map((levelAndItems) => ({
     level: levelAndItems.level,
     items: levelAndItems.items.map<PieSector>((item) => {
+      const textLineHeightProp =
+        item.properties?.textLineHeight ??
+        data.levels[item.level]?.properties?.textLineHeight;
+      const textLineHeight = textLineHeightProp
+        ? (getPropertyValue(item, textLineHeightProp, data) ?? 16)
+        : 16;
       return {
         id: item.id,
         name: item.name,
-        labelSpans: item.labelSpans,
+        labelSpans: layoutLabelSpans(item.labelSpans, textLineHeight),
         value: item.absoluteValue,
         placeholder: item.name === 'Placeholder',
         properties: item.name === 'Placeholder' ? null : Object.keys(item.properties).reduce<PieSectorProperties>((newProperties, property: keyof PieChartItemProperties) => {

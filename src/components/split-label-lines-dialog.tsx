@@ -15,6 +15,7 @@ import { useContext, useEffect, useState } from 'react';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
 import { getPropertyValue } from '@/lib/pie-chart-item-value';
 import { DefaultTreeItemProperties } from '@/lib/default-values';
+import { layoutLabelSpans } from '@/lib/label-span-layout';
 
 export interface SplitLabelLinesDialogProps {
   open: boolean;
@@ -23,18 +24,13 @@ export interface SplitLabelLinesDialogProps {
   onApply: (item: PieChartItem) => void;
 }
 
-function buildSpansFromLines(
-  lines: string[],
-  lineHeight: number
-): PieChartItemLabelTextSpan[] {
+function buildSpansFromLines(lines: string[]): PieChartItemLabelTextSpan[] {
   const spans: PieChartItemLabelTextSpan[] = [];
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
     if (!line.trim()) continue;
     spans.push({
       text: line,
-      x: 0,
-      y: i * lineHeight,
       color: '#000000',
       fontWeight: 'normal',
       anchor: LabelAnchorType.start,
@@ -66,7 +62,7 @@ export function SplitLabelLinesDialog({
     const resolved =
       data != null ? getPropertyValue(item, prop, data) : prop.value;
     const lineHeight = (resolved ?? 16) as number;
-    const labelSpans = buildSpansFromLines(lines, lineHeight);
+    const labelSpans = layoutLabelSpans(buildSpansFromLines(lines), lineHeight);
     onApply({ ...item, name, labelSpans });
     onOpenChange(false);
   };

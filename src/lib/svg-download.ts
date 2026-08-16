@@ -14,7 +14,7 @@ export async function downloadChartSvgAsFile(
   }
 
   const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
-  prepareSvgForExport(clonedSvg);
+  prepareSvgForExport(clonedSvg, data);
   embedFontsInSvg(clonedSvg, data);
 
   const logoImage = clonedSvg.querySelector<SVGImageElement>('image[data-chart-logo]');

@@ -31,12 +31,44 @@ export function collectChartFontFamilies(data: MultiLevelPieChartData): string[]
   return [...families];
 }
 
-/** Reset pan/zoom on a cloned SVG so exports show the full chart viewport. */
-export function prepareSvgForExport(svgElement: SVGSVGElement): void {
+const SVG_EXPORT_MARGIN = 5;
+
+function getMaxOuterRadius(data: MultiLevelPieChartData): number {
+  return data.levels.reduce(
+    (max, level) => Math.max(level.outerRadius, max),
+    0
+  );
+}
+
+/** Reset pan/zoom and crop the cloned SVG so the outer ring fills the export bounds. */
+export function prepareSvgForExport(
+  svgElement: SVGSVGElement,
+  data: MultiLevelPieChartData
+): void {
   const zoomGroup = svgElement.querySelector('#zoomG');
   if (zoomGroup) {
     zoomGroup.removeAttribute('transform');
   }
+
+  const maxOuterRadius = getMaxOuterRadius(data);
+  if (maxOuterRadius <= 0) {
+    return;
+  }
+
+  const exportSize = maxOuterRadius * 2 + SVG_EXPORT_MARGIN * 2;
+  const center = maxOuterRadius + SVG_EXPORT_MARGIN;
+  const oldWidth = Number(svgElement.getAttribute('width')) || exportSize;
+  const oldHeight = Number(svgElement.getAttribute('height')) || exportSize;
+  const dx = center - oldWidth / 2;
+  const dy = center - oldHeight / 2;
+
+  if (zoomGroup && (dx !== 0 || dy !== 0)) {
+    zoomGroup.setAttribute('transform', `translate(${dx},${dy})`);
+  }
+
+  svgElement.setAttribute('width', String(exportSize));
+  svgElement.setAttribute('height', String(exportSize));
+  svgElement.setAttribute('viewBox', `0 0 ${exportSize} ${exportSize}`);
 }
 
 /** Inject Google Fonts @import into an SVG element so exported files keep label typography. */
