@@ -1,4 +1,4 @@
-# White Cloud Charts — AI overview
+# White Cloud Charts
 
 ## What it is
 
@@ -29,7 +29,7 @@
 - **`pieLevels`** (`src/lib/pie-data.ts`) flattens the tree by level, inserts **Placeholder** leaves when a branch stops early but deeper rings exist, then computes slice **values** so each ring partitions correctly under parents.
 - **`getPropertyValue`** (`src/lib/pie-chart-item-value.ts`) resolves colors (including gradient/enumeration per sibling) and inheritance.
 - **`migrateChartData`** / **`serializeChartData`** (`src/lib/chart-data-migration.ts`) normalize legacy chart JSON and version exports.
-- **Color palettes** (`src/lib/palettes/`): registry of built-in palettes, generic palette engine (descendant shading, foreground contrast), and palette browser UI in the pie editor.
+- **Color palettes** (`src/lib/palettes/`): registry of built-in palettes, generic palette engine (descendant shading, foreground contrast), and palette browser UI in the pie editor. Spec: `docs/Generic Chart Color Palette System — Implementation Requirements.md`.
 - SVG export embeds Google Fonts used by labels (`src/lib/svg-font-export.ts`).
 - **`recomputeFromLevel`** recalibrates inner values from a chosen level.
 
@@ -39,7 +39,7 @@ Three columns: **tree** (left) → **levels list + chart** (center) → **inspec
 
 ## Tests
 
-- Jest: e.g. `__tests__/multi-level-pie-data.test.ts`
+- Jest, tests in `__tests__/` (data model, palettes, typography, label layout, SVG export). Verify changes with `npm run lint` and `npm test`.
 
 ## Scripts
 
@@ -48,4 +48,6 @@ Three columns: **tree** (left) → **levels list + chart** (center) → **inspec
 - `npm run lint` — ESLint  
 - `npm test` — Jest  
 
-When behavior or architecture changes meaningfully, keep this file aligned so future sessions stay accurate.
+## Maintaining this file
+
+If you change architecture, major dependencies, or primary entry points, update this file so future sessions stay accurate.
