@@ -150,16 +150,66 @@ function colorNode(
   });
 }
 
+/**
+ * Resolve the palette color index for each top-level sector.
+ * Explicit assignments win; remaining sectors take the next unused palette
+ * color in order, cycling only once every color is in use.
+ */
+export function resolveSectorColorIndices(
+  items: PieChartItem[],
+  palette: ChartPalette,
+  assignments?: Record<string, number>
+): Record<string, number> {
+  const colorCount = palette.colors.length;
+  const isValid = (index: number | undefined): index is number =>
+    index !== undefined && Number.isInteger(index) && index >= 0 && index < colorCount;
+
+  const used = new Set<number>();
+  items.forEach((item) => {
+    const assigned = assignments?.[item.id];
+    if (isValid(assigned)) {
+      used.add(assigned);
+    }
+  });
+
+  const resolved: Record<string, number> = {};
+  let nextCandidate = 0;
+  let fallbackIndex = 0;
+  items.forEach((item) => {
+    const assigned = assignments?.[item.id];
+    if (isValid(assigned)) {
+      resolved[item.id] = assigned;
+      return;
+    }
+    while (nextCandidate < colorCount && used.has(nextCandidate)) {
+      nextCandidate++;
+    }
+    if (nextCandidate < colorCount) {
+      resolved[item.id] = nextCandidate;
+      used.add(nextCandidate);
+      return;
+    }
+    resolved[item.id] = colorCount === 0 ? 0 : fallbackIndex++ % colorCount;
+  });
+
+  return resolved;
+}
+
 /** Apply a palette to chart items, returning a new immutable chart structure. */
 export function applyPalette(
   chart: MultiLevelPieChartData,
   palette: ChartPalette,
-  options?: { setPaletteId?: boolean }
+  options?: { setPaletteId?: boolean; sectorColors?: Record<string, number> }
 ): MultiLevelPieChartData {
   const items = chart.items.map(cloneItem);
+  const sectorColors = resolveSectorColorIndices(
+    items,
+    palette,
+    options?.sectorColors
+  );
 
-  items.forEach((topLevelItem, index) => {
-    const ancestorColor = getPaletteColor(palette, index);
+  items.forEach((topLevelItem) => {
+    const ancestorColor = getPaletteColor(palette, sectorColors[topLevelItem.id]);
     colorNode(topLevelItem, ancestorColor, 0, palette);
   });
 
@@ -167,7 +217,9 @@ export function applyPalette(
 
   return {
     ...chart,
-    ...(setPaletteId ? { paletteId: palette.id } : {}),
+    ...(setPaletteId
+      ? { paletteId: palette.id, paletteSectorColors: sectorColors }
+      : {}),
     items,
   };
 }

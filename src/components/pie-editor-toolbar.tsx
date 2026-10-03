@@ -1,16 +1,14 @@
 'use client';
 
-import { Download, FileText, HelpCircle, Palette, Plus, Route, Save, Upload } from 'lucide-react';
+import { Download, FileText, HelpCircle, Palette, Plus, Save, Upload } from 'lucide-react';
 import { useCallback, useContext, useRef, useState } from 'react';
 import { TreeApi } from 'react-arborist';
 
 import { BulkItemDialog } from '@/app/pie/bulk-item-dialog';
-import { ApplySpineStrokesDialog } from '@/app/pie/apply-spine-strokes-dialog';
 import { MultiLevelPieChartDataContext } from '@/components/contexts/MultiLevelPieChartDataContext';
-import { PaletteBrowserDialog } from '@/components/palettes/palette-browser-dialog';
+import { StyleDialog } from '@/components/palettes/style-dialog';
 import { SaveFileNameDialog } from '@/components/save-file-name-dialog';
 import { Button } from '@/components/ui/button';
-import { applySpineStartRadiusStrokes } from '@/lib/apply-spine-strokes';
 import { migrateChartData, serializeChartData } from '@/lib/chart-data-migration';
 import {
   reconstructParentRelationships,
@@ -46,23 +44,14 @@ export function PieEditorToolbar({ onDataChange, treeRef }: PieEditorToolbarProp
     [onDataChange]
   );
 
-  const onApplySpineStrokes = useCallback(
-    (strokeWidth: number) => {
-      onDataChange({
-        ...data,
-        items: applySpineStartRadiusStrokes(data.items, strokeWidth),
-        levels: data.levels,
-      });
-    },
-    [data, onDataChange]
-  );
-
   const saveJsonAsFile = useCallback(
     (fileName: string) => {
       const cleanData = serializeChartData({
         items: data.items.map((item) => stripParentReferences(item)),
         levels: data.levels,
         paletteId: data.paletteId,
+        paletteSectorColors: data.paletteSectorColors,
+        spineStroke: data.spineStroke,
       });
 
       const jsonData = JSON.stringify(cleanData, null, 2);
@@ -99,6 +88,8 @@ export function PieEditorToolbar({ onDataChange, treeRef }: PieEditorToolbarProp
             items: itemsWithParents,
             levels: loadedData.levels,
             paletteId: loadedData.paletteId,
+            paletteSectorColors: loadedData.paletteSectorColors,
+            spineStroke: loadedData.spineStroke,
           });
         } catch (error) {
           console.error('Error loading file:', error);
@@ -129,24 +120,12 @@ export function PieEditorToolbar({ onDataChange, treeRef }: PieEditorToolbarProp
           </Button>
         }
       />
-      <ApplySpineStrokesDialog
-        onApply={onApplySpineStrokes}
-        trigger={
-          <Button
-            variant="outline"
-            className="h-9"
-            title="Apply start radius strokes along first-child chains"
-          >
-            <Route className="h-4 w-4" /> Spine strokes
-          </Button>
-        }
-      />
-      <PaletteBrowserDialog
+      <StyleDialog
         chartData={data}
         onChartChange={onDataChange}
         trigger={
-          <Button variant="outline" className="h-9" title="Browse and apply color palettes">
-            <Palette className="h-4 w-4" /> Palettes
+          <Button variant="outline" className="h-9" title="Color palettes and spine strokes">
+            <Palette className="h-4 w-4" /> Style
           </Button>
         }
       />

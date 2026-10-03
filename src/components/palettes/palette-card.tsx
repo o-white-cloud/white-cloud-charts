@@ -2,7 +2,6 @@
 
 import { Check } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { ChartPalette } from '@/lib/palettes/types';
 import { cn } from '@/lib/utils';
 
@@ -12,14 +11,15 @@ export interface PaletteCardProps {
   palette: ChartPalette;
   selected: boolean;
   onSelect: (palette: ChartPalette) => void;
-  onApply: (palette: ChartPalette) => void;
+  /** Extra controls shown inside the card while it is selected. */
+  children?: React.ReactNode;
 }
 
 export function PaletteCard({
   palette,
   selected,
   onSelect,
-  onApply,
+  children,
 }: PaletteCardProps) {
   return (
     <div
@@ -54,16 +54,7 @@ export function PaletteCard({
           <PaletteSwatches palette={palette} className="mt-3 flex flex-wrap gap-1" />
         </div>
       </button>
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          size="sm"
-          variant={selected ? 'default' : 'outline'}
-          onClick={() => onApply(palette)}
-        >
-          {selected ? 'Reapply' : 'Apply'}
-        </Button>
-      </div>
+      {selected && children}
     </div>
   );
 }

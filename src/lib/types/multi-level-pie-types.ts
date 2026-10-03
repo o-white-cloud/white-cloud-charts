@@ -5,8 +5,24 @@ export interface MultiLevelPieChartData {
   schemaVersion?: number;
   /** ID of the most recently applied color palette. */
   paletteId?: string;
+  /** Top-level item id → index into the applied palette's colors. */
+  paletteSectorColors?: Record<string, number>;
+  /** Most recently applied spine stroke style. */
+  spineStroke?: SpineStrokeSetting;
   levels: PieChartLevel[];
   items: PieChartItem[];
+}
+
+export type SpineStrokeColor =
+  | { type: 'fixed'; value: string }
+  /** Darker shade of each sector's own color. */
+  | { type: 'shade' };
+
+export interface SpineStrokeSetting {
+  /** Preset id, or 'custom'. */
+  presetId: string;
+  width: number;
+  color: SpineStrokeColor;
 }
 
 export interface PieChartItemProperties extends Record<string, Property<any>> {

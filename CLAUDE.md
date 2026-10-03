@@ -23,13 +23,14 @@
 
 ## Data model
 
-- **`MultiLevelPieChartData`** (`src/lib/types/multi-level-pie-types.ts`): `items` (tree roots) + `levels` (one **PieChartLevel** per ring: inner/outer radius, angles, padding, colors, edges). Optional `schemaVersion` for JSON migration; optional `paletteId` for the last applied color palette.
+- **`MultiLevelPieChartData`** (`src/lib/types/multi-level-pie-types.ts`): `items` (tree roots) + `levels` (one **PieChartLevel** per ring: inner/outer radius, angles, padding, colors, edges). Optional `schemaVersion` for JSON migration; optional `paletteId` for the last applied color palette and `paletteSectorColors` (top-level item id → palette color index, chosen per sector in the palette dialog; unassigned sectors take the next unused color via `resolveSectorColorIndices`), and `spineStroke` (last applied spine stroke style).
 - **`PieChartItem`**: tree node with `innerValue` / `absoluteValue`, `level`, parent/children, labels (`labelSpans`), and **properties** (colors, label layout, strokes, typography). Properties use **`Property<T>`** with `source`: `override` | `parent` | `level`.
 - **Label typography**: `labelFontFamily` and `labelFontSize` inherit level → parent → sector override. Span `fontFamily` / `fontSize` are optional overrides. Default chart font is **Onest** (`src/lib/chart-typography.ts`).
 - **`pieLevels`** (`src/lib/pie-data.ts`) flattens the tree by level, inserts **Placeholder** leaves when a branch stops early but deeper rings exist, then computes slice **values** so each ring partitions correctly under parents.
 - **`getPropertyValue`** (`src/lib/pie-chart-item-value.ts`) resolves colors (including gradient/enumeration per sibling) and inheritance.
 - **`migrateChartData`** / **`serializeChartData`** (`src/lib/chart-data-migration.ts`) normalize legacy chart JSON and version exports.
-- **Color palettes** (`src/lib/palettes/`): registry of built-in palettes, generic palette engine (descendant shading, foreground contrast), and palette browser UI in the pie editor. Spec: `docs/Generic Chart Color Palette System — Implementation Requirements.md`.
+- **Color palettes** (`src/lib/palettes/`): registry of built-in palettes, generic palette engine (descendant shading, foreground contrast), and the **Style** dialog (`src/components/palettes/style-dialog.tsx`) with Colors and Spine strokes tabs; one Apply commits both. Spec: `docs/Generic Chart Color Palette System — Implementation Requirements.md`.
+- **Spine strokes** (`src/lib/spine-strokes.ts`): presets that set the start-radius stroke along each top-level sector's first-child chain. Independent of palettes, except the `shade` color is recomputed when colors change.
 - SVG export embeds Google Fonts used by labels (`src/lib/svg-font-export.ts`).
 - **`recomputeFromLevel`** recalibrates inner values from a chosen level.
 

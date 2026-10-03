@@ -1,3 +1,4 @@
+import { getAllPalettes } from '@/lib/palettes';
 import {
   createPalette,
   softPastelPalette,
@@ -74,5 +75,20 @@ describe('built-in palettes', () => {
     expect(softPastelPalette.foregroundStrategy).toBe(
       DEFAULT_FOREGROUND_STRATEGY
     );
+  });
+});
+
+describe('palette registry', () => {
+  it('has unique ids and valid 6-digit hex colors', () => {
+    const palettes = getAllPalettes();
+    const ids = palettes.map((palette) => palette.id);
+    expect(new Set(ids).size).toBe(ids.length);
+
+    palettes.forEach((palette) => {
+      expect(palette.colors.length).toBeGreaterThan(0);
+      palette.colors.forEach((color) => {
+        expect(color).toMatch(/^#[0-9A-F]{6}$/);
+      });
+    });
   });
 });

@@ -5,6 +5,7 @@ import {
   generateDescendantColor,
   getDescendantMixAmount,
   getPaletteColor,
+  resolveSectorColorIndices,
 } from '@/lib/palettes/palette-engine';
 import { DefaultTreeItemProperties } from '@/lib/default-values';
 import {
@@ -167,5 +168,56 @@ describe('palette engine', () => {
     const result = applyPalette(makeChart([]), softPastelPalette);
     expect(result.items).toEqual([]);
     expect(result.paletteId).toBe('soft-pastel');
+  });
+});
+
+describe('sector color assignments', () => {
+  const ids = ['a', 'b', 'c'];
+  const items = () => ids.map((id) => makeItem(id));
+
+  it('defaults to palette order', () => {
+    expect(resolveSectorColorIndices(items(), softPastelPalette)).toEqual({
+      a: 0,
+      b: 1,
+      c: 2,
+    });
+  });
+
+  it('keeps explicit picks and fills the rest with unused colors', () => {
+    expect(
+      resolveSectorColorIndices(items(), softPastelPalette, { b: 0, c: 5 })
+    ).toEqual({ a: 1, b: 0, c: 5 });
+  });
+
+  it('ignores out-of-range assignments', () => {
+    expect(
+      resolveSectorColorIndices(items(), softPastelPalette, { a: 99, b: -1 })
+    ).toEqual({ a: 0, b: 1, c: 2 });
+  });
+
+  it('cycles once every palette color is used', () => {
+    const many = Array.from({ length: 10 }, (_, i) => makeItem(`s${i}`));
+    const resolved = resolveSectorColorIndices(many, softPastelPalette);
+    expect(resolved.s7).toBe(7);
+    expect(resolved.s8).toBe(0);
+    expect(resolved.s9).toBe(1);
+  });
+
+  it('applies assigned colors and persists them', () => {
+    const result = applyPalette(makeChart(items()), softPastelPalette, {
+      sectorColors: { a: 4 },
+    });
+    expect(result.items[0].properties.color.value?.value).toBe(
+      softPastelPalette.colors[4]
+    );
+    expect(result.paletteSectorColors).toEqual({ a: 4, b: 0, c: 1 });
+  });
+
+  it('does not persist assignments during preview', () => {
+    const result = applyPalette(makeChart(items()), softPastelPalette, {
+      setPaletteId: false,
+      sectorColors: { a: 4 },
+    });
+    expect(result.paletteSectorColors).toBeUndefined();
   });
 });
