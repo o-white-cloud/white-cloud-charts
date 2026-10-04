@@ -52,6 +52,7 @@ export function PieEditorToolbar({ onDataChange, treeRef }: PieEditorToolbarProp
         paletteId: data.paletteId,
         paletteSectorColors: data.paletteSectorColors,
         spineStroke: data.spineStroke,
+        ringStyle: data.ringStyle,
       });
 
       const jsonData = JSON.stringify(cleanData, null, 2);
@@ -90,6 +91,7 @@ export function PieEditorToolbar({ onDataChange, treeRef }: PieEditorToolbarProp
             paletteId: loadedData.paletteId,
             paletteSectorColors: loadedData.paletteSectorColors,
             spineStroke: loadedData.spineStroke,
+            ringStyle: loadedData.ringStyle,
           });
         } catch (error) {
           console.error('Error loading file:', error);

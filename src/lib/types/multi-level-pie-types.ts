@@ -9,6 +9,8 @@ export interface MultiLevelPieChartData {
   paletteSectorColors?: Record<string, number>;
   /** Most recently applied spine stroke style. */
   spineStroke?: SpineStrokeSetting;
+  /** Most recently applied ring style (edges between levels). */
+  ringStyle?: RingStyleSetting;
   levels: PieChartLevel[];
   items: PieChartItem[];
 }
@@ -23,6 +25,12 @@ export interface SpineStrokeSetting {
   presetId: string;
   width: number;
   color: SpineStrokeColor;
+}
+
+export interface RingStyleSetting {
+  presetId: string;
+  width: number;
+  color: string;
 }
 
 export interface PieChartItemProperties extends Record<string, Property<any>> {

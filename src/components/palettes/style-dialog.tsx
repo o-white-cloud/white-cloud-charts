@@ -4,6 +4,7 @@ import { Palette } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 import { PaletteCard } from '@/components/palettes/palette-card';
+import { RingStylePicker } from '@/components/palettes/ring-style-picker';
 import { SectorColorAssigner } from '@/components/palettes/sector-color-assigner';
 import { SpineStrokePicker } from '@/components/palettes/spine-stroke-picker';
 import { Button } from '@/components/ui/button';
@@ -20,9 +21,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cloneChartData } from '@/lib/chart-data-clone';
 import { getAllPalettes, getPalette } from '@/lib/palettes';
 import { applyPalette } from '@/lib/palettes/palette-engine';
+import { applyRingStyle } from '@/lib/ring-styles';
 import { applySpineStrokes } from '@/lib/spine-strokes';
 import {
   MultiLevelPieChartData,
+  RingStyleSetting,
   SpineStrokeSetting,
 } from '@/lib/types/multi-level-pie-types';
 
@@ -31,29 +34,41 @@ interface ColorDraft {
   sectorColors: Record<string, number>;
 }
 
+/** Changes drafted in each tab; null means the tab was not touched. */
+interface StyleDrafts {
+  colors: ColorDraft | null;
+  spine: SpineStrokeSetting | null;
+  rings: RingStyleSetting | null;
+}
+
+const NO_DRAFTS: StyleDrafts = { colors: null, spine: null, rings: null };
+
 /**
- * Apply the drafted colors and spine strokes on top of the snapshot.
+ * Apply the drafted changes on top of the snapshot.
  * Untouched tabs leave the chart alone, except that a shaded spine is
  * recomputed when colors change because it is derived from them.
  */
 function applyStyle(
   snapshot: MultiLevelPieChartData,
-  colorDraft: ColorDraft | null,
-  strokeDraft: SpineStrokeSetting | null
+  drafts: StyleDrafts
 ): MultiLevelPieChartData {
   let next = snapshot;
-  const palette = colorDraft && getPalette(colorDraft.paletteId);
+  const palette = drafts.colors && getPalette(drafts.colors.paletteId);
   if (palette) {
-    next = applyPalette(next, palette, { sectorColors: colorDraft.sectorColors });
+    next = applyPalette(next, palette, { sectorColors: drafts.colors!.sectorColors });
   }
 
   const spine =
-    strokeDraft ??
+    drafts.spine ??
     (palette && snapshot.spineStroke?.color.type === 'shade'
       ? snapshot.spineStroke
       : null);
   if (spine) {
     next = applySpineStrokes(next, spine);
+  }
+
+  if (drafts.rings) {
+    next = applyRingStyle(next, drafts.rings);
   }
   return next;
 }
@@ -66,26 +81,24 @@ export interface StyleDialogProps {
 
 export function StyleDialog({ chartData, onChartChange, trigger }: StyleDialogProps) {
   const [open, setOpen] = useState(false);
-  const [colorDraft, setColorDraft] = useState<ColorDraft | null>(null);
-  const [strokeDraft, setStrokeDraft] = useState<SpineStrokeSetting | null>(null);
+  const [drafts, setDrafts] = useState<StyleDrafts>(NO_DRAFTS);
   const snapshotRef = useRef<MultiLevelPieChartData | null>(null);
   const palettes = getAllPalettes();
 
   const preview = useCallback(
-    (nextColors: ColorDraft | null, nextStroke: SpineStrokeSetting | null) => {
-      setColorDraft(nextColors);
-      setStrokeDraft(nextStroke);
+    (change: Partial<StyleDrafts>) => {
+      const nextDrafts = { ...drafts, ...change };
+      setDrafts(nextDrafts);
       if (snapshotRef.current) {
-        onChartChange(applyStyle(snapshotRef.current, nextColors, nextStroke));
+        onChartChange(applyStyle(snapshotRef.current, nextDrafts));
       }
     },
-    [onChartChange]
+    [drafts, onChartChange]
   );
 
   const close = useCallback(() => {
     snapshotRef.current = null;
-    setColorDraft(null);
-    setStrokeDraft(null);
+    setDrafts(NO_DRAFTS);
     setOpen(false);
   }, []);
 
@@ -98,10 +111,10 @@ export function StyleDialog({ chartData, onChartChange, trigger }: StyleDialogPr
 
   const handleApply = useCallback(() => {
     if (snapshotRef.current) {
-      onChartChange(applyStyle(snapshotRef.current, colorDraft, strokeDraft));
+      onChartChange(applyStyle(snapshotRef.current, drafts));
     }
     close();
-  }, [close, colorDraft, onChartChange, strokeDraft]);
+  }, [close, drafts, onChartChange]);
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
@@ -116,19 +129,20 @@ export function StyleDialog({ chartData, onChartChange, trigger }: StyleDialogPr
   );
 
   const saved = snapshotRef.current ?? chartData;
-  const activePaletteId = colorDraft?.paletteId ?? saved.paletteId ?? null;
+  const activePaletteId = drafts.colors?.paletteId ?? saved.paletteId ?? null;
   const activeSectorColors =
-    colorDraft?.sectorColors ??
+    drafts.colors?.sectorColors ??
     (activePaletteId === saved.paletteId ? saved.paletteSectorColors ?? {} : {});
-  const activeStroke = strokeDraft ?? saved.spineStroke ?? null;
+  const activeStroke = drafts.spine ?? saved.spineStroke ?? null;
+  const activeRings = drafts.rings ?? saved.ringStyle ?? null;
 
   const selectPalette = (paletteId: string) => {
-    if (colorDraft?.paletteId === paletteId) {
+    if (drafts.colors?.paletteId === paletteId) {
       return;
     }
     const sectorColors =
       paletteId === saved.paletteId ? saved.paletteSectorColors ?? {} : {};
-    preview({ paletteId, sectorColors }, strokeDraft);
+    preview({ colors: { paletteId, sectorColors } });
   };
 
   return (
@@ -153,6 +167,7 @@ export function StyleDialog({ chartData, onChartChange, trigger }: StyleDialogPr
           <TabsList>
             <TabsTrigger value="colors">Colors</TabsTrigger>
             <TabsTrigger value="spine">Spine strokes</TabsTrigger>
+            <TabsTrigger value="rings">Rings</TabsTrigger>
           </TabsList>
           <TabsContent value="colors">
             <ScrollArea className="h-[50vh] pr-4">
@@ -169,7 +184,7 @@ export function StyleDialog({ chartData, onChartChange, trigger }: StyleDialogPr
                       items={chartData.items}
                       sectorColors={activeSectorColors}
                       onChange={(sectorColors) =>
-                        preview({ paletteId: palette.id, sectorColors }, strokeDraft)
+                        preview({ colors: { paletteId: palette.id, sectorColors } })
                       }
                     />
                   </PaletteCard>
@@ -186,7 +201,19 @@ export function StyleDialog({ chartData, onChartChange, trigger }: StyleDialogPr
               </p>
               <SpineStrokePicker
                 value={activeStroke}
-                onChange={(setting) => preview(colorDraft, setting)}
+                onChange={(setting) => preview({ spine: setting })}
+              />
+            </ScrollArea>
+          </TabsContent>
+          <TabsContent value="rings">
+            <ScrollArea className="h-[50vh] pr-4">
+              <p className="pb-2 text-sm text-muted-foreground">
+                Draws a ring between levels using each level&apos;s outer edge.
+                The outermost level&apos;s edge is left unchanged.
+              </p>
+              <RingStylePicker
+                value={activeRings}
+                onChange={(setting) => preview({ rings: setting })}
               />
             </ScrollArea>
           </TabsContent>
@@ -198,7 +225,7 @@ export function StyleDialog({ chartData, onChartChange, trigger }: StyleDialogPr
           <Button
             type="button"
             onClick={handleApply}
-            disabled={!colorDraft && !strokeDraft}
+            disabled={!drafts.colors && !drafts.spine && !drafts.rings}
           >
             Apply
           </Button>
